@@ -9,13 +9,20 @@ import { db } from "../firebaseConfig";
 
 
 export default function HomePage() {
+
+   type User = {
+  name?: string;
+  idNumber?: string;
+  leaveCode?: string;
+};
   const [open, setOpen] = useState(false);
-  const [users, setUsers] = useState([]);
+const [users, setUsers] = useState<User[]>([]);
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
  const sidebarRef = useRef(null);
  
+
  const actions = [
   {
     title: "إضافة طبيب",
@@ -62,7 +69,7 @@ export default function HomePage() {
   try {
     const snapshot = await getDocs(collection(db, "users"));
     
-    const data = snapshot.docs.map((doc) => doc.data()); // ← هنا يتم تعريف data
+const data = snapshot.docs.map((doc) => doc.data() as User);
 
     setUsers(data); 
   } catch (error) {
