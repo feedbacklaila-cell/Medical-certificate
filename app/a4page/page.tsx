@@ -70,9 +70,26 @@ export default function A4Page() {
     leaveDurationDays
   } = data;
 
+function toHijriDateFormatted(gregorianDateStr: string) {
+  const date = new Date(gregorianDateStr);
 
+  const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 
-  // 👇 الدالتين في أعلى الملف أو في ملف utility خارجي
+  let formatted = formatter.format(date); // مثال: ٢٢‏/٠١‏/١٤٤٧ AH
+  formatted = formatted
+    .replace(/\u200f/g, '')     // إزالة الرموز الخفية
+    .replace(/\s?AH/, '');      // إزالة "AH" إن وجدت
+
+  return convertArabicNumbersToEnglish(formatted);
+}
+
+function convertArabicNumbersToEnglish(str: string) {
+  return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
+}
 
 const getTitleClass = () => {
   return "font-[700] text-[14px] font-[MondoArabic] text-right";
@@ -81,10 +98,6 @@ const getTitleClass = () => {
 const getValueClass = () => {
   return "font-[400] text-[12px] font-[Arial] text-right";
 };
-
-function convertArabicNumbersToEnglish(str) {
-  return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-}
 
   return (
     <div className="">
@@ -338,7 +351,7 @@ function convertArabicNumbersToEnglish(str) {
 </th>
       <td className={getValueClass()}>
         {convertArabicNumbersToEnglish(
-          `${leaveDurationDays} يوم (${moment(leaveStartGregorian).format("YYYY-MM-DD")} الى ${moment(leaveEndGregorian).format("YYYY-MM-DD")})`
+          `${leaveDurationDays} يوم (${toHijriDateFormatted(leaveStartGregorian)} الى ${toHijriDateFormatted(leaveEndGregorian)})`
         )}
       </td>
       <td className={getValueClass()}>
@@ -349,18 +362,18 @@ function convertArabicNumbersToEnglish(str) {
 
     <tr>
       <th className={getTitleClass()}>تاريخ الدخول</th>
-      <td className={getValueClass()}>
-        {convertArabicNumbersToEnglish(moment(leaveStartGregorian, "YYYY-MM-DD").format("iDD/iMM/iYYYY"))}
-      </td>
+     <td className={getValueClass()} dir="ltr">
+  {toHijriDateFormatted(leaveStartGregorian)}
+</td>
       <td className={getValueClass()}>{leaveStartGregorian}</td>
       <th className={getTitleClass()}>Admission Date</th>
     </tr>
 
     <tr>
       <th className={getTitleClass()}>تاريخ الخروج</th>
-      <td className={getValueClass()}>
-        {convertArabicNumbersToEnglish(moment(leaveEndGregorian, "YYYY-MM-DD").format("iDD/iMM/iYYYY"))}
-      </td>
+     <td className={getValueClass()} dir="ltr">
+  {toHijriDateFormatted(leaveEndGregorian)}
+</td>
       <td className={getValueClass()}>{leaveEndGregorian}</td>
       <th className={getTitleClass()}>Discharge Date</th>
     </tr>
