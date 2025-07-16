@@ -1,14 +1,10 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { db } from "../firebaseConfig";
-import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, query, where, orderBy, limit, getDocs, DocumentData } from "firebase/firestore";
 import '../fonts.css';
 
-export default function A4Page() {
-  const searchParams = useSearchParams();
-  const leaveCodeget = searchParams.get("leaveCode");
 interface LeaveData {
   leaveCode: string;
   leaveStartGregorian: string;
@@ -30,7 +26,11 @@ interface LeaveData {
   leaveDurationDays: number;
 }
 
-const [data, setData] = useState<LeaveData | null>(null);
+export default function A4Page() {
+  const searchParams = useSearchParams();
+  const leaveCodeget = searchParams.get("leaveCode");
+
+  const [data, setData] = useState<LeaveData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,16 +42,18 @@ const [data, setData] = useState<LeaveData | null>(null);
         } else {
           q = query(collection(db, "users"), orderBy("reportDate", "desc"), limit(1));
         }
+
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          const docData = querySnapshot.docs[0].data();
+          const docData = querySnapshot.docs[0].data() as LeaveData;
           setData(docData);
         } else {
           setData(null);
         }
       } catch (error) {
         console.error("خطأ في جلب البيانات:", error);
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -81,9 +83,8 @@ const [data, setData] = useState<LeaveData | null>(null);
     jobTitleEn,
     hospital,
     hospitalEn,
-    leaveDurationDays
+    leaveDurationDays,
   } = data;
-
   function toHijriDateFormatted(gregorianDateStr: string) {
     const date = new Date(gregorianDateStr);
     const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
