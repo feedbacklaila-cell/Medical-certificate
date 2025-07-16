@@ -13,9 +13,13 @@ export default function AddDoctorPage() {
 
   // جلب بيانات الأطباء من Firestore
   const fetchDoctors = async () => {
-    const snapshot = await getDocs(collection(db, "doctors"));
-    const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setDoctors(list);
+    try {
+      const snapshot = await getDocs(collection(db, "doctors"));
+      const list = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setDoctors(list);
+    } catch (error) {
+      console.error("فشل في تحميل الأطباء:", error);
+    }
   };
 
   useEffect(() => {
@@ -33,13 +37,15 @@ export default function AddDoctorPage() {
 
     try {
       await addDoc(collection(db, "doctors"), {
-        doctorName,
-        doctorNameEn,
+        doctorName: doctorName.trim(),
+        doctorNameEn: doctorNameEn.trim(),
       });
+
       alert("تم حفظ الطبيب بنجاح");
+
       setDoctorName("");
       setDoctorNameEn("");
-      fetchDoctors(); // تحديث القائمة بعد الحفظ
+      fetchDoctors(); // تحديث القائمة
     } catch (error) {
       console.error("خطأ في حفظ الطبيب:", error);
       alert("حدث خطأ أثناء الحفظ");
@@ -75,7 +81,7 @@ export default function AddDoctorPage() {
           <button
             onClick={saveDoctor}
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-xl flex items-center justify-center gap-2 text-lg font-semibold shadow"
+            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-xl flex items-center justify-center gap-2 text-lg font-semibold shadow disabled:opacity-50"
           >
             <Stethoscope className="w-5 h-5" />
             {loading ? "جارٍ الحفظ..." : "حفظ الطبيب"}
@@ -84,7 +90,10 @@ export default function AddDoctorPage() {
 
         {/* قائمة الأطباء */}
         <div className="mt-10">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">👨‍⚕️ قائمة الأطباء</h2>
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+            👨‍⚕️ قائمة الأطباء
+          </h2>
+
           {doctors.length === 0 ? (
             <p className="text-gray-500">لا يوجد أطباء مضافين بعد.</p>
           ) : (

@@ -3,20 +3,27 @@
 import { useState, useEffect, useRef } from "react";
 import { db } from "../firebaseConfig";
 import { query, where, getDocs, doc, updateDoc } from "firebase/firestore";
-import { collection, addDoc ,onSnapshot} from "firebase/firestore";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 const generateLeaveCode = () => {
   return `GLS250763${Math.floor(10000 + Math.random() * 90000)}`;
 };
-export default function Home() {
-  
 
-  
+export default function Home() {
   const [isEditing, setIsEditing] = useState(false);
-const [editSearch, setEditSearch] = useState("");
-const [editingDocId, setEditingDocId] = useState(null);
+  const [editSearch, setEditSearch] = useState("");
+  const [editingDocId, setEditingDocId] = useState(null);
+  const [hospitals, setHospitals] = useState([]);
+  const [showHospitalList, setShowHospitalList] = useState(false);
+  const [hospitalSearch, setHospitalSearch] = useState("");
+  const hospitalListRef = useRef(null);
+  const [doctors, setDoctors] = useState([]);
+  const [showDoctorList, setShowDoctorList] = useState(false);
+  const [doctorSearch, setDoctorSearch] = useState("");
+  const doctorListRef = useRef(null);
+  const searchParams = useSearchParams();
 
   const [formData, setFormData] = useState({
     leaveCode: generateLeaveCode(),
@@ -37,37 +44,10 @@ const [editingDocId, setEditingDocId] = useState(null);
     workPlaceEn: "",
     doctorNameEn: "",
     jobTitleEn: "",
-      hospital: "",
-        hospitalEn: "",    
+    hospital: "",
+    hospitalEn: "",
   });
 
-
-{
-  const [hospitals, setHospitals] = useState([]);
-  const [showHospitalList, setShowHospitalList] = useState(false);
-  const [hospitalSearch, setHospitalSearch] = useState("");
-  const hospitalListRef = useRef(null);
-const searchParams = useSearchParams();
-
-
-useEffect(() => {
-  if (editSearch.trim() !== "") {
-    fetchUserData();
-  }
-}, [editSearch]);
-
-// تعديل useEffect لاستخلاص الباراميتر فقط وتفعيل التعديل
-useEffect(() => {
-  const param = searchParams.get("editSearch");
-  if (param) {
-    setEditSearch(param);
-    setIsEditing(true);
-  }
-}, [searchParams]);
- 
-
-
-;
   // جلب المستشفيات
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "hospitals"), (snapshot) => {
@@ -77,21 +57,85 @@ useEffect(() => {
     return () => unsubscribe();
   }, []);
 
-  // إخفاء القائمة عند النقر خارجها
+  // جلب الأطباء
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "doctors"), (snapshot) => {
+      const docsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setDoctors(docsData);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // إخفاء القوائم عند النقر خارجها
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        hospitalListRef.current &&
-        !hospitalListRef.current.contains(event.target)
-      ) {
+      if (hospitalListRef.current && !hospitalListRef.current.contains(event.target)) {
         setShowHospitalList(false);
       }
+      if (doctorListRef.current && !doctorListRef.current.contains(event.target)) {
+        setShowDoctorList(false);
+      }
     }
+    
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // التحميل التلقائي عند وجود معلمة URL
+  useEffect(() => {
+    const param = searchParams.get("editSearch");
+    if (param) {
+      setEditSearch(param);
+      setIsEditing(true);
+      fetchUserData(param);
+    }
+  }, [searchParams]);
+
+  // جلب بيانات المستخدم
+  const fetchUserData = async (searchValue = editSearch) => {
+    if (!searchValue.trim()) {
+      alert("يرجى إدخال الاسم أو رقم الهوية");
+      return;
+    }
+
+    try {
+      const q = query(collection(db, "users"), 
+        where("name", "==", searchValue.trim()));
+      
+      const q2 = query(collection(db, "users"), 
+        where("idNumber", "==", searchValue.trim()));
+      
+      const [snapshot1, snapshot2] = await Promise.all([
+        getDocs(q),
+        getDocs(q2),
+      ]);
+
+      const docs = [...snapshot1.docs, ...snapshot2.docs];
+
+      if (docs.length === 0) {
+        alert("لم يتم العثور على بيانات لهذا الشخص");
+        return;
+      }
+
+      const docData = docs[0].data();
+      setEditingDocId(docs[0].id);
+
+      setFormData({
+        ...formData,
+        ...docData,
+      });
+
+      alert("تم تحميل البيانات. يمكنك الآن تعديلها.");
+    } catch (error) {
+      console.error("خطأ في جلب البيانات:", error);
+      alert("حدث خطأ أثناء جلب البيانات");
+    }
+  };
 
   // اختيار مستشفى
   const selectHospital = (hospital) => {
@@ -104,211 +148,137 @@ useEffect(() => {
     setHospitalSearch("");
   };
 
-  // فلترة حسب البحث
-  const filteredHospitals = hospitals.filter(h =>
-    h.name.includes(hospitalSearch)
-  );
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleDurationChange = (e) => {
-  const days = parseInt(e.target.value);
-  if (!formData.leaveStart) {
-    alert("الرجاء اختيار تاريخ بدء الإجازة أولاً");
-    return;
-  }
-  const startDate = new Date(formData.leaveStart);
-  const endDate = new Date(startDate);
-  endDate.setDate(startDate.getDate() + days - 1); // حساب تاريخ نهاية الإجازة بشكل دقيق
-
-  const entryDate = new Date(startDate); // تاريخ الدخول = تاريخ بداية الإجازة
-const entryDateREP = new Date(startDate); // تاريخ الدخول = تاريخ بداية الإجازة
-  setFormData({
-    ...formData,
-    reportDate:entryDateREP.toISOString().split("T")[0],
-    leaveDuration: days,
-    leaveEnd: endDate.toISOString().split("T")[0],
-    entryDate: entryDate.toISOString().split("T")[0],
-  });
-};
-  // حالة الأطباء من الفايربيس
-  const [doctors, setDoctors] = useState([]);
-  const [showDoctorList, setShowDoctorList] = useState(false);
-  const [doctorSearch, setDoctorSearch] = useState("");
-  const doctorListRef = useRef(null);
-
-  // تحميل قائمة الأطباء من فايربيس
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "doctors"), (snapshot) => {
-      const docsData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setDoctors(docsData);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // إخفاء القائمة عند الضغط خارجها
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (
-        doctorListRef.current &&
-        !doctorListRef.current.contains(event.target)
-      ) {
-        setShowDoctorList(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-
-  // دالة اختيار طبيب من القائمة
+  // اختيار طبيب
   const selectDoctor = (doctor) => {
     setFormData({
       ...formData,
       doctorName: doctor.doctorName,
-      doctorNameEn: doctor.doctorNameEn,
+      doctorNameEn: doctor.doctorNameEn || "",
     });
     setShowDoctorList(false);
     setDoctorSearch("");
   };
 
-  // فلترة الأطباء حسب البحث
-  const filteredDoctors = doctors.filter((doc) =>
-    doc.doctorName.includes(doctorSearch)
-  );
- 
-
-  const fetchUserData = async () => {
-  if (!editSearch.trim()) {
-    alert("يرجى إدخال الاسم أو رقم الهوية");
-    return;
-  }
-
-  const q = query(
-    collection(db, "users"),
-    where("name", "==", editSearch.trim())
-  );
-
-  const q2 = query(
-    collection(db, "users"),
-    where("idNumber", "==", editSearch.trim())
-  );
-
-  const [snapshot1, snapshot2] = await Promise.all([
-    getDocs(q),
-    getDocs(q2),
-  ]);
-
-  const docs = [...snapshot1.docs, ...snapshot2.docs];
-
-  if (docs.length === 0) {
-    alert("لم يتم العثور على بيانات لهذا الشخص");
-    return;
-  }
-
-  const docData = docs[0].data();
-  setEditingDocId(docs[0].id);
-
-  setFormData({
-    ...formData,
-    ...docData, // يتم تعبئة كل شيء من البيانات القديمة
-  });
-
-  alert("تم تحميل البيانات. يمكنك الآن تعديلها.");
-};
- const saveUserData = async () => {
-  const userData = {
-
-    leaveDurationGregorian: ` ${formData.leaveDuration} Days  (${formData.entryDate} to ${formData.leaveEnd})`,
-    leaveDurationDays: formData.leaveDuration,
-
-
-    
-    leaveStartGregorian: formData.entryDate,
-  
-
-    reportDate: formData.reportDate,
-
-    name: formData.name,
-    nameEn: formData.nameEn,
-    idNumber: formData.idNumber,
-    nationality: formData.nationality,
-    nationalityEn: formData.nationalityEn,
-    workPlace: formData.workPlace,
-    workPlaceEn: formData.workPlaceEn,
-    doctorName: formData.doctorName,
-    doctorNameEn: formData.doctorNameEn,
-    jobTitle: formData.jobTitle,
-    jobTitleEn: formData.jobTitleEn,
-    leaveCode: formData.leaveCode,
-     hospital: formData.hospital,
-     hospitalEn:formData.hospitalEn,
+  // معالجة التغييرات
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  try {
-    if (isEditing && editingDocId) {
-      // تعديل البيانات الحالية
-      const userDoc = doc(db, "users", editingDocId);
-      await updateDoc(userDoc, userData);
-      alert("تم تعديل البيانات بنجاح");
-    } else {
-    const checkCode = query(collection(db, "users"), where("leaveCode", "==", formData.leaveCode));
-const codeDocs = await getDocs(checkCode);
-
-if (codeDocs.size > 0) {
-  alert("رمز الإجازة محجوز مسبقاً، لا يمكن استخدامه مرة أخرى");
-  return;
-}
-
-// تحقق من الاسم أو الهوية المكررة
-const checkName = query(collection(db, "users"), where("name", "==", formData.name));
-const checkID = query(collection(db, "users"), where("idNumber", "==", formData.idNumber));
-const [nameDocs, idDocs] = await Promise.all([getDocs(checkName), getDocs(checkID)]);
-
-if (nameDocs.size > 0 || idDocs.size > 0) {
-  alert("الاسم أو رقم الهوية مسجل مسبقاً، استخدم زر التعديل");
-  return;
-}
-
-
-// إنشاء رمز جديد
-
-      await addDoc(collection(db, "users"), userData);
-      alert("تم حفظ البيانات بنجاح");
-      setFormData({
-  leaveCode: generateLeaveCode(),
-  leaveStart: "",
-  leaveDuration: 1,
-  leaveEnd: "",
-  reportDate: "",
-  entryDate: "",
-  name: "",
-  idNumber: "",
-  nationality: "السعودية",
-  workPlace: "",
-  doctorName: "",
-  jobTitle: "",
-  nameEn: "",
-  idNumberEn: "",
-  nationalityEn: "Saudi Arabia",
-  workPlaceEn: "",
-  doctorNameEn: "",
-  jobTitleEn: "",
-    hospital: "",
-    hospitalEn:"",
-});
+  // معالجة تغيير مدة الإجازة
+  const handleDurationChange = (e) => {
+    const days = parseInt(e.target.value);
+    if (!formData.leaveStart) {
+      alert("الرجاء اختيار تاريخ بدء الإجازة أولاً");
+      return;
     }
-  } catch (error) {
-    console.error("خطأ في حفظ البيانات:", error);
-    alert("فشل في حفظ البيانات");
-  }
-};
+    
+    const startDate = new Date(formData.leaveStart);
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + days - 1);
+    
+    setFormData({
+      ...formData,
+      leaveDuration: days,
+      leaveEnd: endDate.toISOString().split("T")[0],
+      reportDate: startDate.toISOString().split("T")[0],
+      entryDate: startDate.toISOString().split("T")[0],
+    });
+  };
+
+  // حفظ البيانات
+  const saveUserData = async () => {
+    const userData = {
+      leaveDurationGregorian: `${formData.leaveDuration} Days (${formData.entryDate} to ${formData.leaveEnd})`,
+      leaveDurationDays: formData.leaveDuration,
+      leaveStartGregorian: formData.entryDate,
+      reportDate: formData.reportDate,
+      name: formData.name,
+      nameEn: formData.nameEn,
+      idNumber: formData.idNumber,
+      nationality: formData.nationality,
+      nationalityEn: formData.nationalityEn,
+      workPlace: formData.workPlace,
+      workPlaceEn: formData.workPlaceEn,
+      doctorName: formData.doctorName,
+      doctorNameEn: formData.doctorNameEn,
+      jobTitle: formData.jobTitle,
+      jobTitleEn: formData.jobTitleEn,
+      leaveCode: formData.leaveCode,
+      hospital: formData.hospital,
+      hospitalEn: formData.hospitalEn,
+    };
+
+    try {
+      if (isEditing && editingDocId) {
+        const userDoc = doc(db, "users", editingDocId);
+        await updateDoc(userDoc, userData);
+        alert("تم تعديل البيانات بنجاح");
+      } else {
+        const checkCode = query(collection(db, "users"), 
+          where("leaveCode", "==", formData.leaveCode));
+        const codeDocs = await getDocs(checkCode);
+
+        if (codeDocs.size > 0) {
+          alert("رمز الإجازة محجوز مسبقاً، لا يمكن استخدامه مرة أخرى");
+          return;
+        }
+
+        const checkName = query(collection(db, "users"), 
+          where("name", "==", formData.name));
+        const checkID = query(collection(db, "users"), 
+          where("idNumber", "==", formData.idNumber));
+        
+        const [nameDocs, idDocs] = await Promise.all([
+          getDocs(checkName), 
+          getDocs(checkID)
+        ]);
+
+        if (nameDocs.size > 0 || idDocs.size > 0) {
+          alert("الاسم أو رقم الهوية مسجل مسبقاً، استخدم زر التعديل");
+          return;
+        }
+
+        await addDoc(collection(db, "users"), userData);
+        alert("تم حفظ البيانات بنجاح");
+        
+        setFormData({
+          leaveCode: generateLeaveCode(),
+          leaveStart: "",
+          leaveDuration: 1,
+          leaveEnd: "",
+          reportDate: "",
+          entryDate: "",
+          name: "",
+          idNumber: "",
+          nationality: "السعودية",
+          workPlace: "",
+          doctorName: "",
+          jobTitle: "",
+          nameEn: "",
+          idNumberEn: "",
+          nationalityEn: "Saudi Arabia",
+          workPlaceEn: "",
+          doctorNameEn: "",
+          jobTitleEn: "",
+          hospital: "",
+          hospitalEn: "",
+        });
+      }
+    } catch (error) {
+      console.error("خطأ في حفظ البيانات:", error);
+      alert("فشل في حفظ البيانات");
+    }
+  };
+
+  // فلترة المستشفيات
+  const filteredHospitals = hospitals.filter(h => 
+    h.name.includes(hospitalSearch)
+  );
+  
+  // فلترة الأطباء
+  const filteredDoctors = doctors.filter(doc => 
+    doc.doctorName.includes(doctorSearch)
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 flex items-center justify-center p-8">
@@ -351,12 +321,9 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
           <div>
             <div className="font-semibold mb-1">مدة الإجازة:</div>
             {formData.leaveStart && formData.leaveEnd ? (
-              <>
-               
-                <div className="text-gray-700">
-                  {`${formData.leaveDuration} Days`} ( {formData.leaveStart} to {formData.leaveEnd} )
-                </div>
-              </>
+              <div className="text-gray-700">
+                {`${formData.leaveDuration} يوم (${formData.leaveStart} إلى ${formData.leaveEnd})`}
+              </div>
             ) : (
               <div className="text-gray-700">الرجاء اختيار تاريخ بدء الإجازة ومدة الإجازة</div>
             )}
@@ -364,24 +331,7 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
 
           <div>
             <div className="font-semibold mb-1">تاريخ الدخول:</div>
-            {formData.entryDate ? (
-              <>
-                <div className="text-gray-700">{formData.entryDate}</div>
-              </>
-            ) : (
-              <div className="text-gray-700">-</div>
-            )}
-          </div>
-
-          <div>
-            <div className="font-semibold mb-1">تاريخ نهاية الإجازة:</div>
-            {formData.leaveEnd ? (
-              <>
-                <div className="text-gray-700">{formData.leaveEnd}</div>
-              </>
-            ) : (
-              <div className="text-gray-700">-</div>
-            )}
+            <div className="text-gray-700">{formData.entryDate || "-"}</div>
           </div>
 
           <div>
@@ -390,16 +340,14 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
           </div>
 
           {/* الحقول الشخصية */}
-          {/* ... الحقول الشخصية مع تعديل doctorName و doctorNameEn ... */}
           {[
             ["الاسم", "name", "ادخل الاسم", "Name", "nameEn", "Enter your name"],
-            ["رقم الهوية / الإقامة", "idNumber", "ادخل رقم الهوية", ],
+            ["رقم الهوية / الإقامة", "idNumber", "ادخل رقم الهوية"],
             ["الجنسية", "nationality", "ادخل الجنسية", "Nationality", "nationalityEn", "Enter nationality"],
             ["جهة العمل", "workPlace", "ادخل جهة العمل", "Workplace", "workPlaceEn", "Enter workplace"],
-            // نحذف doctorName و doctorNameEn من هنا لأنه سنضيفهم بشكل منفصل أدناه
             ["المسمى الوظيفي", "jobTitle", "ادخل المسمى الوظيفي", "Job Title", "jobTitleEn", "Enter job title"],
           ].map(([labelAr, nameAr, placeholderAr, labelEn, nameEn, placeholderEn]) => (
-           <div key={nameAr}>
+            <div key={nameAr}>
               <label className="font-semibold mb-1 block">{labelAr}:</label>
               <input
                 type="text"
@@ -421,7 +369,7 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
             </div>
           ))}
           
- {/* الآن حقل الطبيب المعالج مع زر اختيار */}
+          {/* حقل الطبيب المعالج */}
           <div className="relative">
             <label className="font-semibold mb-1 block">اسم الطبيب المعالج:</label>
             <div className="flex">
@@ -448,7 +396,6 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
               </button>
             </div>
 
-            {/* قائمة الأطباء */}
             {showDoctorList && (
               <ul
                 ref={doctorListRef}
@@ -471,7 +418,6 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
             )}
           </div>
 
-          {/* حقل اسم الطبيب بالإنجليزي (مُعبأ تلقائي) */}
           <div>
             <label className="font-semibold mb-1 block">Doctor Name (English):</label>
             <input
@@ -483,123 +429,145 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
               className="w-full border border-gray-300 p-2 rounded-lg"
             />
           </div>
-<div>
-     <div className="relative mb-4">
-        <label className="font-semibold mb-1 block">ادخال مستشفى:</label>
-        <div className="flex">
-          <input
-            type="text"
-            name="hospital"
-            value={formData.hospital}
-            onChange={(e) => {
-              setFormData({ ...formData, hospital: e.target.value });
-              setHospitalSearch(e.target.value);
-              setShowHospitalList(true);
-            }}
-            placeholder="ادخل اسم المستشفى"
-            className="w-full border border-gray-300 p-2 rounded-l-lg"
-            autoComplete="off"
-          />
-          <button
-            type="button"
-            onClick={() => setShowHospitalList(!showHospitalList)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-3 rounded-r-lg"
-            title="اختيار مستشفى"
-          >
-            ▼
-          </button>
-        </div>
 
-        {/* القائمة */}
-        {showHospitalList && (
-          <ul
-            ref={hospitalListRef}
-            className="absolute z-10 bg-white border border-gray-300 w-full max-h-48 overflow-auto rounded-b-lg shadow-md"
-          >
-            {filteredHospitals.length > 0 ? (
-              filteredHospitals.map(hospital => (
-                <li
-                  key={hospital.id}
-                  onClick={() => selectHospital(hospital)}
-                  className="cursor-pointer px-4 py-2 hover:bg-blue-100"
-                >
-                  {hospital.name}
-                </li>
-              ))
-            ) : (
-              <li className="px-4 py-2 text-gray-500">لا توجد مستشفيات</li>
+          {/* حقل المستشفى */}
+          <div className="relative mb-4">
+            <label className="font-semibold mb-1 block">ادخال مستشفى:</label>
+            <div className="flex">
+              <input
+                type="text"
+                name="hospital"
+                value={formData.hospital}
+                onChange={(e) => {
+                  setFormData({ ...formData, hospital: e.target.value });
+                  setHospitalSearch(e.target.value);
+                  setShowHospitalList(true);
+                }}
+                placeholder="ادخل اسم المستشفى"
+                className="w-full border border-gray-300 p-2 rounded-l-lg"
+                autoComplete="off"
+              />
+              <button
+                type="button"
+                onClick={() => setShowHospitalList(!showHospitalList)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 rounded-r-lg"
+                title="اختيار مستشفى"
+              >
+                ▼
+              </button>
+            </div>
+
+            {showHospitalList && (
+              <ul
+                ref={hospitalListRef}
+                className="absolute z-10 bg-white border border-gray-300 w-full max-h-48 overflow-auto rounded-b-lg shadow-md"
+              >
+                {filteredHospitals.length > 0 ? (
+                  filteredHospitals.map(hospital => (
+                    <li
+                      key={hospital.id}
+                      onClick={() => selectHospital(hospital)}
+                      className="cursor-pointer px-4 py-2 hover:bg-blue-100"
+                    >
+                      {hospital.name}
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-4 py-2 text-gray-500">لا توجد مستشفيات</li>
+                )}
+              </ul>
             )}
-          </ul>
-        )}
-      </div>
+          </div>
 
-      {/* الاسم الإنجليزي (يظهر تلقائيًا بعد اختيار المستشفى) */}
-     <div className="mb-4">
-  <label className="font-semibold mb-1 block">Hospital Name (English):</label>
-  <input
-    type="text"
-    name="hospitalEn"
-    value={formData.hospitalEn || ""}
-    onChange={(e) =>
-      setFormData({ ...formData, hospitalEn: e.target.value })
-    }
-    className="w-full border border-gray-300 p-2 rounded-lg text-gray-700"
-    placeholder="اكتب أو سيتم تعبئته تلقائيًا"
-  />
-</div>
-    
-</div>
-          <button
-            onClick={saveUserData}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg mt-4 w-full"
-          >
-            حفظ البيانات
-          </button>
+          <div>
+            <label className="font-semibold mb-1 block">Hospital Name (English):</label>
+            <input
+              type="text"
+              name="hospitalEn"
+              value={formData.hospitalEn || ""}
+              onChange={(e) => setFormData({ ...formData, hospitalEn: e.target.value })}
+              className="w-full border border-gray-300 p-2 rounded-lg text-gray-700"
+              placeholder="اكتب أو سيتم تعبئته تلقائيًا"
+            />
+          </div>
 
-          <Link href="/a4page">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg mt-4 w-full">
-              طباعه تقرير
+          {/* الأزرار */}
+          <div className="flex flex-col gap-4 mt-6">
+            <button
+              onClick={saveUserData}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+            >
+              حفظ البيانات
             </button>
-          </Link>
+
+            <Link href="/a4page">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full">
+                طباعه تقرير
+              </button>
+            </Link>
+
+            <Link href="/checkleavepage">
+              <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                التحقق من الإجازة
+              </button>
+            </Link>
+          </div>
         </div>
 
-        {/* زر التحقق من الإجازة في العمود الثاني */}
-        <div className="flex items-start justify-center md:justify-end">
-          <Link href="/checkleavepage">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              التحقق من الإجازة
+        {/* قسم التعديل */}
+        <div className="space-y-6">
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg w-full"
+            >
+              {isEditing ? "إغلاق التعديل" : "تعديل البيانات"}
             </button>
-          </Link>
-        </div>
-        <div className="mt-6">
-  <button
-    onClick={() => setIsEditing(!isEditing)}
-    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg w-full"
-  >
-    {isEditing ? "إغلاق التعديل" : "تعديل البيانات"}
-  </button>
 
-  {isEditing && (
-    <div className="mt-4">
-      <label className="block font-semibold mb-1">ابحث بالاسم أو رقم الهوية:</label>
-      <input
-        type="text"
-        value={editSearch}
-        onChange={(e) => setEditSearch(e.target.value)}
-        placeholder="ادخل الاسم أو رقم الهوية"
-        className="w-full border border-gray-300 p-2 rounded-lg mb-2"
-      />
-      <button
-        onClick={fetchUserData}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full"
-      >
-        جلب البيانات
-      </button>
-    </div>
-  )}
-</div>
+            {isEditing && (
+              <div className="mt-4">
+                <label className="block font-semibold mb-1">ابحث بالاسم أو رقم الهوية:</label>
+                <input
+                  type="text"
+                  value={editSearch}
+                  onChange={(e) => setEditSearch(e.target.value)}
+                  placeholder="ادخل الاسم أو رقم الهوية"
+                  className="w-full border border-gray-300 p-2 rounded-lg mb-2"
+                />
+                <button
+                  onClick={() => fetchUserData()}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full"
+                >
+                  جلب البيانات
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* معلومات إضافية */}
+          <div className="p-4 bg-blue-50 rounded-lg">
+            <h2 className="text-xl font-semibold text-blue-800 mb-3">معلومات الإجازة</h2>
+            <div className="space-y-2">
+              <div>
+                <span className="font-medium">تاريخ بدء الإجازة:</span>
+                <span> {formData.leaveStart || "غير محدد"}</span>
+              </div>
+              <div>
+                <span className="font-medium">تاريخ نهاية الإجازة:</span>
+                <span> {formData.leaveEnd || "غير محدد"}</span>
+              </div>
+              <div>
+                <span className="font-medium">المستشفى:</span>
+                <span> {formData.hospital || "غير محدد"}</span>
+              </div>
+              <div>
+                <span className="font-medium">الطبيب المعالج:</span>
+                <span> {formData.doctorName || "غير محدد"}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-}
 }
