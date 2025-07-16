@@ -1,285 +1,385 @@
 "use client";
+
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { db } from "../firebaseConfig";
+import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import '../fonts.css';
-import { useState, useEffect, useRef } from "react";
-import { Menu, X } from "lucide-react";
-import Image from 'next/image';
 
-// واجهة بيانات الإجازة
-interface LeaveData {
-  name?: string;
-  reportDate?: string;
-  entryDateGregorian?: string;
-  leaveEndGregorian?: string;
-  leaveDurationDays?: string | number;
-  doctorName?: string;
-  jobTitle?: string;
-}
+export default function A4Page() {
+  const searchParams = useSearchParams();
+  const leaveCodeget = searchParams.get("leaveCode");
 
-// بيانات وهمية للعرض (يجب استبدالها باتصالات Firebase الحقيقية)
-const mockLeaveData = {
-  name: "محمد أحمد عبد الله",
-  reportDate: "1445/09/15",
-  entryDateGregorian: "2024/04/10",
-  leaveEndGregorian: "2024/04/20",
-  leaveDurationDays: "10 أيام",
-  doctorName: "د. خالد بن سعيد",
-  jobTitle: "مهندس برمجيات"
-};
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-export default function VerifyLeavePage() {
-  const [leaveCode, setLeaveCode] = useState("");
-  const [idNumber, setIdNumber] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState<LeaveData | null>(null);
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // إغلاق القائمة عند النقر خارجها
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpen(false);
+    async function fetchData() {
+      try {
+        let q;
+        if (leaveCodeget) {
+          q = query(collection(db, "users"), where("leaveCode", "==", leaveCodeget));
+        } else {
+          q = query(collection(db, "users"), orderBy("reportDate", "desc"), limit(1));
+        }
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const docData = querySnapshot.docs[0].data();
+          setData(docData);
+        } else {
+          setData(null);
+        }
+      } catch (error) {
+        console.error("خطأ في جلب البيانات:", error);
+      } finally {
+        setLoading(false);
       }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleSearch = async () => {
-    setError("");
-    setUserData(null);
-
-    if (!leaveCode || !idNumber) {
-      setError("يرجى إدخال رمز الإجازة ورقم الهوية.");
-      return;
     }
 
-    setLoading(true);
+    fetchData();
+  }, [leaveCodeget]);
 
-    try {
-      // محاكاة اتصال Firebase (استبدل هذا بالاتصال الحقيقي)
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // في البيئة الحقيقية، استخدم:
-      // const q = query(
-      //   collection(db, "users"),
-      //   where("leaveCode", "==", leaveCode),
-      //   where("idNumber", "==", idNumber)
-      // );
-      // const querySnapshot = await getDocs(q);
-      // if (!querySnapshot.empty) {
-      //   const data = querySnapshot.docs[0].data();
-      //   setUserData(data);
-      // } else {
-      //   setError("لم يتم العثور على بيانات مطابقة.");
-      // }
-      
-      // استخدام بيانات وهمية للعرض
-      setUserData(mockLeaveData);
-    } catch (err) {
-      console.error(err);
-      setError("حدث خطأ أثناء البحث.");
-    }
+  if (loading) return <div className="p-4">جاري تحميل البيانات...</div>;
+  if (!data) return <div className="p-4">لا توجد بيانات لعرضها</div>;
 
-    setLoading(false);
-  };
+  const {
+    leaveCode,
+    leaveStartGregorian,
+    leaveEndGregorian,
+    reportDate,
+    name,
+    nameEn,
+    idNumber,
+    nationality,
+    nationalityEn,
+    workPlace,
+    workPlaceEn,
+    doctorName,
+    doctorNameEn,
+    jobTitle,
+    jobTitleEn,
+    hospital,
+    hospitalEn,
+    leaveDurationDays
+  } = data;
 
-  const handleReset = () => {
-    setLeaveCode("");
-    setIdNumber("");
-    setUserData(null);
-    setError("");
-  };
+  function toHijriDateFormatted(gregorianDateStr: string) {
+    const date = new Date(gregorianDateStr);
+    const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+
+    let formatted = formatter.format(date);
+    formatted = formatted
+      .replace(/\u200f/g, '')
+      .replace(/\s?AH/, '');
+
+    return convertArabicNumbersToEnglish(formatted);
+  }
+
+  function convertArabicNumbersToEnglish(str: string) {
+    return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
+  }
+
+  const getTitleClass = () => "font-[700] text-[14px] font-[MondoArabic] text-right";
+  const getValueClass = () => "font-[400] text-[12px] font-[Arial] text-right";
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* شريط التنقل */}
-      <div className="bg-[#f8f9fb] border-b border-gray-200 flex justify-between items-center p-4 md:p-6 relative">
-        <div className="flex items-center space-x-2">
-          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-32 h-14 md:w-40 md:h-16 flex items-center justify-center">
-            <span className="text-gray-500 text-xs">شعار المنصة</span>
-          </div>
+    <div className="">
+      <style jsx>{`
+        body {
+          margin: 0;
+          font-family: "Arial", sans-serif;
+          background-color: #fff;
+        }
+        .page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          padding-bottom: 15px;
+          border-bottom: 2px solid #2B3D77;
+        }
+        .header-image {
+          width: 80px;
+          height: 80px;
+          border-radius: 8px;
+          object-fit: cover;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          border: 1px solid #ddd;
+        }
+        .logo-left {
+          margin-right: auto;
+        }
+        .logo-center {
+          margin: 0 auto;
+        }
+        .logo-right {
+          margin-left: auto;
+        }
+        .report-title {
+          text-align: center;
+          margin: 25px 0;
+        }
+        .report-title h1 {
+          font-size: 14px;
+          color: #2B3D77;
+          margin-bottom: 10px;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .report-title h2 {
+          color: #366ED5;
+          font-size: 14px;
+          font-family: 'UntypeMondoNews', Georgia, serif;
+          font-weight: 700;
+          font-style: italic;
+        }
+        .medical-table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          table-layout: fixed;
+          font-size: 14px;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 0 0 1px #CCCCCC;
+          margin-bottom: 5px;
+          transform: scaleX(1.0);
+        }
+        .medical-table th, 
+        .medical-table td {
+          padding: 12px 8px;
+          vertical-align: middle;
+          height: 48px;
+          box-sizing: border-box;
+          border: 1px solid #CCCCCC;
+          text-align: center;
+        }
+        .medical-table th {
+          font-weight: bold;
+          width: 20%;
+          color: #366EB5;
+        }
+        .medical-table td:nth-child(2),
+        .medical-table td:nth-child(3) {
+          color: #2B3D77;
+        }
+        .medical-table th:nth-child(4) {
+          color: #366ED5;
+          font-weight: normal;
+        }
+        .medical-table tr:nth-child(2) {
+          background-color: #2B3D77 !important;
+        }
+        .medical-table tr:nth-child(2) th,
+        .medical-table tr:nth-child(2) td {
+          color: #FFFFFF !important;
+          font-weight: normal;
+        }
+        .medical-table tr:nth-child(odd) {
+          background-color: #FFFFFF;
+        }
+        .medical-table tr:nth-child(even):not(:nth-child(2)) {
+          background-color: #F7F7F7;
+        }
+        .medical-table tr:first-child th:first-child {
+          border-top-right-radius: 8px;
+        }
+        .medical-table tr:first-child th:last-child {
+          border-top-left-radius: 8px;
+        }
+        .medical-table tr:last-child td:first-child {
+          border-bottom-right-radius: 8px;
+        }
+        .medical-table tr:last-child td:last-child {
+          border-bottom-left-radius: 8px;
+        }
+        .medical-table td {
+          width: 65%;
+        }
+        .merged-columns {
+          width: 130% !important;
+        }
+        .footer-container {
+          width: 100%;
+          display: flex;
+          position: relative;
+          padding-top: 40px;
+          padding-bottom: 40px;
+        }
+        .vertical-line {
+          position: absolute;
+          top: 0; 
+          bottom: 0;
+          left: 50%; 
+          width: 2px;
+          background-color: #CCCCCC;
+        }
+        .footer-left {
+          text-align: right;
+          flex: 1;
+          padding-right: 17px;
+        }
+        .footer-right {
+          text-align: left;
+          flex: 1;
+          padding-left: 17px;
+        }
+        .footer-text {
+          font-size: 12px;
+          color: #666;
+          margin-bottom: 5px;
+          line-height: 1.5;
+        }
+        .footer-title {
+          font-weight: bold;
+          margin-bottom: 10px;
+          font-size: 14px;
+        }
+        .date-time {
+          position: absolute;
+          bottom: 0;
+          left: 80%;
+          transform: translateX(-50%);
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+          width: 200px;
+          margin-left: 10px;
+        }
+      `}</style>
+
+      <div className="relative w-full h-[85px]">
+        <div className="absolute top-10 left-10">
+          <img src="/logo.png" alt="logo" className="w-[135px] h-[60px]" />
+        </div>
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-[-5px] z-50">
+          <img src="/m3.png" alt="m3" className="w-[160px] h-[260px] object-contain" />
+        </div>
+        <div className="absolute top-10 right-10">
+          <img src="/m5.png" alt="m5" className="w-[220px] h-[110px]" />
+        </div>
+      </div>
+
+      <div className="translate-y-[85px]">
+        <div className="p-6">
+          <table className="medical-table border-collapse border border-gray-400 w-full text-right" dir="rtl">
+            <tbody>
+              <tr>
+                <th className={getTitleClass()}>رمز الإجازة</th>
+                <td className={getValueClass()} colSpan={2}>{leaveCode}</td>
+                <th className={getTitleClass()}>Leave ID</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>
+                  <img src="/s2.png" alt="logo" className="w-[50px] h-[15px]" />
+                </th>
+                <td className={getValueClass()}>
+                  {convertArabicNumbersToEnglish(
+                    `${leaveDurationDays} يوم (${toHijriDateFormatted(leaveStartGregorian)} الى ${toHijriDateFormatted(leaveEndGregorian)})`
+                  )}
+                </td>
+                <td className={getValueClass()}>
+                  {`Days ${leaveDurationDays} (${leaveStartGregorian} to ${leaveEndGregorian})`}
+                </td>
+                <th className={getTitleClass()}>Leave Duration</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>تاريخ الدخول</th>
+                <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
+                <td className={getValueClass()}>{leaveStartGregorian}</td>
+                <th className={getTitleClass()}>Admission Date</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>تاريخ الخروج</th>
+                <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveEndGregorian)}</td>
+                <td className={getValueClass()}>{leaveEndGregorian}</td>
+                <th className={getTitleClass()}>Discharge Date</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>تاريخ إصدار التقرير</th>
+                <td className={getValueClass()} colSpan={2}>{reportDate}</td>
+                <th className={getTitleClass()}>Issue Date</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>الاسم</th>
+                <td className={getValueClass()}>{name}</td>
+                <td className={getValueClass()}>{nameEn}</td>
+                <th className={getTitleClass()}>Name</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>رقم الهوية الإقامة</th>
+                <td className={getValueClass()} colSpan={2}>{idNumber}</td>
+                <th className={getTitleClass()}>National ID / Iqama</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>الجنسية</th>
+                <td className={getValueClass()}>{nationality}</td>
+                <td className={getValueClass()}>{nationalityEn}</td>
+                <th className={getTitleClass()}>Nationality</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>جهة العمل</th>
+                <td className={getValueClass()}>{workPlaceEn}</td>
+                <td className={getValueClass()}>{workPlace}</td>
+                <th className={getTitleClass()}>Employer</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>اسم الطبيب</th>
+                <td className={getValueClass()}>{doctorName}</td>
+                <td className={getValueClass()}>{doctorNameEn}</td>
+                <th className={getTitleClass()}>Physician Name</th>
+              </tr>
+              <tr>
+                <th className={getTitleClass()}>المعالج</th>
+                <td className={getValueClass()}>{jobTitleEn}</td>
+                <td className={getValueClass()}>{jobTitle}</td>
+                <th className={getTitleClass()}>Position</th>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        {/* زر القائمة */}
-        <button
-          className="p-2 rounded-md text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="footer-container" style={{ marginTop: '-5px', paddingTop: '0' }}>
+          <div className="vertical-line"></div>
 
-        {/* القائمة المنسدلة */}
-        {open && (
-          <div 
-            ref={menuRef}
-            className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-md p-4 flex flex-col space-y-3 text-gray-700 w-48 z-50 border border-gray-100"
-          >
-            <a href="#" className="hover:text-blue-600 py-1">الخدمات</a>
-            <a href="#" className="hover:text-blue-600 py-1">الاستعلامات</a>
-            <a href="#" className="hover:text-blue-600 py-1">إنشاء حساب</a>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full text-center mt-2">
-              تسجيل الدخول
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* العنوان الرئيسي */}
-      <div className="bg-white text-center py-6 md:py-8 px-4">
-        <h1 className="text-2xl md:text-4xl font-bold text-[#306db5] mt-4 relative inline-block font-cairo">
-          الإجازات المرضية
-        </h1>
-        <p className="text-sm md:text-base text-[#798ca1] mt-2 max-w-2xl mx-auto font-cairo">
-          خدمة الاستعلام عن الإجازات المرضية تتيح لك الاستعلام عن حالة طلبك للإجازة ويمكنك طباعتها عن طريق تطبيق صحتي
-        </p>
-      </div>
-
-      {/* نموذج البحث */}
-      <div className="flex justify-center px-4 py-6">
-        <div className="bg-white rounded-lg p-6 shadow-md w-full max-w-md space-y-4 border border-gray-100">
-          <div className="space-y-3">
-            <input
-              type="text"
-              value={leaveCode}
-              onChange={(e) => setLeaveCode(e.target.value)}
-              className="w-full border border-gray-300 p-3 rounded-md text-right focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="رمز الخدمة"
-            />
-            <input
-              type="text"
-              value={idNumber}
-              onChange={(e) => setIdNumber(e.target.value)}
-              className="w-full border border-gray-300 p-3 rounded-md text-right focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="رقم الهوية / الإقامة"
-            />
-          </div>
-          
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 font-medium p-3 rounded-md text-center">
-              {error}
-            </div>
-          )}
-          
-          <button
-            onClick={handleSearch}
-            disabled={loading}
-            className={`w-full py-3 px-4 rounded-md font-medium ${
-              loading 
-                ? "bg-blue-400 cursor-not-allowed" 
-                : "bg-blue-600 hover:bg-blue-700"
-            } text-white transition-colors`}
-          >
-            {loading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                جاري البحث...
-              </span>
-            ) : "استعلام"}
-          </button>
-        </div>
-      </div>
-
-      {/* عرض النتيجة */}
-      {userData && (
-        <div className="flex justify-center px-4 py-6">
-          <div className="bg-gray-50 rounded-lg p-6 shadow-md w-full max-w-4xl border border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-right">
-              <div className="space-y-6">
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="font-semibold text-[#1a3760] mb-1">الاسم:</div>
-                  <div className="text-gray-800 text-lg">{userData.name || "-"}</div>
-                </div>
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="font-semibold text-[#1a3760] mb-1">تاريخ إصدار تقرير الإجازة:</div>
-                  <div className="text-gray-800">{userData.reportDate || "-"}</div>
-                </div>
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="font-semibold text-[#1a3760] mb-1">تبدأ من:</div>
-                  <div className="text-gray-800">{userData.entryDateGregorian || "-"}</div>
-                </div>
-              </div>
-              <div className="space-y-6">
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="font-semibold text-[#1a3760] mb-1">وحتى:</div>
-                  <div className="text-gray-800">{userData.leaveEndGregorian || "-"}</div>
-                </div>
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="font-semibold text-[#1a3760] mb-1">المدة بالأيام:</div>
-                  <div className="text-gray-800">{userData.leaveDurationDays || "-"}</div>
-                </div>
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="font-semibold text-[#1a3760] mb-1">اسم الطبيب:</div>
-                  <div className="text-gray-800">{userData.doctorName || "-"}</div>
-                </div>
-                <div className="border-b border-gray-200 pb-4">
-                  <div className="font-semibold text-[#1a3760] mb-1">المسمى الوظيفي:</div>
-                  <div className="text-gray-800">{userData.jobTitle || "-"}</div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-8 flex justify-center">
-              <button
-                onClick={handleReset}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors"
+          <div className="footer-left" style={{ width: '100%', paddingRight: '100px', textAlign: 'right' }}>
+            <div className="footer-title">التحقق من البيانات</div>
+            <div className="footer-text">يرجى التأكد من زيارة موقع منصة صحة الرسمي</div>
+            <div className="footer-text">
+              <a
+                href="https://example.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'blue', textDecoration: 'underline' }}
               >
-                استعلام جديد
-              </button>
+                www.seha.sa/#/inquiries/lenguiry
+              </a>
+            </div>
+          </div>
+
+          <div
+            className="footer-right"
+            style={{
+              width: "150%",
+              paddingLeft: "115px",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <img src="/m8.png" alt="logo" className="w-[100px] h-[90px]" />
+            <div className="dually" style={{ fontFamily: "Cairo, sans-serif", fontSize: "14px", fontWeight: 400 }}>
+              {hospital}
+            </div>
+            <div className="dually" style={{ fontFamily: "Cairo, sans-serif", fontSize: "14px", fontWeight: 400 }}>
+              {hospitalEn}
             </div>
           </div>
         </div>
-      )}
-
-      {/* الفوتر */}
-      <footer className="bg-[#306db5] text-white mt-auto py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            {/* القسم الأيسر */}
-            <div className="flex flex-col items-center">
-              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center mb-3">
-                <span className="text-gray-500 text-xs">شعار وزارة الصحة</span>
-              </div>
-              <div className="text-xs text-center text-blue-100">
-                منصة صحة معتمدة من قبل وزارة الصحة © 2024
-              </div>
-            </div>
-
-            {/* القسم الأيمن */}
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-blue-100 text-center">
-              <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
-                <a href="#" className="hover:text-white hover:underline transition">تواصل معنا</a>
-                <a href="#" className="hover:text-white hover:underline transition">الأسئلة الشائعة</a>
-                <a href="#" className="hover:text-white hover:underline transition">الرئيسية</a>
-                <a href="#" className="hover:text-white hover:underline transition">دليل الاستخدام</a>
-                <a href="#" className="hover:text-white hover:underline transition">الشروط والأحكام</a>
-              </div>
-              <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-4 mt-3">
-                <div className="flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                  </svg>
-                  <span>920002005</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                  </svg>
-                  <span>support@seha.sa</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }
