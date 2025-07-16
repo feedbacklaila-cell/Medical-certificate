@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import moment from "moment-hijri";
 import { db } from "../firebaseConfig";
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import '../fonts.css';
