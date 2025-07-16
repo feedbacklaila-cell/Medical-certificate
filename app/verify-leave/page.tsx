@@ -4,12 +4,22 @@ import { useState } from "react";
 import { db } from "../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Menu } from "lucide-react";
+
+interface LeaveData {
+  name?: string;
+  reportDate?: string;
+  entryDateGregorian?: string;
+  leaveEndGregorian?: string;
+  leaveDurationDays?: string | number;
+  doctorName?: string;
+  jobTitle?: string;
+}
 export default function VerifyLeavePage() {
   const [leaveCode, setLeaveCode] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
+const [userData, setUserData] = useState<LeaveData | null>(null);
  const [open, setOpen] = useState(false);
   const handleSearch = async () => {
     setError("");
@@ -54,7 +64,7 @@ export default function VerifyLeavePage() {
 
   return (
    <div className="min-h-screen bg-white flex flex-col">
-      {/* رأس الصفحة */}
+      
       <div className="bg-[#f8f9fb] border-b border-gray-200 flex justify-between items-center p-6 relative">
         <div className="flex items-center space-x-2">
           <img src="/logo.png" alt="logo" style={{ width: "135px", height: "60px" }} />
@@ -83,8 +93,7 @@ export default function VerifyLeavePage() {
 
       {/* العنوان */}
       <div className="bg-white text-center py-8">
-        <h1
-          style={{
+        <h1 style={{
             backgroundPosition: "50%",
             backgroundRepeat: "no-repeat",
             color: "#306db5",

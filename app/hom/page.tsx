@@ -37,7 +37,7 @@ export default function HomePage() {
   {
     title: "إضافة مستشفى",
     icon: <FaHospital className="text-blue-600 text-3xl" />,
-    path: "/addhospital",
+    path: "/addHospitalPage",
   },
   {
     title: "تقرير طبي",

@@ -78,7 +78,7 @@ export default function A4Page() {
   // 👇 الدالتين في أعلى الملف أو في ملف utility خارجي
 
 const getTitleClass = () => {
-  return "font-[900] text-[14px] font-[MondoArabic] text-right";
+  return "font-[700] text-[14px] font-[MondoArabic] text-right";
 };
 
 const getValueClass = () => {
@@ -335,7 +335,9 @@ function convertArabicNumbersToEnglish(str) {
     </tr>
 
     <tr>
-      <th className={getTitleClass()}>    <img src="s2.png" alt="logo" className="w-[100px] h-[90px]" />
+   <th className={`${getTitleClass()} 
+            center`}>
+  <img src="s2.png" alt="logo" className="w-[50px] h-[15px]" />
 </th>
       <td className={getValueClass()}>
         {convertArabicNumbersToEnglish(
