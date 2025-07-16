@@ -5,28 +5,39 @@ import { db } from "../firebaseConfig";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { Stethoscope } from "lucide-react";
 
+// ✅ تعريف نوع الطبيب
+type Doctor = {
+  id: string;
+  doctorName: string;
+  doctorNameEn: string;
+};
+
 export default function AddDoctorPage() {
   const [doctorName, setDoctorName] = useState("");
   const [doctorNameEn, setDoctorNameEn] = useState("");
   const [loading, setLoading] = useState(false);
-  const [doctors, setDoctors] = useState([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]); // ✅ تم تحديد النوع
 
-  // جلب بيانات الأطباء من Firestore
+  // ✅ تعريف دالة جلب الأطباء
   const fetchDoctors = async () => {
     try {
       const snapshot = await getDocs(collection(db, "doctors"));
-      const list = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const list = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Doctor[]; // ✅ تأكيد النوع
       setDoctors(list);
     } catch (error) {
       console.error("فشل في تحميل الأطباء:", error);
     }
   };
 
+  // ✅ جلب الأطباء عند التحميل الأول
   useEffect(() => {
     fetchDoctors();
   }, []);
 
-  // حفظ بيانات الطبيب
+  // ✅ حفظ بيانات الطبيب
   const saveDoctor = async () => {
     if (!doctorName.trim() || !doctorNameEn.trim()) {
       alert("يرجى إدخال اسمي الطبيب بالعربي والإنجليزي");
@@ -41,13 +52,13 @@ export default function AddDoctorPage() {
         doctorNameEn: doctorNameEn.trim(),
       });
 
-      alert("تم حفظ الطبيب بنجاح");
+      alert("✅ تم حفظ الطبيب بنجاح");
 
       setDoctorName("");
       setDoctorNameEn("");
       fetchDoctors(); // تحديث القائمة
     } catch (error) {
-      console.error("خطأ في حفظ الطبيب:", error);
+      console.error("❌ خطأ في حفظ الطبيب:", error);
       alert("حدث خطأ أثناء الحفظ");
     } finally {
       setLoading(false);
