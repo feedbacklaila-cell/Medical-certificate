@@ -1,115 +1,88 @@
 "use client";
 
-import { useCallback,useState, useEffect, useRef } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, Pencil, Trash2, Printer, Search } from "lucide-react";
-import { FaUserMd, FaCalendarPlus, FaFileAlt,FaStethoscope,FaUserFriends, FaClipboardCheck,FaHospital,} from "react-icons/fa";
+import { FaUserMd, FaCalendarPlus, FaFileAlt, FaStethoscope, FaUserFriends, FaClipboardCheck, FaHospital } from "react-icons/fa";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
-
-export default function HomePage() {
-
-   type User = {
+type User = {
   name?: string;
   idNumber?: string;
   leaveCode?: string;
 };
+
+export default function HomePage() {
   const [open, setOpen] = useState(false);
-const [users, setUsers] = useState<User[]>([]);
-  const [searchVisible, setSearchVisible] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
- const sidebarRef = useRef(null);
- 
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
- const actions = [
-  {
-    title: "إضافة طبيب",
-   
-    icon: <FaUserMd className="text-blue-600 text-3xl" />,
-    path: "/adddoctor",
-  },
-  {
-    title: "إجازة جديدة",
-    
-    icon: <FaCalendarPlus className="text-blue-600 text-3xl" />,
-    path: "/newLeave",
-  },
-  {
-    title: "تقرير",
-    icon: <FaFileAlt className="text-blue-600 text-3xl" />,
-    path: "/a4page",
-  },
-  {
-    title: "إضافة مستشفى",
-    icon: <FaHospital className="text-blue-600 text-3xl" />,
-    path: "/addHospitalPage",
-  },
-  {
-    title: "تقرير طبي",
-  
-    icon: <FaStethoscope className="text-blue-600 text-3xl" />,
-    path: "/medicalreport",
-  },
-  {
-    title: "مرافق مريض",
-   
-    icon: <FaUserFriends className="text-blue-600 text-3xl" />,
-    path: "/companion",
-  },
-  {
-    title: "مشهد مراجعة",
-    icon: <FaClipboardCheck className="text-blue-600 text-3xl" />,
-    path: "/reviewnote",
-  },
-];
+  const actions = [
+    { title: "إضافة طبيب", icon: <FaUserMd className="text-blue-600 text-3xl" />, path: "/adddoctor" },
+    { title: "إجازة جديدة", icon: <FaCalendarPlus className="text-blue-600 text-3xl" />, path: "/newLeave" },
+    { title: "تقرير", icon: <FaFileAlt className="text-blue-600 text-3xl" />, path: "/a4page" },
+    { title: "إضافة مستشفى", icon: <FaHospital className="text-blue-600 text-3xl" />, path: "/addHospitalPage" },
+    { title: "تقرير طبي", icon: <FaStethoscope className="text-blue-600 text-3xl" />, path: "/medicalreport" },
+    { title: "مرافق مريض", icon: <FaUserFriends className="text-blue-600 text-3xl" />, path: "/companion" },
+    { title: "مشهد مراجعة", icon: <FaClipboardCheck className="text-blue-600 text-3xl" />, path: "/reviewnote" },
+  ];
 
- const fetchUsers = useCallback(async () => {
-  try {
-    const snapshot = await getDocs(collection(db, "users"));
-    
-const data = snapshot.docs.map((doc) => doc.data() as User);
-
-    setUsers(data); 
-  } catch (error) {
-    console.error("حدث خطأ أثناء جلب المستخدمين:", error);
-  }
-}, []);
+  const fetchUsers = useCallback(async () => {
+    try {
+      const snapshot = await getDocs(collection(db, "users"));
+      const data = snapshot.docs.map((doc) => doc.data() as User);
+      setUsers(data);
+    } catch (error) {
+      console.error("حدث خطأ أثناء جلب المستخدمين:", error);
+    }
+  }, []);
 
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  const filteredUsers = users.filter((user) =>
-    user.name?.includes(searchQuery) || user.idNumber?.includes(searchQuery)
-  );
+  const filteredUsers = users.filter((user) => {
+    const name = user.name?.toLowerCase() || "";
+    const idNumber = user.idNumber?.toLowerCase() || "";
+    const query = searchQuery.toLowerCase();
+    return name.includes(query) || idNumber.includes(query);
+  });
 
-
-
-    useEffect(() => {
-    function handleClickOutside(event) {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
-    }
+    };
 
     if (open) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
-
+    
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [open]);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
       {/* Header */}
       <header className="mx-4 mt-4 rounded-xl flex items-center justify-between bg-white px-6 py-4 shadow-md">
         <div className="flex items-center space-x-2">
-          <img src="/m11.png" alt="logo" style={{ width: "70px", height: "60px" }} />
+          <img 
+            src="/m11.png" 
+            alt="logo" 
+            width={70} 
+            height={60}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              target.src = '/default-logo.png';
+            }}
+          />
         </div>
         <button
           className="p-2 rounded-md text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -139,227 +112,116 @@ const data = snapshot.docs.map((doc) => doc.data() as User);
                 >
                   <div className="text-right flex-1 mr-4 truncate">
                     <p className="text-blue-800 font-medium text-sm truncate">
-                      {action.title} - <span className="text-gray-500 font-normal">{action.subtitle}</span>
+                      {action.title}
                     </p>
                   </div>
-                  <div className="text-7xl text-blue-600">{action.icon}</div>
+                  <div className="text-3xl text-blue-600">{action.icon}</div>
                 </button>
               </li>
             ))}
           </ul>
         </div>
       )}
+      
       {/* Title & Search */}
-<div
-  style={{
-    position: "relative",
-    marginTop: "40px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  }}
->
-  {/* العنوان في الوسط */}
-  <h1
-    style={{
-      fontFamily: "Cairo, sans-serif",
-      fontSize: "20px",
-      fontWeight: 700,
-      padding: "6px 16px",
-      borderRadius: "15px",
-      border: "2px solid #2563EB",
-      color: "#1E3A8A",
-      lineHeight: "1.6",
-    }}
-  >
-    Register users
-  </h1>
-</div>
-  {/* أيقونة البحث ومربع البحث يمين العنوان، لكن لا تؤثر على تمركزه */}
-  
+      <div className="relative mt-10 flex justify-center items-center">
+        <h1 className="font-cairo font-bold text-xl px-4 py-2 rounded-xl border-2 border-blue-600 text-blue-900">
+          Register users
+        </h1>
+      </div>
+      
+      {/* Search and Add Button */}
+      <div className="flex justify-between items-center h-12 mt-8 px-4">
+        <button
+          onClick={() => router.push("/newLeave")}
+          className="flex items-center bg-white text-blue-600 rounded-full px-4 py-2 font-cairo font-bold text-sm shadow-md transition-all hover:shadow-lg"
+        >
+          <span className="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center mr-2">+</span>
+          إضافة جديد
+        </button>
+
+        <div className="flex items-center border-2 border-blue-600 rounded-xl px-3 py-1 bg-white shadow-md">
+          <button
+            className="mr-2"
+            aria-label="Search"
+          >
+            <Search color="#2563EB" size={22} />
+          </button>
+          <input
+            type="text"
+            placeholder="Search table"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="font-cairo text-sm outline-none placeholder-blue-600 w-32"
+          />
+        </div>
+      </div>
+
       {/* Table */}
-
-
-     {/* أيقونة البحث فوق الجدول مباشرة بدون دفعه للأسفل */}
-
-  {/* زر البحث */}
-<div
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: "40px",
-    marginTop: "30px",  // نزّل الحاوية كلها 8 بكسل تحت
-  }}
->
-  {/* زر الإضافة جهة الشمال */}
-  <button
-    onClick={() => router.push("/newLeave")}
-    style={{
-      display: "flex",
-      alignItems: "center",
-      backgroundColor: "#fffff",
-      color: "#2563EB",
-      borderRadius: "999px",
-      padding: "6px 10px",
-      fontFamily: "Cairo, sans-serif",
-      fontWeight: "bold",
-      fontSize: "14px",
-      width: "120px",
-      justifyContent: "center",
-      boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-      transition: "all 0.3s ease",
-      cursor: "pointer",
-      height: "100%",
-    }}
-  >
-    <div
-      style={{
-        backgroundColor: "#2563EB",
-        color: "#fff",
-        borderRadius: "50%",
-        width: "20px",
-        height: "20px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: "8px",
-        fontSize: "14px",
-        fontWeight: "bold",
-      }}
-    > +
-    </div>
-    إضافة جديد
-  </button>
-
-  {/* زر البحث مع مربع البحث جهة اليمين */}
-  <div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    border: "2px solid #2563EB",
-    borderRadius: "12px",
-    padding: "2px 6px",
-    backgroundColor: "#fff",
-    gap: "4px",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-    zIndex: 10,
-    height: "40px",
-  }}
->
-  <button
-    onClick={() => setSearchVisible(!searchVisible)}  // تقدر تخلي الزر ينفذ حاجة ثانية لو تحب
-    style={{
-      background: "none",
-      border: "none",
-      cursor: "pointer",
-      padding: 0,
-      marginRight: "10px",
-      display: "flex",
-      alignItems: "center",
-      height: "100%",
-    }}
-    aria-label="Toggle search"
-  >
-    <Search color="#2563EB" size={22} />
-  </button>
-
-  {/* هذا هو مربع البحث دايمًا ظاهر */}
-<input
-  type="text"
-  placeholder="Search table "
-  value={searchQuery}
-  onChange={(e) => setSearchQuery(e.target.value)}
-  style={{
-    fontFamily: "Cairo, sans-serif",
-    fontSize: "14px",
-    padding: "4px 8px",       // قللت البادينج شوي
-    border: "none",
-    outline: "none",
-    width: "100px",           // صغرت العرض من 140px إلى 100px
-    height: "100%",
-    marginRight: "6px",       // مسافة صغيرة من الحافة اليمنى
-  }}
- className="custom-placeholder"
-/>
-
-<style jsx>{`
-  .custom-placeholder::placeholder {
-    color: #2563EB;
-    opacity: 1;
-  }
-`}</style>
-</div>
-
-</div>
-
-      <main className="flex-grow flex items-start justify-center px-4 py-10">
-        <div className="w-full max-w-6xl bg-white rounded-xl shadow-md p-6">
-          <div className="w-full overflow-x-auto">
-            <div className="min-w-[900px]">
-              {/* Table Header */}
-             <div
-  className="grid grid-cols-5 text-sm font-bold border-b pb-3 mb-4 text-center text-black"
-  style={{ fontFamily: "Cairo2, sans-serif", fontSize: "20px", fontWeight: 700 }}
->
-  <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-    <span>#</span>
-    <span className="text-gray-400 text-base">▲▼</span>
-  </div>
-  <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-    <span>الاسم</span>
-    <span className="text-base">▲▼</span>
-  </div>
-  <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-    <span>رقم الهوية</span>
-    <span className="text-base">▲▼</span>
-  </div>
-  <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-    <span>رمز الإجازة</span>
-    <span className="text-base">▲▼</span>
-  </div>
-  <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-    <span>الإجراءات</span>
-    <span className="text-base">▲▼</span>
-  </div>
-
+      <main className="flex-grow flex justify-center px-4 py-6">
+        <div className="w-full max-w-6xl bg-white rounded-xl shadow-md p-6 overflow-x-auto">
+          <div className="min-w-[900px]">
+            {/* Table Header */}
+            <div className="grid grid-cols-5 text-lg font-bold border-b pb-4 mb-4 text-center text-black font-cairo">
+              <div className="flex items-center justify-center gap-1">
+                <span>#</span>
+                <span className="text-gray-400">▲▼</span>
               </div>
-
-              {/* Table Rows */}
-              {filteredUsers.map((user, index) => (
-                <div
-                  key={index}
-                      className="grid grid-cols-5 items-center text-center text-sm py-3 border-b text-black"  >
-                  <span className="font-extrabold text-lg whitespace-nowrap">{index + 1}</span>
-                  <p className="whitespace-nowrap" style={{ fontFamily: "Cairo, sans-serif", fontSize: "14px", fontWeight: 700 }}>{user.name || "—"}</p>
-                  <p className="whitespace-nowrap" style={{ fontFamily: "Cairo, sans-serif", fontSize: "14px", fontWeight: 700 }}>{user.idNumber || "—"}</p>
-                  <p className="whitespace-nowrap" style={{ fontFamily: "Cairo, sans-serif", fontSize: "14px", fontWeight: 700 }}>{user.leaveCode || "—"}</p>
-                  <div className="flex justify-center gap-2 whitespace-nowrap">
-                  <button
-  onClick={() => {
-    const idOrName = user.idNumber || user.name;
-    router.push(`/newLeave?editSearch=${encodeURIComponent(idOrName)}`); // ← هذا هو سطر التنقل
-  }}
-  className="p-1.5 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
-  title="تعديل"
->
-  <Pencil size={20} />
-</button>
-                    <button className="p-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200" title="حذف">
-                      <Trash2 size={20} />
-                    </button>
-                    <button
-  onClick={() => router.push(`/a4page?leaveCode=${encodeURIComponent(user.leaveCode)}`)}
-  className="p-1.5 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200"
-  title="طباعة"
->
-  <Printer size={20} />
-</button>
-                  </div>
-                </div>
-              ))}
-
+              <div className="flex items-center justify-center gap-1">
+                <span>الاسم</span>
+                <span>▲▼</span>
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <span>رقم الهوية</span>
+                <span>▲▼</span>
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <span>رمز الإجازة</span>
+                <span>▲▼</span>
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <span>الإجراءات</span>
+                <span>▲▼</span>
+              </div>
             </div>
+
+            {/* Table Rows */}
+            {filteredUsers.map((user, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-5 items-center text-center py-4 border-b text-black"
+              >
+                <span className="font-extrabold text-lg">{index + 1}</span>
+                <p className="font-cairo font-bold">{user.name || "—"}</p>
+                <p className="font-cairo font-bold">{user.idNumber || "—"}</p>
+                <p className="font-cairo font-bold">{user.leaveCode || "—"}</p>
+                <div className="flex justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      const idOrName = user.idNumber || user.name || "";
+                      router.push(`/newLeave?editSearch=${encodeURIComponent(idOrName)}`);
+                    }}
+                    className="p-1.5 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
+                    title="تعديل"
+                  >
+                    <Pencil size={20} />
+                  </button>
+                  <button 
+                    className="p-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200" 
+                    title="حذف"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                  <button
+                    onClick={() => router.push(`/a4page?leaveCode=${encodeURIComponent(user.leaveCode || "")}`)}
+                    className="p-1.5 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200"
+                    title="طباعة"
+                  >
+                    <Printer size={20} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </main>
