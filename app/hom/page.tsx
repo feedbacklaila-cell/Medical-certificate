@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useCallback,useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, Pencil, Trash2, Printer, Search } from "lucide-react";
 import { FaUserMd, FaCalendarPlus, FaFileAlt,FaStethoscope,FaUserFriends, FaClipboardCheck,FaHospital,} from "react-icons/fa";
@@ -58,14 +58,21 @@ export default function HomePage() {
   },
 ];
 
+ const fetchUsers = useCallback(async () => {
+  try {
+    const snapshot = await getDocs(collection(db, "users"));
+    
+    const data = snapshot.docs.map((doc) => doc.data()); // ← هنا يتم تعريف data
+
+    setUsers(data); 
+  } catch (error) {
+    console.error("حدث خطأ أثناء جلب المستخدمين:", error);
+  }
+}, []);
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      const snapshot = await getDocs(collection(db, "users"));
-      const data = snapshot.docs.map((doc) => doc.data());
-      setUsers(data);
-    };
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   const filteredUsers = users.filter((user) =>
     user.name?.includes(searchQuery) || user.idNumber?.includes(searchQuery)
