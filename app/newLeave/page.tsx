@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import moment from "moment-hijri";
 import { db } from "../firebaseConfig";
 import { query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 import { collection, addDoc ,onSnapshot} from "firebase/firestore";
@@ -183,10 +182,7 @@ const entryDateREP = new Date(startDate); // تاريخ الدخول = تاري�
   const filteredDoctors = doctors.filter((doc) =>
     doc.doctorName.includes(doctorSearch)
   );
-  const toHijri = (date) => {
-    return moment(date, "YYYY-MM-DD").format("iYYYY/iMM/iDD");
-  };
-
+ 
 
   const fetchUserData = async () => {
   if (!editSearch.trim()) {
@@ -356,9 +352,7 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
             <div className="font-semibold mb-1">مدة الإجازة:</div>
             {formData.leaveStart && formData.leaveEnd ? (
               <>
-                <div className="text-gray-700">
-                  {`${formData.leaveDuration} يوم`} ( {toHijri(formData.leaveStart)} إلى {toHijri(formData.leaveEnd)} )
-                </div>
+               
                 <div className="text-gray-700">
                   {`${formData.leaveDuration} Days`} ( {formData.leaveStart} to {formData.leaveEnd} )
                 </div>
@@ -372,7 +366,6 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
             <div className="font-semibold mb-1">تاريخ الدخول:</div>
             {formData.entryDate ? (
               <>
-                <div className="text-gray-700">{toHijri(formData.entryDate)}</div>
                 <div className="text-gray-700">{formData.entryDate}</div>
               </>
             ) : (
@@ -384,7 +377,6 @@ if (nameDocs.size > 0 || idDocs.size > 0) {
             <div className="font-semibold mb-1">تاريخ نهاية الإجازة:</div>
             {formData.leaveEnd ? (
               <>
-                <div className="text-gray-700">{toHijri(formData.leaveEnd)}</div>
                 <div className="text-gray-700">{formData.leaveEnd}</div>
               </>
             ) : (
