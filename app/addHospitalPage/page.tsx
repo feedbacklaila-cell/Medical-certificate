@@ -5,17 +5,26 @@ import { db } from "../firebaseConfig";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { PlusCircle } from "lucide-react";
 
+type Hospital = {
+  id: string;
+  name: string;
+  nameEn: string;
+};
+
 export default function AddHospitalPage() {
   const [hospitalName, setHospitalName] = useState("");
   const [hospitalNameEn, setHospitalNameEn] = useState("");
-  const [hospitals, setHospitals] = useState([]);
+  // حددنا النوع هنا
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ استخدم useCallback لحل تحذير ESLint
   const fetchHospitals = useCallback(async () => {
     try {
       const snapshot = await getDocs(collection(db, "hospitals"));
-      const list = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const list = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Hospital, "id">),
+      }));
       setHospitals(list);
     } catch (error) {
       console.error("فشل في جلب المستشفيات:", error);
@@ -24,7 +33,7 @@ export default function AddHospitalPage() {
 
   useEffect(() => {
     fetchHospitals();
-  }, [fetchHospitals]); // ✅ أضف الدالة كـ dependency
+  }, [fetchHospitals]);
 
   const handleSave = async () => {
     if (!hospitalName.trim() || !hospitalNameEn.trim()) {
@@ -43,7 +52,7 @@ export default function AddHospitalPage() {
       alert("✅ تم حفظ المستشفى بنجاح");
       setHospitalName("");
       setHospitalNameEn("");
-      fetchHospitals(); // ✅ استدعاء الدالة الثابتة
+      fetchHospitals();
     } catch (error) {
       console.error("حدث خطأ أثناء الحفظ:", error);
       alert("❌ حدث خطأ أثناء حفظ المستشفى");
