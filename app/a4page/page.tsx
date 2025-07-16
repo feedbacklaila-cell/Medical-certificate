@@ -50,11 +50,9 @@ export default function A4Page() {
   const {
     
     leaveCode,
-    leaveDurationGregorian,
-    leaveDurationHijri,
+   
     leaveStartGregorian,
-    leaveStartHijri,
-    leaveEndHijri,
+   
     leaveEndGregorian,
     reportDate,
     name,

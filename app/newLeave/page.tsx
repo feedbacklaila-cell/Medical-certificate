@@ -68,7 +68,7 @@ useEffect(() => {
  
 
 
-[];
+;
   // جلب المستشفيات
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "hospitals"), (snapshot) => {
@@ -229,16 +229,12 @@ const entryDateREP = new Date(startDate); // تاريخ الدخول = تاري�
  const saveUserData = async () => {
   const userData = {
 
-    leaveDurationHijri: `${formData.leaveDuration} يوم (${toHijri(formData.entryDate)} إلى ${toHijri(formData.leaveEnd)})`,
     leaveDurationGregorian: ` ${formData.leaveDuration} Days  (${formData.entryDate} to ${formData.leaveEnd})`,
     leaveDurationDays: formData.leaveDuration,
 
 
     
-    leaveStartHijri: toHijri(formData.entryDate),
     leaveStartGregorian: formData.entryDate,
-    leaveEndHijri: toHijri(formData.leaveEnd),
-    leaveEndGregorian: formData.leaveEnd,
   
 
     reportDate: formData.reportDate,
