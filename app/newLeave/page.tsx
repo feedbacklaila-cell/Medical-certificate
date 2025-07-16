@@ -12,14 +12,36 @@ const generateLeaveCode = () => {
 };
 
 export default function Home() {
+
+
+
+  type Doctor = {
+  id: string;
+  doctorName?: string;
+  doctorNameEn?: string;
+  [key: string]: any;
+};
+
+const [doctors, setDoctors] = useState<Doctor[]>([]);
+
+type Hospital = {
+  id: string;
+  name?: string;     
+  nameEn?: string;
+  [key: string]: any; 
+};
+
+const [hospitals, setHospitals] = useState<Hospital[]>([]);
+
+
   const [isEditing, setIsEditing] = useState(false);
   const [editSearch, setEditSearch] = useState("");
   const [editingDocId, setEditingDocId] = useState(null);
-  const [hospitals, setHospitals] = useState([]);
+  
   const [showHospitalList, setShowHospitalList] = useState(false);
   const [hospitalSearch, setHospitalSearch] = useState("");
   const hospitalListRef = useRef(null);
-  const [doctors, setDoctors] = useState([]);
+
   const [showDoctorList, setShowDoctorList] = useState(false);
   const [doctorSearch, setDoctorSearch] = useState("");
   const doctorListRef = useRef(null);
