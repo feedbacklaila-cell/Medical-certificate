@@ -9,8 +9,28 @@ import '../fonts.css';
 export default function A4Page() {
   const searchParams = useSearchParams();
   const leaveCodeget = searchParams.get("leaveCode");
+interface LeaveData {
+  leaveCode: string;
+  leaveStartGregorian: string;
+  leaveEndGregorian: string;
+  reportDate: string;
+  name: string;
+  nameEn: string;
+  idNumber: string;
+  nationality: string;
+  nationalityEn: string;
+  workPlace: string;
+  workPlaceEn: string;
+  doctorName: string;
+  doctorNameEn: string;
+  jobTitle: string;
+  jobTitleEn: string;
+  hospital: string;
+  hospitalEn: string;
+  leaveDurationDays: number;
+}
 
-  const [data, setData] = useState<any>(null);
+const [data, setData] = useState<LeaveData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
