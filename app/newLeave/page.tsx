@@ -19,7 +19,9 @@ export default function Home() {
   id: string;
   doctorName?: string;
   doctorNameEn?: string;
-  [key: string]: any;
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+  setFormData({ ...formData, [name]: value });
 };
 
 const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -28,7 +30,9 @@ type Hospital = {
   id: string;
   name?: string;     
   nameEn?: string;
-  [key: string]: any; 
+const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+  setFormData({ ...formData, [name]: value });
 };
 
 const [hospitals, setHospitals] = useState<Hospital[]>([]);
