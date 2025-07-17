@@ -7,51 +7,62 @@ import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-const generateLeaveCode = () => {
+// تعريف الأنواع
+type Doctor = {
+  id: string;
+  doctorName?: string;
+  doctorNameEn?: string;
+};
+
+type Hospital = {
+  id: string;
+  name?: string;
+  nameEn?: string;
+
+};
+
+type FormData = {
+  leaveCode: string;
+  leaveStart: string;
+  leaveDuration: number;
+  leaveEnd: string;
+  reportDate: string;
+  entryDate: string;
+  name: string;
+  idNumber: string;
+  nationality: string;
+  workPlace: string;
+  doctorName: string;
+  jobTitle: string;
+  nameEn: string;
+  idNumberEn: string;
+  nationalityEn: string;
+  workPlaceEn: string;
+  doctorNameEn: string;
+  jobTitleEn: string;
+  hospital: string;
+  hospitalEn: string;
+};
+
+const generateLeaveCode = (): string => {
   return `GLS250763${Math.floor(10000 + Math.random() * 90000)}`;
 };
 
 export default function Home() {
-
-
-
-  type Doctor = {
-  id: string;
-  doctorName?: string;
-  doctorNameEn?: string;
-const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target;
-  setFormData({ ...formData, [name]: value });
-};
-
-const [doctors, setDoctors] = useState<Doctor[]>([]);
-
-type Hospital = {
-  id: string;
-  name?: string;     
-  nameEn?: string;
-const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target;
-  setFormData({ ...formData, [name]: value });
-};
-
-const [hospitals, setHospitals] = useState<Hospital[]>([]);
-
-
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editSearch, setEditSearch] = useState("");
-  const [editingDocId, setEditingDocId] = useState(null);
-  
+  const [editingDocId, setEditingDocId] = useState<string | null>(null);
   const [showHospitalList, setShowHospitalList] = useState(false);
   const [hospitalSearch, setHospitalSearch] = useState("");
-  const hospitalListRef = useRef(null);
-
+  const hospitalListRef = useRef<HTMLUListElement>(null);
   const [showDoctorList, setShowDoctorList] = useState(false);
   const [doctorSearch, setDoctorSearch] = useState("");
-  const doctorListRef = useRef(null);
+  const doctorListRef = useRef<HTMLUListElement>(null);
   const searchParams = useSearchParams();
 
-  const [formData, setFormData] = useState({
+  const initialFormData: FormData = {
     leaveCode: generateLeaveCode(),
     leaveStart: "",
     leaveDuration: 1,
@@ -72,12 +83,17 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
     jobTitleEn: "",
     hospital: "",
     hospitalEn: "",
-  });
+  };
+
+  const [formData, setFormData] = useState<FormData>(initialFormData);
 
   // جلب المستشفيات
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "hospitals"), (snapshot) => {
-      const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const list = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      })) as Hospital[];
       setHospitals(list);
     });
     return () => unsubscribe();
@@ -89,7 +105,7 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
       const docsData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      }));
+      })) as Doctor[];
       setDoctors(docsData);
     });
     return () => unsubscribe();
@@ -97,11 +113,11 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
   // إخفاء القوائم عند النقر خارجها
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (hospitalListRef.current && !hospitalListRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (hospitalListRef.current && !hospitalListRef.current.contains(event.target as Node)) {
         setShowHospitalList(false);
       }
-      if (doctorListRef.current && !doctorListRef.current.contains(event.target)) {
+      if (doctorListRef.current && !doctorListRef.current.contains(event.target as Node)) {
         setShowDoctorList(false);
       }
     }
@@ -148,11 +164,11 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
         return;
       }
 
-      const docData = docs[0].data();
+      const docData = docs[0].data() as FormData;
       setEditingDocId(docs[0].id);
 
       setFormData({
-        ...formData,
+        ...initialFormData,
         ...docData,
       });
 
@@ -164,10 +180,10 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
   };
 
   // اختيار مستشفى
-  const selectHospital = (hospital) => {
+  const selectHospital = (hospital: Hospital) => {
     setFormData({
       ...formData,
-      hospital: hospital.name,
+      hospital: hospital.name || "",
       hospitalEn: hospital.nameEn || "",
     });
     setShowHospitalList(false);
@@ -175,10 +191,10 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
   };
 
   // اختيار طبيب
-  const selectDoctor = (doctor) => {
+  const selectDoctor = (doctor: Doctor) => {
     setFormData({
       ...formData,
-      doctorName: doctor.doctorName,
+      doctorName: doctor.doctorName || "",
       doctorNameEn: doctor.doctorNameEn || "",
     });
     setShowDoctorList(false);
@@ -186,12 +202,13 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
   };
 
   // معالجة التغييرات
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   // معالجة تغيير مدة الإجازة
-  const handleDurationChange = (e) => {
+  const handleDurationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const days = parseInt(e.target.value);
     if (!formData.leaveStart) {
       alert("الرجاء اختيار تاريخ بدء الإجازة أولاً");
@@ -267,27 +284,10 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
         await addDoc(collection(db, "users"), userData);
         alert("تم حفظ البيانات بنجاح");
         
+        // إعادة تعيين النموذج بعد الحفظ
         setFormData({
+          ...initialFormData,
           leaveCode: generateLeaveCode(),
-          leaveStart: "",
-          leaveDuration: 1,
-          leaveEnd: "",
-          reportDate: "",
-          entryDate: "",
-          name: "",
-          idNumber: "",
-          nationality: "السعودية",
-          workPlace: "",
-          doctorName: "",
-          jobTitle: "",
-          nameEn: "",
-          idNumberEn: "",
-          nationalityEn: "Saudi Arabia",
-          workPlaceEn: "",
-          doctorNameEn: "",
-          jobTitleEn: "",
-          hospital: "",
-          hospitalEn: "",
         });
       }
     } catch (error) {
@@ -298,12 +298,12 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
   // فلترة المستشفيات
   const filteredHospitals = hospitals.filter(h => 
-    h.name.includes(hospitalSearch)
+    h.name?.includes(hospitalSearch)
   );
   
   // فلترة الأطباء
   const filteredDoctors = doctors.filter(doc => 
-    doc.doctorName.includes(doctorSearch)
+    doc.doctorName?.includes(doctorSearch)
   );
 
   return (
@@ -373,25 +373,29 @@ const [hospitals, setHospitals] = useState<Hospital[]>([]);
             ["جهة العمل", "workPlace", "ادخل جهة العمل", "Workplace", "workPlaceEn", "Enter workplace"],
             ["المسمى الوظيفي", "jobTitle", "ادخل المسمى الوظيفي", "Job Title", "jobTitleEn", "Enter job title"],
           ].map(([labelAr, nameAr, placeholderAr, labelEn, nameEn, placeholderEn]) => (
-            <div key={nameAr}>
-              <label className="font-semibold mb-1 block">{labelAr}:</label>
+            <div key={nameAr as string}>
+              <label className="font-semibold mb-1 block">{labelAr as string}:</label>
               <input
                 type="text"
-                name={nameAr}
-                value={formData[nameAr]}
+                name={nameAr as string}
+                value={formData[nameAr as keyof FormData] as string}
                 onChange={handleChange}
-                placeholder={placeholderAr}
+                placeholder={placeholderAr as string}
                 className="w-full border border-gray-300 p-2 rounded-lg mb-2"
               />
-              <label className="font-semibold mb-1 block">{labelEn}:</label>
-              <input
-                type="text"
-                name={nameEn}
-                value={formData[nameEn]}
-                onChange={handleChange}
-                placeholder={placeholderEn}
-                className="w-full border border-gray-300 p-2 rounded-lg"
-              />
+              {labelEn && (
+                <>
+                  <label className="font-semibold mb-1 block">{labelEn as string}:</label>
+                  <input
+                    type="text"
+                    name={nameEn as string}
+                    value={formData[nameEn as keyof FormData] as string}
+                    onChange={handleChange}
+                    placeholder={placeholderEn as string}
+                    className="w-full border border-gray-300 p-2 rounded-lg"
+                  />
+                </>
+              )}
             </div>
           ))}
           
