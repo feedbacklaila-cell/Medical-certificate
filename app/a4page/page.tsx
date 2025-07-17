@@ -437,97 +437,111 @@ function A4PageContent() {
         </div>
 
         <div className="footer-container" style={{ marginTop: '-5px', paddingTop: '0' }}>
-          <div className="vertical-line"></div>
+  <div className="vertical-line"></div>
 
-          <div
-  className="footer-left"
-  style={{
-    width: '100%',
-    paddingRight: '100px',
-    textAlign: 'center',  // بدل 'right' خليها 'center'
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',  // عشان العناصر تصطف في الوسط عرضياً
-  }}
->
- <img src="/qr.png" alt="m5" className="w-[150px] h-[150px]" /><div
-  style={{
-    fontFamily: "Cairo, sans-serif",
-    fontSize: "14px",
-    fontWeight: 300,
-    marginBottom: '5px',
-  }}
->
-  للتحقق من بيانات التقرير يرجى التأكد من زيارة موقع منصة صحة الرسمي
-</div>
-<div
-  style={{
-    fontSize: '16px',
-    marginBottom: '5px',
-    fontFamily: 'MondoArabic',
-  }}
->
-  To check the report please visit Seha's official website
-</div>
- <div className="footer-text">
-  <a
-    href="https://seha-as-com-qj61-git-main-soumuis-projects.vercel.app/verify-leave"
-    target="_blank"
-    rel="noopener noreferrer"
+  <div
+    className="footer-left"
     style={{
-      color: 'blue',
-      textDecoration: 'underline',
-      fontSize: '14px', // 👈 تكبير الخط
-      fontWeight: 'bold' // (اختياري) لتغليظه
+      width: '100%',
+      paddingRight: '100px',
+      textAlign: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
     }}
   >
-    www.seha.sa/#/inquiries/lenguiry
-  </a>
-</div>
-</div>
+    <img src="/qr.png" alt="m5" className="w-[150px] h-[150px]" />
 
+    <div
+      style={{
+        fontFamily: "Cairo, sans-serif",
+        fontSize: "14px",
+        fontWeight: 300,
+        marginBottom: '5px',
+      }}
+    >
+      للتحقق من بيانات التقرير يرجى التأكد من زيارة موقع منصة صحة الرسمي
+    </div>
 
-        <div
-  className="footer-right"
-  style={{
-    width: "150%",
-    paddingLeft: "115px",
-  }}
->
-  <img src="/m8.png" alt="logo" className="w-[100px] h-[90px] block mx-auto" />
+    <div
+      style={{
+        fontSize: '16px',
+        marginBottom: '5px',
+        fontFamily: 'MondoArabic',
+      }}
+    >
+      To check the report please visit Seha&apos;s official website
+    </div>
 
-  <div className="text-center font-[400] text-[14px] font-[Cairo,sans-serif] mt-1">
-    {hospital}
+    <div className="footer-text">
+      <a
+        href="https://seha-as-com-qj61-git-main-soumuis-projects.vercel.app/verify-leave"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          color: 'blue',
+          textDecoration: 'underline',
+          fontSize: '14px',
+          fontWeight: 'bold',
+        }}
+      >
+        www.seha.sa/#/inquiries/lenguiry
+      </a>
+    </div>
   </div>
-  
-  <div className="text-center font-[400] text-[14px] font-[Cairo,sans-serif]">
-    {hospitalEn}
+
+  <div
+    className="footer-right"
+    style={{
+      width: "150%",
+      paddingLeft: "115px",
+    }}
+  >
+    <img src="/m8.png" alt="logo" className="w-[100px] h-[90px] block mx-auto" />
+
+    <div className="text-center font-[400] text-[14px] font-[Cairo,sans-serif] mt-1">
+      {hospital}
+    </div>
+
+    <div className="text-center font-[400] text-[14px] font-[Cairo,sans-serif]">
+      {hospitalEn}
+    </div>
   </div>
-</div>
 
-        </div>
-
-        <div style={{ 
+  <div
+    style={{
       position: 'absolute',
       left: '0',
       bottom: '0',
       textAlign: 'left',
-      paddingLeft: '20px'
-    }}>
-      <div style={{ 
+      paddingLeft: '20px',
+    }}
+  >
+    <div
+      style={{
         fontSize: '14px',
         fontWeight: 'bold',
-         fontFamily: 'Arial, sans-serif'
-      }}>12:14 AM</div>
-      <div style={{ 
-        fontSize: '14px',
-        fontWeight: 'bold',
-        fontFamily: 'Arial, sans-serif'
-      }}>Monday, July 7, 2025</div>
+        fontFamily: 'Arial, sans-serif',
+      }}
+    >
+      12:14 AM
     </div>
-    <div className="absolute  right-10">
-          <img src="/sh1.png" alt="m5" className="w-[220px] h-[110px]" />
-        </div>
+    <div
+      style={{
+        fontSize: '14px',
+        fontWeight: 'bold',
+        fontFamily: 'Arial, sans-serif',
+      }}
+    >
+      Monday, July 7, 2025
+    </div>
+  </div>
+
+  <div className="absolute right-10">
+    <img src="/sh1.png" alt="m5" className="w-[220px] h-[110px]" />
+  </div>
+</div>
+
       </div>
     </div>
   );
