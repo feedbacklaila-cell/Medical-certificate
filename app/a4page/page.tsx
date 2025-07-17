@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { db } from "../firebaseConfig";
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
@@ -25,7 +25,35 @@ interface LeaveData {
   leaveDurationDays: number;
 }
 
+function toHijriDateFormatted(gregorianDateStr: string) {
+  const date = new Date(gregorianDateStr);
+  const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+
+  let formatted = formatter.format(date);
+  formatted = formatted
+    .replace(/\u200f/g, '')
+    .replace(/\s?AH/, '');
+
+  return convertArabicNumbersToEnglish(formatted);
+}
+
+function convertArabicNumbersToEnglish(str: string) {
+  return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
+}
+
 export default function A4Page() {
+  return (
+    <Suspense fallback={<div className="p-4">جاري تحميل البيانات...</div>}>
+      <A4PageContent />
+    </Suspense>
+  );
+}
+
+function A4PageContent() {
   const searchParams = useSearchParams();
   const leaveCodeget = searchParams.get("leaveCode");
 
@@ -84,25 +112,6 @@ export default function A4Page() {
     hospitalEn,
     leaveDurationDays,
   } = data;
-  function toHijriDateFormatted(gregorianDateStr: string) {
-    const date = new Date(gregorianDateStr);
-    const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-
-    let formatted = formatter.format(date);
-    formatted = formatted
-      .replace(/\u200f/g, '')
-      .replace(/\s?AH/, '');
-
-    return convertArabicNumbersToEnglish(formatted);
-  }
-
-  function convertArabicNumbersToEnglish(str: string) {
-    return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
-  }
 
   const getTitleClass = () => "font-[700] text-[14px] font-[MondoArabic] text-right";
   const getValueClass = () => "font-[400] text-[12px] font-[Arial] text-right";
