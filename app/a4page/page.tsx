@@ -118,7 +118,7 @@ function A4PageContent() {
     leaveDurationDays,
   } = data;
 
-  const getTitleClass = () => "font-[400] text-[14px] Cairo, sans-serif text-right";
+  const getTitleClass = () => "font-[700] text-[14px] font-[MondoArabic] text-right";
   const getValueClass = () => "font-[400] text-[14px] font-[MondoArabic] text-right";
 
   return (
@@ -290,7 +290,7 @@ function A4PageContent() {
         <div className="absolute top-10 left-10">
           <img src="/logo.png" alt="logo" className="w-[135px] h-[60px]" />
         </div>
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-[-5px] z-50">
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-[5px] z-50">
           <img src="/m3.png" alt="m3" className="w-[160px] h-[260px] object-contain" />
         </div>
         <div className="absolute top-10 right-10">
@@ -298,7 +298,7 @@ function A4PageContent() {
         </div>
       </div>
 
-      <div className="translate-y-[85px]">
+      <div className="translate-y-[110px]">
         <div className="p-6">
           <table className="medical-table border-collapse border border-gray-400 w-full text-right" dir="rtl">
             <tbody>
@@ -358,7 +358,7 @@ function A4PageContent() {
               <tr>
                                       <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
-</th>                <td className={getTitleClass()}>{name}</td>
+</th>                <td className={getValueClass()}>{name}</td>
                 <td className={getValueClass()}>{nameEn}</td>
                                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
@@ -439,38 +439,94 @@ function A4PageContent() {
         <div className="footer-container" style={{ marginTop: '-5px', paddingTop: '0' }}>
           <div className="vertical-line"></div>
 
-          <div className="footer-left" style={{ width: '100%', paddingRight: '100px', textAlign: 'right' }}>
-            <div className="footer-title">التحقق من البيانات</div>
-            <div className="footer-text">يرجى التأكد من زيارة موقع منصة صحة الرسمي</div>
-            <div className="footer-text">
-              <a
-                href="https://example.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'blue', textDecoration: 'underline' }}
-              >
-                www.seha.sa/#/inquiries/lenguiry
-              </a>
-            </div>
-          </div>
-
           <div
-            className="footer-right"
-            style={{
-              width: "150%",
-              paddingLeft: "115px",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <img src="/m8.png" alt="logo" className="w-[100px] h-[90px]" />
-            <div className="dually" style={{ fontFamily: "Cairo, sans-serif", fontSize: "14px", fontWeight: 400 }}>
-              {hospital}
-            </div>
-            <div className="dually" style={{ fontFamily: "Cairo, sans-serif", fontSize: "14px", fontWeight: 400 }}>
-              {hospitalEn}
-            </div>
-          </div>
+  className="footer-left"
+  style={{
+    width: '100%',
+    paddingRight: '100px',
+    textAlign: 'center',  // بدل 'right' خليها 'center'
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',  // عشان العناصر تصطف في الوسط عرضياً
+  }}
+>
+ <img src="/qr.png" alt="m5" className="w-[150px] h-[150px]" /><div
+  style={{
+    fontFamily: "Cairo, sans-serif",
+    fontSize: "14px",
+    fontWeight: 300,
+    marginBottom: '5px',
+  }}
+>
+  للتحقق من بيانات التقرير يرجى التأكد من زيارة موقع منصة صحة الرسمي
+</div>
+<div
+  style={{
+    fontSize: '16px',
+    marginBottom: '5px',
+    fontFamily: 'MondoArabic',
+  }}
+>
+  To check the report please visit Seha's official website
+</div>
+ <div className="footer-text">
+  <a
+    href="https://seha-as-com-qj61-git-main-soumuis-projects.vercel.app/verify-leave"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      color: 'blue',
+      textDecoration: 'underline',
+      fontSize: '14px', // 👈 تكبير الخط
+      fontWeight: 'bold' // (اختياري) لتغليظه
+    }}
+  >
+    www.seha.sa/#/inquiries/lenguiry
+  </a>
+</div>
+</div>
+
+
+        <div
+  className="footer-right"
+  style={{
+    width: "150%",
+    paddingLeft: "115px",
+  }}
+>
+  <img src="/m8.png" alt="logo" className="w-[100px] h-[90px] block mx-auto" />
+
+  <div className="text-center font-[400] text-[14px] font-[Cairo,sans-serif] mt-1">
+    {hospital}
+  </div>
+  
+  <div className="text-center font-[400] text-[14px] font-[Cairo,sans-serif]">
+    {hospitalEn}
+  </div>
+</div>
+
+        </div>
+
+        <div style={{ 
+      position: 'absolute',
+      left: '0',
+      bottom: '0',
+      textAlign: 'left',
+      paddingLeft: '20px'
+    }}>
+      <div style={{ 
+        fontSize: '14px',
+        fontWeight: 'bold',
+         fontFamily: 'Arial, sans-serif'
+      }}>12:14 AM</div>
+      <div style={{ 
+        fontSize: '14px',
+        fontWeight: 'bold',
+        fontFamily: 'Arial, sans-serif'
+      }}>Monday, July 7, 2025</div>
+    </div>
+    <div className="absolute  right-10">
+          <img src="/sh1.png" alt="m5" className="w-[220px] h-[110px]" />
         </div>
       </div>
     </div>

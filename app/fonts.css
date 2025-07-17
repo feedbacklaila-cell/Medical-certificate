@@ -1,53 +1,46 @@
-
 @font-face {
-  font-family: 'nsArabic';
-  src: url('//fonts/nsArabic.woff2') format('woff2'),
-       url('//fonts/nsArabic.ttf') format('truetype');
+  font-family: 'Cairo';
+  src: url('/fonts/cairo/Cairo-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
 }
+
 @font-face {
   font-family: 'Cairo';
   src: url('/fonts/cairo/Cairo-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
-  font-display: swap;
 }
 
 @font-face {
+  
   font-family: 'IBMPlexArabic';
   src: url('/fonts/cairo/IBMPlexArabic-Text.ttf') format('truetype');
-  font-weight: 400;
+  font-weight: 400;  /* تغيير من 700 إلى 400 لأنه خط عادي */
   font-style: normal;
-  font-display: swap;
 }
 
 @font-face {
   font-family: 'NotoSansArabic';
-  src: url('/fonts/cairo/NotoSansArabic-Regular.ttf') format('truetype');
-  font-weight: 400;
+  src: url('/fonts/cairo/NotoSansArabic-Regular.ttf') format('truetype');  /* تصحيح المسار */
+  font-weight: 400;  /* تغيير من 700 إلى 400 */
   font-style: normal;
-  font-display: swap;
 }
-
 @font-face {
   font-family: 'AscenderSerif';
   src: url('/fonts/Ascender-Serif-W01-Bold.ttf') format('truetype');
-  font-weight: 700;
+  font-weight: 700;  
   font-style: normal;
-  font-display: swap;
 }
 
-@font-face {
+font-face {
   font-family: 'UntypeMondoNews';
   src: url('/fonts/untype-mondo-news-bold-italic.woff2') format('woff2'),
        url('/fonts/untype-mondo-news-bold-italic.ttf') format('truetype');
-  font-weight: 700;
+  font-weight: 700; /* Bold */
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
   font-family: 'MondoArabic';
   src: url('/fonts/untype-mondo-news-bold-italic.woff2') format('woff2'),
@@ -55,4 +48,5 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0600-06FF; /* نطاق الحروف العربية */
 }
