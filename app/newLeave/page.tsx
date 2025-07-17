@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { db } from "../firebaseConfig";
 import { query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 import { collection, addDoc, onSnapshot } from "firebase/firestore";
@@ -47,7 +47,8 @@ const generateLeaveCode = (): string => {
   return `GLS250763${Math.floor(10000 + Math.random() * 90000)}`;
 };
 
-export default function Home() {
+// الجزء الرئيسي من التطبيق
+function MainContent() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -606,5 +607,14 @@ export default function Home() {
         </div>
       </div>
     </div>
+  );
+}
+
+// المكون الرئيسي مع تغليف Suspense
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-2xl text-purple-700">جاري التحميل...</div>}>
+      <MainContent />
+    </Suspense>
   );
 }
