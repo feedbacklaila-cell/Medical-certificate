@@ -27,6 +27,7 @@ interface LeaveData {
 
 function toHijriDateFormatted(gregorianDateStr: string) {
   const date = new Date(gregorianDateStr);
+
   const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
     day: '2-digit',
     month: '2-digit',
@@ -34,9 +35,12 @@ function toHijriDateFormatted(gregorianDateStr: string) {
   });
 
   let formatted = formatter.format(date);
+
+  // تنظيف شامل لأي حروف غير رقمية أو فاصلة أو شرطة
   formatted = formatted
-    .replace(/\u200f/g, '')
-    .replace(/\s?AH/, '');
+    .replace(/\u200f/g, '')         // remove RTL marker
+    .replace(/\s?AH/, '')           // remove "AH"
+    .replace(/[^\d/.-]/g, '');      // ← remove anything that's not number, slash, dot, or dash
 
   return convertArabicNumbersToEnglish(formatted);
 }
@@ -44,6 +48,7 @@ function toHijriDateFormatted(gregorianDateStr: string) {
 function convertArabicNumbersToEnglish(str: string) {
   return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
 }
+
 
 export default function A4Page() {
   return (
@@ -113,8 +118,8 @@ function A4PageContent() {
     leaveDurationDays,
   } = data;
 
-  const getTitleClass = () => "font-[700] text-[14px] font-[MondoArabic] text-right";
-  const getValueClass = () => "font-[400] text-[12px] font-[Arial] text-right";
+  const getTitleClass = () => "font-[400] text-[14px] Cairo, sans-serif text-right";
+  const getValueClass = () => "font-[400] text-[14px] font-[MondoArabic] text-right";
 
   return (
     <div className="">
@@ -227,10 +232,10 @@ function A4PageContent() {
           border-bottom-left-radius: 8px;
         }
         .medical-table td {
-          width: 65%;
+          width: 50%;
         }
         .merged-columns {
-          width: 130% !important;
+          width: 100% !important;
         }
         .footer-container {
           width: 100%;
@@ -250,12 +255,12 @@ function A4PageContent() {
         .footer-left {
           text-align: right;
           flex: 1;
-          padding-right: 17px;
+          padding-right: 20px;
         }
         .footer-right {
           text-align: left;
           flex: 1;
-          padding-left: 17px;
+          padding-left: 20px;
         }
         .footer-text {
           font-size: 12px;
@@ -298,14 +303,18 @@ function A4PageContent() {
           <table className="medical-table border-collapse border border-gray-400 w-full text-right" dir="rtl">
             <tbody>
               <tr>
-                <th className={getTitleClass()}>رمز الإجازة</th>
+                          <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/s1.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "60px", height: "15px" }} />
+</th>
                 <td className={getValueClass()} colSpan={2}>{leaveCode}</td>
-                <th className={getTitleClass()}>Leave ID</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e1.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "60px", height: "15px" }} />
+</th>
               </tr>
               <tr>
-                <th className={getTitleClass()}>
-                  <img src="/s2.png" alt="logo" className="w-[50px] h-[15px]" />
-                </th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/s2.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "65px", height: "16px" }} />
+</th>
                 <td className={getValueClass()}>
                   {convertArabicNumbersToEnglish(
                     `${leaveDurationDays} يوم (${toHijriDateFormatted(leaveStartGregorian)} الى ${toHijriDateFormatted(leaveEndGregorian)})`
@@ -314,60 +323,115 @@ function A4PageContent() {
                 <td className={getValueClass()}>
                   {`Days ${leaveDurationDays} (${leaveStartGregorian} to ${leaveEndGregorian})`}
                 </td>
-                <th className={getTitleClass()}>Leave Duration</th>
+                       <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e2.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "90px", height: "14px" }} />
+</th>
               </tr>
               <tr>
-                <th className={getTitleClass()}>تاريخ الدخول</th>
+                                  <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/s3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "80px", height: "15px" }} />
+</th>
                 <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
                 <td className={getValueClass()}>{leaveStartGregorian}</td>
-                <th className={getTitleClass()}>Admission Date</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "12px" }} />
+</th>
               </tr>
               <tr>
-                <th className={getTitleClass()}>تاريخ الخروج</th>
+                                          <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/ss4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "15px" }} />
+</th>
                 <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveEndGregorian)}</td>
                 <td className={getValueClass()}>{leaveEndGregorian}</td>
-                <th className={getTitleClass()}>Discharge Date</th>
+                         <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+</th>
               </tr>
               <tr>
-                <th className={getTitleClass()}>تاريخ إصدار التقرير</th>
+                                                       <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/s5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "125px", height: "17px" }} />
+</th>
                 <td className={getValueClass()} colSpan={2}>{reportDate}</td>
-                <th className={getTitleClass()}>Issue Date</th>
-              </tr>
+                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+</th>              </tr>
               <tr>
-                <th className={getTitleClass()}>الاسم</th>
-                <td className={getValueClass()}>{name}</td>
+                                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/s6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
+</th>                <td className={getTitleClass()}>{name}</td>
                 <td className={getValueClass()}>{nameEn}</td>
-                <th className={getTitleClass()}>Name</th>
+                                    <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+</th>
               </tr>
               <tr>
-                <th className={getTitleClass()}>رقم الهوية الإقامة</th>
-                <td className={getValueClass()} colSpan={2}>{idNumber}</td>
-                <th className={getTitleClass()}>National ID / Iqama</th>
+                                  <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/s7.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "125px", height: "17px" }} />
+</th>                   <td className={getValueClass()} colSpan={2}>{idNumber}</td>
+                                    <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e7.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+</th>
               </tr>
               <tr>
-                <th className={getTitleClass()}>الجنسية</th>
-                <td className={getValueClass()}>{nationality}</td>
+                                  <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/s8.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
+</th>                   <td className={getValueClass()}>{nationality}</td>
                 <td className={getValueClass()}>{nationalityEn}</td>
-                <th className={getTitleClass()}>Nationality</th>
+                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e8.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+</th>
               </tr>
               <tr>
-                <th className={getTitleClass()}>جهة العمل</th>
-                <td className={getValueClass()}>{workPlaceEn}</td>
+                              <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/s9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
+</th>                  <td className={getValueClass()}>{workPlaceEn}</td>
                 <td className={getValueClass()}>{workPlace}</td>
-                <th className={getTitleClass()}>Employer</th>
-              </tr>
+                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+</th>              </tr>
+            <tr style={{ height: "75px" /* ← تحكم بارتفاع الصف من هنا */ }}>
+  <th
+    className={getTitleClass()}
+    style={{
+      textAlign: "center",
+      verticalAlign: "middle",
+      padding: 0,
+    }}
+  >
+    <img
+      src="/s10.png"
+      alt="logo"
+      style={{
+        width: "140px",
+        height: "45px", // ← تحكم بحجم الصورة هنا
+        objectFit: "contain",
+        display: "block",
+        margin: "0 auto",
+      }}
+    />
+  </th>
+
+  <td className={getValueClass()} style={{ verticalAlign: "middle" }}>
+    {doctorName}
+  </td>
+
+  <td className={getValueClass()} style={{ verticalAlign: "middle" }}>
+    {doctorNameEn}
+  </td>
+
+                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e11.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+</th>
+</tr>
+
               <tr>
-                <th className={getTitleClass()}>اسم الطبيب</th>
-                <td className={getValueClass()}>{doctorName}</td>
-                <td className={getValueClass()}>{doctorNameEn}</td>
-                <th className={getTitleClass()}>Physician Name</th>
-              </tr>
-              <tr>
-                <th className={getTitleClass()}>المعالج</th>
-                <td className={getValueClass()}>{jobTitleEn}</td>
+                              <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/s11.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
+</th>                  <td className={getValueClass()}>{jobTitleEn}</td>
                 <td className={getValueClass()}>{jobTitle}</td>
-                <th className={getTitleClass()}>Position</th>
-              </tr>
+                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e10.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+</th>              </tr>
             </tbody>
           </table>
         </div>
