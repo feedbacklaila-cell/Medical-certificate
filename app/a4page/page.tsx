@@ -470,7 +470,7 @@ function A4PageContent() {
         fontFamily: 'MondoArabic',
       }}
     >
-      To check the report please visit Seha&apos;s official website
+      To check the report please visit Sehas official website
     </div>
 
     <div className="footer-text">
