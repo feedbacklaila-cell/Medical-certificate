@@ -475,7 +475,7 @@ function A4PageContent() {
 
     <div className="footer-text">
       <a
-        href="https://seha-as-com-qj61-git-main-soumuis-projects.vercel.app/verify-leave"
+        href="https://https://seha-as-com-qj61.vercel.app/verify-leave"
         target="_blank"
         rel="noopener noreferrer"
         style={{
