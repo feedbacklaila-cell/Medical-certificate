@@ -7,7 +7,7 @@ import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-// تعريف الأنواع
+// تعريف الأنواع الآمنة بدون any
 type Doctor = {
   id: string;
   doctorName?: string;
@@ -18,7 +18,6 @@ type Hospital = {
   id: string;
   name?: string;
   nameEn?: string;
-
 };
 
 type FormData = {
@@ -87,25 +86,33 @@ export default function Home() {
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
-  // جلب المستشفيات
+  // جلب المستشفيات - مع التعامل الآمن مع البيانات
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "hospitals"), (snapshot) => {
-      const list = snapshot.docs.map(doc => ({ 
-        id: doc.id, 
-        ...doc.data() 
-      })) as Hospital[];
+      const list = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || "",
+          nameEn: data.nameEn || ""
+        } as Hospital;
+      });
       setHospitals(list);
     });
     return () => unsubscribe();
   }, []);
 
-  // جلب الأطباء
+  // جلب الأطباء - مع التعامل الآمن مع البيانات
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "doctors"), (snapshot) => {
-      const docsData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Doctor[];
+      const docsData = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          doctorName: data.doctorName || "",
+          doctorNameEn: data.doctorNameEn || ""
+        } as Doctor;
+      });
       setDoctors(docsData);
     });
     return () => unsubscribe();
@@ -164,13 +171,13 @@ export default function Home() {
         return;
       }
 
-      const docData = docs[0].data() as FormData;
+      const docData = docs[0].data() as Partial<FormData>;
       setEditingDocId(docs[0].id);
 
       setFormData({
         ...initialFormData,
         ...docData,
-      });
+      } as FormData);
 
       alert("تم تحميل البيانات. يمكنك الآن تعديلها.");
     } catch (error) {
@@ -204,7 +211,7 @@ export default function Home() {
   // معالجة التغييرات
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value } as FormData));
   };
 
   // معالجة تغيير مدة الإجازة
@@ -296,14 +303,14 @@ export default function Home() {
     }
   };
 
-  // فلترة المستشفيات
+  // فلترة المستشفيات - مع التعامل الآمن مع القيم
   const filteredHospitals = hospitals.filter(h => 
-    h.name?.includes(hospitalSearch)
+    (h.name || "").toLowerCase().includes(hospitalSearch.toLowerCase())
   );
   
-  // فلترة الأطباء
+  // فلترة الأطباء - مع التعامل الآمن مع القيم
   const filteredDoctors = doctors.filter(doc => 
-    doc.doctorName?.includes(doctorSearch)
+    (doc.doctorName || "").toLowerCase().includes(doctorSearch.toLowerCase())
   );
 
   return (
@@ -438,7 +445,7 @@ export default function Home() {
                       onClick={() => selectDoctor(doctor)}
                       className="cursor-pointer px-4 py-2 hover:bg-blue-100"
                     >
-                      {doctor.doctorName}
+                      {doctor.doctorName || "غير معروف"}
                     </li>
                   ))
                 ) : (
@@ -499,7 +506,7 @@ export default function Home() {
                       onClick={() => selectHospital(hospital)}
                       className="cursor-pointer px-4 py-2 hover:bg-blue-100"
                     >
-                      {hospital.name}
+                      {hospital.name || "غير معروف"}
                     </li>
                   ))
                 ) : (
@@ -514,7 +521,7 @@ export default function Home() {
             <input
               type="text"
               name="hospitalEn"
-              value={formData.hospitalEn || ""}
+              value={formData.hospitalEn}
               onChange={(e) => setFormData({ ...formData, hospitalEn: e.target.value })}
               className="w-full border border-gray-300 p-2 rounded-lg text-gray-700"
               placeholder="اكتب أو سيتم تعبئته تلقائيًا"
