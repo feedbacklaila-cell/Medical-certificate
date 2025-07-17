@@ -45,8 +45,15 @@ function convertArabicNumbersToEnglish(str: string) {
   return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
 }
 
-export default function A4Page()
- {
+export default function A4Page() {
+  return (
+    <Suspense fallback={<div className="p-4">جاري تحميل البيانات...</div>}>
+      <A4PageContent />
+    </Suspense>
+  );
+}
+
+function A4PageContent() {
   const searchParams = useSearchParams();
   const leaveCodeget = searchParams.get("leaveCode");
 
