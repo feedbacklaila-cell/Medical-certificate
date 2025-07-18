@@ -6,17 +6,21 @@ import { useSearchParams } from "next/navigation";
 import { db } from "../firebaseConfig";
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 
- export const tajawal = Tajawal({
+// إصلاح مشكلة الخطوط مع إضافة preload: true
+const tajawal = Tajawal({
   subsets: ["arabic"],
   weight: ["300", "400", "700"],
   display: "swap",
+  preload: true, // الإضافة المطلوبة
 });
 
-export const MondoArabic = Noto_Serif({
+const mondoArabic = Noto_Serif({
   subsets: ["latin"],
   weight: ["400"],
   display: "swap",
+  preload: true, // الإضافة المطلوبة
 });
+
 interface LeaveData {
   leaveCode: string;
   leaveStartGregorian: string;
@@ -40,12 +44,10 @@ interface LeaveData {
 }
 
 function toHijriDateFormatted(gregorianDateStr: string) {
-  // التحقق من صحة السلسلة التاريخية
   if (!gregorianDateStr) return '';
   
   const date = new Date(gregorianDateStr);
   
-  // التحقق من صحة كائن التاريخ
   if (isNaN(date.getTime())) return '';
 
   const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
@@ -56,11 +58,10 @@ function toHijriDateFormatted(gregorianDateStr: string) {
 
   let formatted = formatter.format(date);
 
-  // تنظيف شامل لأي حروف غير رقمية أو فاصلة أو شرطة
   formatted = formatted
-    .replace(/\u200f/g, '')         // remove RTL marker
-    .replace(/\s?AH/, '')           // remove "AH"
-    .replace(/[^\d/.-]/g, '');      // ← remove anything that's not number, slash, dot, or dash
+    .replace(/\u200f/g, '')
+    .replace(/\s?AH/, '')
+    .replace(/[^\d/.-]/g, '');
 
   return convertArabicNumbersToEnglish(formatted);
 }
@@ -144,7 +145,7 @@ function A4PageContent() {
 const getTitleClass = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#2b3d77]`;
 const getTitleClassf = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#fff]`;
   const getValueClass = () =>
-  `${MondoArabic.className} font-medium text-base text-[12px] text-right text-[#fff]`;
+  `${mondoArabic.className} font-medium text-base text-[12px] text-right text-[#fff]`;
 
   return (
     <div className="">
