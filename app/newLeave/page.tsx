@@ -7,7 +7,7 @@ import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-// تعريف الأنواع الآمنة بدون any
+// تعريف الأنواع الآمنة مع إضافة حقل الوقت
 type Doctor = {
   id: string;
   doctorName?: string;
@@ -41,6 +41,8 @@ type FormData = {
   jobTitleEn: string;
   hospital: string;
   hospitalEn: string;
+  selectedTime: string; // حقل جديد للوقت
+  timeDisplay: string; // حقل جديد لعرض الوقت
 };
 
 const generateLeaveCode = (): string => {
@@ -83,11 +85,13 @@ function MainContent() {
     jobTitleEn: "",
     hospital: "",
     hospitalEn: "",
+    selectedTime: "12:00", // قيمة افتراضية للوقت
+    timeDisplay: "12:00 مساءً" // قيمة افتراضية للعرض
   };
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
-  // جلب المستشفيات - مع التعامل الآمن مع البيانات
+  // جلب المستشفيات
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "hospitals"), (snapshot) => {
       const list = snapshot.docs.map(doc => {
@@ -103,7 +107,7 @@ function MainContent() {
     return () => unsubscribe();
   }, []);
 
-  // جلب الأطباء - مع التعامل الآمن مع البيانات
+  // جلب الأطباء
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "doctors"), (snapshot) => {
       const docsData = snapshot.docs.map((doc) => {
@@ -212,7 +216,29 @@ function MainContent() {
   // معالجة التغييرات
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value } as FormData));
+    
+    // إذا كان الحقل هو selectedTime، نقوم بتحويل القيمة إلى تنسوق عرض مناسب
+    if (name === "selectedTime") {
+      const formattedTime = formatTimeForDisplay(value);
+      setFormData(prev => ({
+        ...prev, 
+        [name]: value,
+        timeDisplay: formattedTime
+      } as FormData));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value } as FormData));
+    }
+  };
+
+  // دالة لتحويل الوقت من 24 ساعة إلى تنسيق 12 ساعة مع AM/PM
+  const formatTimeForDisplay = (time: string): string => {
+    if (!time) return "";
+    
+    const [hours, minutes] = time.split(':').map(Number);
+    const period = hours >= 12 ? 'مساءً' : 'صباحاً';
+    const hours12 = hours % 12 || 12;
+    
+    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
   // معالجة تغيير مدة الإجازة
@@ -236,13 +262,14 @@ function MainContent() {
     });
   };
 
-  // حفظ البيانات
+  // حفظ البيانات مع تضمين الوقت
   const saveUserData = async () => {
     const userData = {
       leaveDurationGregorian: `${formData.leaveDuration} Days (${formData.entryDate} to ${formData.leaveEnd})`,
       leaveDurationDays: formData.leaveDuration,
       leaveStartGregorian: formData.entryDate,
       reportDate: formData.reportDate,
+      leaveEndGregorian:formData.leaveEnd,
       name: formData.name,
       nameEn: formData.nameEn,
       idNumber: formData.idNumber,
@@ -257,6 +284,8 @@ function MainContent() {
       leaveCode: formData.leaveCode,
       hospital: formData.hospital,
       hospitalEn: formData.hospitalEn,
+      selectedTime: formData.selectedTime, // حفظ الوقت المحدد
+      timeDisplay: formData.timeDisplay // حفظ تنسيق الوقت للعرض
     };
 
     try {
@@ -304,12 +333,12 @@ function MainContent() {
     }
   };
 
-  // فلترة المستشفيات - مع التعامل الآمن مع القيم
+  // فلترة المستشفيات
   const filteredHospitals = hospitals.filter(h => 
     (h.name || "").toLowerCase().includes(hospitalSearch.toLowerCase())
   );
   
-  // فلترة الأطباء - مع التعامل الآمن مع القيم
+  // فلترة الأطباء
   const filteredDoctors = doctors.filter(doc => 
     (doc.doctorName || "").toLowerCase().includes(doctorSearch.toLowerCase())
   );
@@ -335,6 +364,23 @@ function MainContent() {
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded-lg"
             />
+          </div>
+
+          {/* إضافة حقل إدخال الوقت */}
+          <div>
+            <label className="font-semibold mb-1 block">اختر الوقت:</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="time"
+                name="selectedTime"
+                value={formData.selectedTime}
+                onChange={handleChange}
+                className="w-full border border-gray-300 p-2 rounded-lg"
+              />
+              <div className="bg-blue-50 px-4 py-2 rounded-lg min-w-[120px]">
+                {formData.timeDisplay}
+              </div>
+            </div>
           </div>
 
           <div>
@@ -539,14 +585,14 @@ function MainContent() {
             </button>
 
             <Link href="/a4page">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full">
-                طباعه تقرير
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full" >
+                طباعه تقرير 
               </button>
             </Link>
 
-            <Link href="/checkleavepage">
+            <Link href="/hom">
               <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
-                التحقق من الإجازة
+              رجوع
               </button>
             </Link>
           </div>
@@ -582,13 +628,17 @@ function MainContent() {
             )}
           </div>
 
-          {/* معلومات إضافية */}
+          {/* معلومات إضافية مع عرض الوقت */}
           <div className="p-4 bg-blue-50 rounded-lg">
             <h2 className="text-xl font-semibold text-blue-800 mb-3">معلومات الإجازة</h2>
             <div className="space-y-2">
               <div>
                 <span className="font-medium">تاريخ بدء الإجازة:</span>
                 <span> {formData.leaveStart || "غير محدد"}</span>
+              </div>
+              <div>
+                <span className="font-medium">الوقت المحدد:</span>
+                <span> {formData.timeDisplay || "غير محدد"}</span>
               </div>
               <div>
                 <span className="font-medium">تاريخ نهاية الإجازة:</span>

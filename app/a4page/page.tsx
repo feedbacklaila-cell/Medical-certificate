@@ -1,9 +1,34 @@
 "use client";
+import { Tajawal } from "next/font/google";
+import { IBM_Plex_Sans_Arabic } from "next/font/google";
+
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { db } from "../firebaseConfig";
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 
+
+import { Noto_Serif } from "next/font/google";
+
+export const notoSerif = Noto_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+});
+
+
+export const MondoArabic = Noto_Serif({
+   subsets: ["latin"],
+  weight: ["400"],
+  display: "swap"
+});
+
+
+const tajawal = Tajawal({
+  subsets: ["arabic"],
+  weight: ["300", "400", "700"],
+  display: "swap",
+});
 interface LeaveData {
   leaveCode: string;
   leaveStartGregorian: string;
@@ -22,11 +47,18 @@ interface LeaveData {
   jobTitleEn: string;
   hospital: string;
   hospitalEn: string;
+  timeDisplay: string;
   leaveDurationDays: number;
 }
 
 function toHijriDateFormatted(gregorianDateStr: string) {
+  // التحقق من صحة السلسلة التاريخية
+  if (!gregorianDateStr) return '';
+  
   const date = new Date(gregorianDateStr);
+  
+  // التحقق من صحة كائن التاريخ
+  if (isNaN(date.getTime())) return '';
 
   const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
     day: '2-digit',
@@ -46,6 +78,7 @@ function toHijriDateFormatted(gregorianDateStr: string) {
 }
 
 function convertArabicNumbersToEnglish(str: string) {
+  if (!str) return '';
   return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
 }
 
@@ -115,12 +148,20 @@ function A4PageContent() {
     jobTitleEn,
     hospital,
     hospitalEn,
+    timeDisplay,
     leaveDurationDays,
   } = data;
 
-  const getTitleClass = () => "font-[700] text-[14px] font-[MondoArabic] text-right";
-  const getValueClass = () => "font-[400] text-[14px] font-[MondoArabic] text-right";
 
+const getTitleClass = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#2b3d77]`;
+const getTitleClassf = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#fff]`;
+
+ 
+ const getValueClass = () =>
+  `${MondoArabic.className} font-medium text-base text-[12px] text-right text-[#fff]`;
+  
+  // الدالة الجديدة للإنجليزية
+  const getValueClass1 = () => "font-normal text-[12px] text-[#2b3d77] text-right font-noto-serif";
   return (
     <div className="">
       <style jsx>{`
@@ -290,7 +331,7 @@ function A4PageContent() {
         <div className="absolute top-10 left-10">
           <img src="/logo.png" alt="logo" className="w-[135px] h-[60px]" />
         </div>
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-[5px] z-50">
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-[0px] z-50">
           <img src="/m3.png" alt="m3" className="w-[160px] h-[260px] object-contain" />
         </div>
         <div className="absolute top-10 right-10">
@@ -298,7 +339,7 @@ function A4PageContent() {
         </div>
       </div>
 
-      <div className="translate-y-[110px]">
+      <div className="translate-y-[95px]">
         <div className="p-6">
           <table className="medical-table border-collapse border border-gray-400 w-full text-right" dir="rtl">
             <tbody>
@@ -315,11 +356,22 @@ function A4PageContent() {
                 <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s2.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "65px", height: "16px" }} />
 </th>
-                <td className={getValueClass()}>
-                  {convertArabicNumbersToEnglish(
-                    `${leaveDurationDays} يوم (${toHijriDateFormatted(leaveStartGregorian)} الى ${toHijriDateFormatted(leaveEndGregorian)})`
-                  )}
-                </td>
+                <td className="text-right">
+  <>
+    <span className={getValueClass()}>
+      {convertArabicNumbersToEnglish(`${leaveDurationDays}`)}
+    </span>
+    <span className={getTitleClassf()}> يوم (</span>
+    <span className={getValueClass()}>
+      {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveStartGregorian))}
+    </span>
+    <span className={getTitleClassf()}> الى </span>
+    <span className={getValueClass()}>
+      {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveEndGregorian))}
+    </span>
+    <span className={getTitleClassf()}>)</span>
+  </>
+</td>
                 <td className={getValueClass()}>
                   {`Days ${leaveDurationDays} (${leaveStartGregorian} to ${leaveEndGregorian})`}
                 </td>
@@ -358,7 +410,7 @@ function A4PageContent() {
               <tr>
                                       <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
-</th>                <td className={getValueClass()}>{name}</td>
+</th>               <td className={getTitleClass()}>{name}</td>
                 <td className={getValueClass()}>{nameEn}</td>
                                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
@@ -375,7 +427,7 @@ function A4PageContent() {
               <tr>
                                   <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s8.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
-</th>                   <td className={getValueClass()}>{nationality}</td>
+</th>                   <td className={getTitleClass()}>{nationality}</td>
                 <td className={getValueClass()}>{nationalityEn}</td>
                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e8.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
@@ -384,8 +436,10 @@ function A4PageContent() {
               <tr>
                               <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
-</th>                  <td className={getValueClass()}>{workPlaceEn}</td>
-                <td className={getValueClass()}>{workPlace}</td>
+</th>                   <td className={getTitleClass()}>{workPlace}</td>
+
+                        <td className={getValueClass()}>{workPlaceEn}</td>
+            
                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>              </tr>
@@ -411,7 +465,7 @@ function A4PageContent() {
     />
   </th>
 
-  <td className={getValueClass()} style={{ verticalAlign: "middle" }}>
+  <td className={getTitleClass()} style={{ verticalAlign: "middle" }}>
     {doctorName}
   </td>
 
@@ -427,8 +481,9 @@ function A4PageContent() {
               <tr>
                               <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s11.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
-</th>                  <td className={getValueClass()}>{jobTitleEn}</td>
-                <td className={getValueClass()}>{jobTitle}</td>
+</th>                 <td className={getTitleClass()}>{jobTitle}</td>
+
+                      <td className={getValueClass()}>{jobTitleEn}</td>
                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e10.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>              </tr>
@@ -450,12 +505,12 @@ function A4PageContent() {
       alignItems: 'center',
     }}
   >
-    <img src="/qr.png" alt="m5" className="w-[150px] h-[150px]" />
+    <img src="/qr.png" alt="m5" className="w-[100px] h-[100px]" />
 
     <div
       style={{
         fontFamily: "Cairo, sans-serif",
-        fontSize: "14px",
+        fontSize: "12px",
         fontWeight: 300,
         marginBottom: '5px',
       }}
@@ -465,7 +520,7 @@ function A4PageContent() {
 
     <div
       style={{
-        fontSize: '16px',
+        fontSize: '12px',
         marginBottom: '5px',
         fontFamily: 'MondoArabic',
       }}
@@ -475,13 +530,13 @@ function A4PageContent() {
 
     <div className="footer-text">
       <a
-        href="https://https://seha-as-com-qj61.vercel.app/verify-leave"
+        href="https://seha-as-com-qj61.vercel.app/verify-leave"
         target="_blank"
         rel="noopener noreferrer"
         style={{
           color: 'blue',
           textDecoration: 'underline',
-          fontSize: '14px',
+          fontSize: '12px',
           fontWeight: 'bold',
         }}
       >
@@ -507,40 +562,33 @@ function A4PageContent() {
       {hospitalEn}
     </div>
   </div>
-
-  <div
-    style={{
-      position: 'absolute',
-      left: '0',
-      bottom: '0',
-      textAlign: 'left',
-      paddingLeft: '20px',
-    }}
-  >
-    <div
-      style={{
-        fontSize: '14px',
-        fontWeight: 'bold',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
-      12:14 AM
-    </div>
-    <div
-      style={{
-        fontSize: '14px',
-        fontWeight: 'bold',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
-      Monday, July 7, 2025
-    </div>
-  </div>
-
 </div>
-<div className="absolute right-10">
-    <img src="/sh1.png" alt="m5" className="w-[220px] h-[110px]" />
-  </div>
+ <div className="absolute" style={{ right: '50px', }}>
+  <img src="/sh1.png" alt="m5" className="w-[150] h-[80]" />
+</div>
+  {timeDisplay && (
+          <div className="text-xs font-bold font-sans">
+            {timeDisplay}
+          </div>
+        )}
+ <div
+  style={{
+    fontSize: '12px',
+    fontWeight: 'bold',
+    fontFamily: 'Arial, sans-serif',
+  }}
+>
+  {
+    leaveEndGregorian && !isNaN(new Date(leaveEndGregorian).getTime())
+      ? new Intl.DateTimeFormat('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+        }).format(new Date(leaveEndGregorian))
+      : 'Invalid date'
+  }
+</div>
       </div>
     </div>
   );
