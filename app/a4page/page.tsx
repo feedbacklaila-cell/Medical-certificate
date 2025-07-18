@@ -565,7 +565,7 @@ const getTitleClassf = () => `${tajawal.className}  font-medium text-base text-[
           month: 'long',
           day: 'numeric',
           year: 'numeric',
-        }).format(new Date(leaveEndGregorian))
+        }).format(new Date(reportDate))
       : 'Invalid date'
   }
 </div>
