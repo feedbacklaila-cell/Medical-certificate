@@ -143,7 +143,6 @@ function A4PageContent() {
 
 const getTitleClass = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#2b3d77]`;
 const getTitleClassf = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#fff]`;
-  const getValueClass1 = () => "font-[400] text-[12px] font-[MondoArabic] text-right";
   const getValueClass = () =>
   `${MondoArabic.className} font-medium text-base text-[12px] text-right text-[#fff]`;
 
