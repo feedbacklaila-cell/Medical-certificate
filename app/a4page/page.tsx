@@ -1,32 +1,20 @@
 "use client";
 import { Tajawal } from "next/font/google";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
-
+import { Noto_Serif } from "next/font/google";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { db } from "../firebaseConfig";
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 
-
-import { Noto_Serif } from "next/font/google";
-
-export const notoSerif = Noto_Serif({
-  subsets: ["latin"],
-  weight: ["400"],
+ export const tajawal = Tajawal({
+  subsets: ["arabic"],
+  weight: ["300", "400", "700"],
   display: "swap",
 });
 
-
 export const MondoArabic = Noto_Serif({
-   subsets: ["latin"],
+  subsets: ["latin"],
   weight: ["400"],
-  display: "swap"
-});
-
-
-const tajawal = Tajawal({
-  subsets: ["arabic"],
-  weight: ["300", "400", "700"],
   display: "swap",
 });
 interface LeaveData {
@@ -155,13 +143,10 @@ function A4PageContent() {
 
 const getTitleClass = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#2b3d77]`;
 const getTitleClassf = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#fff]`;
-
- 
- const getValueClass = () =>
+  const getValueClass1 = () => "font-[400] text-[12px] font-[MondoArabic] text-right";
+  const getValueClass = () =>
   `${MondoArabic.className} font-medium text-base text-[12px] text-right text-[#fff]`;
-  
-  // الدالة الجديدة للإنجليزية
-  const getValueClass1 = () => "font-normal text-[12px] text-[#2b3d77] text-right font-noto-serif";
+
   return (
     <div className="">
       <style jsx>{`
@@ -199,12 +184,7 @@ const getTitleClassf = () => `${tajawal.className}  font-medium text-base text-[
           text-align: center;
           margin: 25px 0;
         }
-        .report-title h1 {
-          font-size: 14px;
-          color: #2B3D77;
-          margin-bottom: 10px;
-          text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
+      
         .report-title h2 {
           color: #366ED5;
           font-size: 14px;
