@@ -529,7 +529,7 @@ const getValueClass = () =>
         fontFamily: 'NotoSerif',
       }}
     >
-      To check the report please visit Seha's official website
+      To check the report please visit Sehas official website
     </div>
 
     <div className="footer-text">
