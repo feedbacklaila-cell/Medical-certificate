@@ -1,5 +1,5 @@
 "use client";
-import '../fonts.css';
+import '../../styles/fonts.css';
 import { useState } from "react";
 import { db } from "../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
