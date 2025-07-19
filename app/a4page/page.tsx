@@ -126,7 +126,7 @@ function A4PageContent() {
   } = data;
 
 
-const getTitleClass = () =>
+  const getTitleClass = () =>
   `font-tajawal font-medium text-base text-[12px] text-right text-[#2b3d77]`;
 
 const getTitleClassf = () =>
@@ -134,13 +134,57 @@ const getTitleClassf = () =>
 
 const getValueClass = () =>
   `font-notoserif font-medium text-base text-[12px] text-right text-[#fff]`;
-
   return (
     <div className="">
+      <style jsx global>{`
+        /* تعريف خطوط جديدة */
+        @font-face {
+          font-family: 'Tajawal';
+          src: url('/fonts/Tajawal-Regular.woff2') format('woff2');
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+        }
+        
+        @font-face {
+          font-family: 'NotoSerif';
+          src: url('/fonts/NotoSerif-Regular.woff2') format('woff2');
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+        }
+        
+        @font-face {
+          font-family: 'Cairo';
+          src: url('/fonts/Cairo-Regular.woff2') format('woff2');
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+        }
+        
+        /* تطبيق الخطوط على العناصر */
+        body {
+          margin: 0;
+          font-family: 'Tajawal', 'NotoSerif', 'Cairo', Arial, sans-serif;
+          background-color: #fff;
+        }
+        
+        .font-tajawal {
+          font-family: 'Tajawal', Arial, sans-serif !important;
+        }
+        
+        .font-notoserif {
+          font-family: 'NotoSerif', Times, serif !important;
+        }
+        
+        .font-cairo {
+          font-family: 'Cairo', Arial, sans-serif !important;
+        }
+      `}</style>
+      
       <style jsx>{`
         body {
           margin: 0;
-          font-family: "Arial", sans-serif;
           background-color: #fff;
         }
         .page-header {
@@ -176,7 +220,6 @@ const getValueClass = () =>
         .report-title h2 {
           color: #366ED5;
           font-size: 14px;
-          font-family: 'UntypeMondoNews', Georgia, serif;
           font-weight: 700;
           font-style: italic;
         }
@@ -411,7 +454,7 @@ const getValueClass = () =>
                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>              </tr>
-            <tr style={{ height: "75px" /* ← تحكم بارتفاع الصف من هنا */ }}>
+            <tr style={{ height: "75px" }}>
   <th
     className={getTitleClass()}
     style={{
@@ -425,7 +468,7 @@ const getValueClass = () =>
       alt="logo"
       style={{
         width: "140px",
-        height: "45px", // ← تحكم بحجم الصورة هنا
+        height: "45px",
         objectFit: "contain",
         display: "block",
         margin: "0 auto",
@@ -490,7 +533,7 @@ const getValueClass = () =>
       style={{
         fontSize: '12px',
         marginBottom: '5px',
-        fontFamily: 'MondoArabic',
+        fontFamily: 'Cairo',
       }}
     >
       To check the report please visit Sehas official website
@@ -522,11 +565,11 @@ const getValueClass = () =>
   >
     <img src="/m8.png" alt="logo" className="w-[100px] h-[90px] block mx-auto" />
 
-    <div className="text-center font-[400] text-[14px] font-[Cairo,sans-serif] mt-1">
+    <div className="text-center font-[400] text-[14px] font-cairo mt-1">
       {hospital}
     </div>
 
-    <div className="text-center font-[400] text-[14px] font-[Cairo,sans-serif]">
+    <div className="text-center font-[400] text-[14px] font-cairo">
       {hospitalEn}
     </div>
   </div>
