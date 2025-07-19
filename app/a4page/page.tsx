@@ -125,27 +125,25 @@ function A4PageContent() {
     leaveDurationDays,
   } = data;
 
-
-  const getTitleClass = () =>
-  `font-tajawal font-medium text-base text-[12px] text-right text-[#2b3d77]`;
+const getTitleClass = () =>
+  `font-tajawal font-light text-base text-[12px] text-right text-[#2b3d77]`;
 
 const getTitleClassf = () =>
-  `font-tajawal font-medium text-base text-[12px] text-right text-[#fff]`;
-
+  `font-tajawal font-light text-base text-[12px] text-right text-[#fff]`;
 const getValueClass = () =>
   `font-notoserif font-medium text-base text-[12px] text-right text-[#fff]`;
   return (
     <div className="">
       <style jsx global>{`
         /* تعريف خطوط جديدة */
-        @font-face {
-          font-family: 'Tajawal';
-          src: url('/fonts/Tajawal-Regular.woff2') format('woff2');
-          font-weight: 400;
-          font-style: normal;
-          font-display: swap;
-        }
-        
+              @font-face {
+  font-family: 'Tajawal';
+  src: url('/fonts/Tajawal-Light.woff2') format('woff2');
+  font-weight: 400; /* وزن خفيف */
+  font-style: normal;
+  font-display: swap;
+}
+ 
         @font-face {
           font-family: 'NotoSerif';
           src: url('/fonts/NotoSerif-Regular.woff2') format('woff2');
@@ -170,7 +168,7 @@ const getValueClass = () =>
         }
         
         .font-tajawal {
-          font-family: 'Tajawal', Arial, sans-serif !important;
+          font-family: 'Tajawal', Cairo, sans-serif !important;
         }
         
         .font-notoserif {
@@ -220,7 +218,7 @@ const getValueClass = () =>
         .report-title h2 {
           color: #366ED5;
           font-size: 14px;
-          font-weight: 700;
+          font-weight: 400;
           font-style: italic;
         }
         .medical-table {
@@ -321,7 +319,7 @@ const getValueClass = () =>
           line-height: 1.5;
         }
         .footer-title {
-          font-weight: bold;
+          font-weight: 300;
           margin-bottom: 10px;
           font-size: 14px;
         }
@@ -339,13 +337,13 @@ const getValueClass = () =>
       `}</style>
 
       <div className="relative w-full h-[85px]">
-        <div className="absolute top-10 left-10">
+        <div className="absolute  left-10">
           <img src="/logo.png" alt="logo" className="w-[135px] h-[60px]" />
         </div>
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-[0px] z-50">
+        <div className="absolute left-1/2 transform -translate-x-1/2  z-50">
           <img src="/m3.png" alt="m3" className="w-[160px] h-[260px] object-contain" />
         </div>
-        <div className="absolute top-10 right-10">
+        <div className="absolute  right-10">
           <img src="/m5.png" alt="m5" className="w-[220px] h-[110px]" />
         </div>
       </div>
@@ -502,19 +500,13 @@ const getValueClass = () =>
           </table>
         </div>
 
-        <div className="footer-container" style={{ marginTop: '-5px', paddingTop: '0' }}>
+      <div className="footer-container" style={{ marginTop: '-15px', paddingTop: '0' }}>
   <div className="vertical-line"></div>
 
+  {/* كتلة الصورة والنص مزاحة لليمين */}
   <div
-    className="footer-left"
-    style={{
-      width: '100%',
-      paddingRight: '100px',
-      textAlign: 'center',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    }}
+    className="flex flex-col items-center text-center"
+    style={{ transform: 'translateX(100px)' }} // ← تحكم هنا بالانزياح
   >
     <img src="/qr.png" alt="m5" className="w-[100px] h-[100px]" />
 
@@ -524,6 +516,7 @@ const getValueClass = () =>
         fontSize: "12px",
         fontWeight: 300,
         marginBottom: '5px',
+        marginTop: '5px',
       }}
     >
       للتحقق من بيانات التقرير يرجى التأكد من زيارة موقع منصة صحة الرسمي
@@ -533,10 +526,10 @@ const getValueClass = () =>
       style={{
         fontSize: '12px',
         marginBottom: '5px',
-        fontFamily: 'Cairo',
+        fontFamily: 'NotoSerif',
       }}
     >
-      To check the report please visit Sehas official website
+      To check the report please visit Seha's official website
     </div>
 
     <div className="footer-text">
@@ -556,14 +549,14 @@ const getValueClass = () =>
     </div>
   </div>
 
+
+
+
+
   <div
-    className="footer-right"
-    style={{
-      width: "150%",
-      paddingLeft: "115px",
-    }}
+    className="absolute" style={{ right: '400px', }}
   >
-    <img src="/m8.png" alt="logo" className="w-[100px] h-[90px] block mx-auto" />
+    <img src="/m8.png" alt="logo" className="w-[90px] h-[90px] block mx-auto" />
 
     <div className="text-center font-[400] text-[14px] font-cairo mt-1">
       {hospital}
@@ -573,7 +566,7 @@ const getValueClass = () =>
       {hospitalEn}
     </div>
   </div>
-</div>
+</div   >
  <div className="absolute" style={{ right: '50px', }}>
   <img src="/sh1.png" alt="m5" className="w-[150] h-[80]" />
 </div>

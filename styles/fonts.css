@@ -6,17 +6,26 @@
   font-style: normal;
   font-display: swap;
 }
-
 @font-face {
-  font-family: 'Tajawal';
-  src: url('/fonts/Tajawal-Regular.woff2') format('woff2');
+  font-family: 'Cairo';
+  src: url('/fonts/cairo/Cairo-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Tajawal';
+  src: url('/fonts/Tajawal-Light.ttf') format('woff2');
+  font-weight: 300; /* وزن خفيف */
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-  font-family: 'NotoSerif';
-  src: url('/fonts/NotoSerif-Regular.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'IBM';
+  src: url('/fonts/IBMPlexSansArabic-Regular.woff2') format('woff2');
+  font-weight: 300; /* وزن خفيف */
   font-style: normal;
-} 
+  font-display: swap;
+}
+
