@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
+// ✅ استيراد ملف الـ CSS العام
+import "../styles/fonts.css";  // تأكد من أن الملف موجود فعلاً
+
+// ✅ استيراد ملف Tailwind أو global styles إذا كان عندك
 import "./globals.css";
-import '../styles/fonts.css';
-
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
