@@ -1,25 +1,9 @@
 "use client";
-import { Tajawal } from "next/font/google";
-import { Noto_Serif } from "next/font/google";
+
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { db } from "../firebaseConfig";
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
-
-// إصلاح مشكلة الخطوط مع إضافة preload: true
-const tajawal = Tajawal({
-  subsets: ["arabic"],
-  weight: ["300", "400", "700"],
-  display: "swap",
-  preload: true, // الإضافة المطلوبة
-});
-
-const mondoArabic = Noto_Serif({
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-  preload: true, // الإضافة المطلوبة
-});
 
 interface LeaveData {
   leaveCode: string;
@@ -142,10 +126,14 @@ function A4PageContent() {
   } = data;
 
 
-const getTitleClass = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#2b3d77]`;
-const getTitleClassf = () => `${tajawal.className}  font-medium text-base text-[12px] text-right text-[#fff]`;
-  const getValueClass = () =>
-  `${mondoArabic.className} font-medium text-base text-[12px] text-right text-[#fff]`;
+const getTitleClass = () =>
+  `font-tajawal font-medium text-base text-[12px] text-right text-[#2b3d77]`;
+
+const getTitleClassf = () =>
+  `font-tajawal font-medium text-base text-[12px] text-right text-[#fff]`;
+
+const getValueClass = () =>
+  `font-notoserif font-medium text-base text-[12px] text-right text-[#fff]`;
 
   return (
     <div className="">
