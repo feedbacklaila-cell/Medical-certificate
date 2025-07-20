@@ -209,7 +209,7 @@ export default function VerifyLeavePage() {
   type="text"
   value={leaveCode}
   onChange={(e) => setLeaveCode(e.target.value.toUpperCase())}
-  className="w-full border  p-2 rounded-md text-right bg-black text-white font-tajawal font-light text-[14px]"
+  className="w-full border  p-2 rounded-md text-right  text-white font-tajawal font-light text-[14px]"
   placeholder="رمز الخدمة"
   maxLength={14}
   disabled={isBlocked}
@@ -219,7 +219,7 @@ export default function VerifyLeavePage() {
   type="text"
   value={idNumber}
   onChange={(e) => setIdNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
-  className="w-full border p-2 rounded-md text-right bg-black text-white font-tajawal font-light text-[14px]"
+  className="w-full border p-2 rounded-md text-right  text-white font-tajawal font-light text-[14px]"
   placeholder="رقم الهوية / الإقامة"
   maxLength={10}
   disabled={isBlocked}
