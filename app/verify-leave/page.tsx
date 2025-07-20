@@ -146,10 +146,11 @@ const [userData, setUserData] = useState<LeaveData | null>(null);
           <div className="bg-gray-50 rounded-md p-8 shadow-md w-full max-w-4xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-right">
               <div className="space-y-8">
-                <div>
-                  <div className="font-semibold text-[#1a3760]">الاسم:</div>
-                  <div className="text-gray-700">{userData.name || "-"}</div>
-                </div>
+
+            <div className="flex flex-col items-center space-y-1">
+    <div className="font-semibold text-[#1a3760]">الاسم:</div>
+    <div className="text-gray-700">{userData.name || "-"}</div>
+  </div>
                 <div>
                   <div className="font-semibold text-[#1a3760]">تاريخ إصدار تقرير الإجازة:</div>
                   <div className="text-gray-700">{userData.reportDate || "-"}</div>
