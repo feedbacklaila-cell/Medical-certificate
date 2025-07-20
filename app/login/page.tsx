@@ -205,26 +205,24 @@ export default function VerifyLeavePage() {
       {/* نموذج البحث */}
       <div className="flex justify-center">
         <div className="bg-white rounded-md p-8 shadow-md w-full max-w-md space-y-4">
-         <input
-  type="text"
-  value={leaveCode}
-  onChange={(e) => setLeaveCode(e.target.value.toUpperCase())}
-  className="w-full border  p-2 rounded-md text-right  text-white font-tajawal font-light text-[14px]"
-  placeholder="رمز الخدمة"
-  maxLength={14}
-  disabled={isBlocked}
-/>
-
-<input
-  type="text"
-  value={idNumber}
-  onChange={(e) => setIdNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
-  className="w-full border p-2 rounded-md text-right  text-white font-tajawal font-light text-[14px]"
-  placeholder="رقم الهوية / الإقامة"
-  maxLength={10}
-  disabled={isBlocked}
-/>
-
+          <input
+            type="text"
+            value={leaveCode}
+            onChange={(e) => setLeaveCode(e.target.value.toUpperCase())}
+            className="w-full border border-gray-300 p-2 rounded-md text-right"
+            placeholder="رمز الخدمة"
+            maxLength={14}
+            disabled={isBlocked}
+          />
+          <input
+            type="text"
+            value={idNumber}
+            onChange={(e) => setIdNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+            className="w-full border border-gray-300 p-2 rounded-md text-right"
+            placeholder="رقم الهوية / الإقامة"
+            maxLength={10}
+            disabled={isBlocked}
+          />
           
           {error && !isBlocked && (
             <div className="text-red-600 font-semibold text-center p-2">
