@@ -133,17 +133,17 @@ const getTitleClassf = () =>
 const getValueClass = () =>
   `font-notoserif font-medium text-base text-[12px] text-right text-[#fff]`;
   return (
-    <div className="">
+    <div className="print-container">
       <style jsx global>{`
         /* تعريف خطوط جديدة */
-              @font-face {
-  font-family: 'Tajawal';
-  src: url('/fonts/Tajawal-Regular.woff2') format('woff2');
-  font-weight: 400; /* وزن خفيف */
-  font-style: normal;
-  font-display: swap;
-}
- 
+        @font-face {
+          font-family: 'Tajawal';
+          src: url('/fonts/Tajawal-Regular.woff2') format('woff2');
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+        }
+         
         @font-face {
           font-family: 'NotoSerif';
           src: url('/fonts/NotoSerif-Regular.woff2') format('woff2');
@@ -163,8 +163,23 @@ const getValueClass = () =>
         /* تطبيق الخطوط على العناصر */
         body {
           margin: 0;
+          padding: 0;
           font-family: 'Tajawal', 'NotoSerif', 'Cairo', Arial, sans-serif;
           background-color: #fff;
+          -webkit-print-color-adjust: exact !important;
+          color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        
+        .print-container {
+          width: 210mm;
+          min-height: 297mm;
+          margin: 0 auto;
+          padding: 15mm 15mm 20mm 15mm;
+          background: white;
+          position: relative;
+          box-sizing: border-box;
+          box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
         
         .font-tajawal {
@@ -177,6 +192,26 @@ const getValueClass = () =>
         
         .font-cairo {
           font-family: 'Cairo', Arial, sans-serif !important;
+        }
+        
+        /* تنسيقات الطباعة */
+        @media print {
+          body {
+            margin: 0;
+            padding: 0;
+          }
+          .print-container {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+            page-break-after: avoid;
+            page-break-inside: avoid;
+          }
+          .no-print {
+            display: none !important;
+          }
         }
       `}</style>
       
@@ -337,264 +372,245 @@ const getValueClass = () =>
       `}</style>
 
       <div className="relative w-full h-[85px]">
-        <div className="absolute  left-10 top-10" >
+        <div className="absolute left-10 top-10" >
           <img src="/logo.png" alt="logo" className="w-[135px] h-[60px]" />
         </div>
         <div className="absolute left-1/2 transform -translate-x-1/2 top-4 z-50">
           <img src="/m3.png" alt="m3" className="w-[160px] h-[260px] object-contain" />
         </div>
-        <div className="absolute  right-10 top-10">
+        <div className="absolute right-10 top-10">
           <img src="/m5.png" alt="m5" className="w-[220px] h-[110px]" />
         </div>
       </div>
 
-      <div className="translate-y-[110px]">
+      <div className="mt-[110px]">
         <div className="p-6">
           <table className="medical-table border-collapse border border-gray-400 w-full text-right" dir="rtl">
             <tbody>
               <tr>
-                          <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/s1.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "60px", height: "15px" }} />
-</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/s1.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "60px", height: "15px" }} />
+                </th>
                 <td className={getValueClass()} colSpan={2}>{leaveCode}</td>
                 <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e1.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "60px", height: "15px" }} />
-</th>
+                  <img src="/e1.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "60px", height: "15px" }} />
+                </th>
               </tr>
               <tr>
                 <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/s2.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "65px", height: "16px" }} />
-</th>
+                  <img src="/s2.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "65px", height: "16px" }} />
+                </th>
                 <td className="text-right">
-  <>
-    <span className={getValueClass()}>
-      {convertArabicNumbersToEnglish(`${leaveDurationDays}`)}
-    </span>
-    <span className={getTitleClassf()}> يوم (</span>
-    <span className={getValueClass()}>
-      {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveStartGregorian))}
-    </span>
-    <span className={getTitleClassf()}> الى </span>
-    <span className={getValueClass()}>
-      {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveEndGregorian))}
-    </span>
-    <span className={getTitleClassf()}>)</span>
-  </>
-</td>
+                  <>
+                    <span className={getValueClass()}>
+                      {convertArabicNumbersToEnglish(`${leaveDurationDays}`)}
+                    </span>
+                    <span className={getTitleClassf()}> يوم (</span>
+                    <span className={getValueClass()}>
+                      {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveStartGregorian))}
+                    </span>
+                    <span className={getTitleClassf()}> الى </span>
+                    <span className={getValueClass()}>
+                      {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveEndGregorian))}
+                    </span>
+                    <span className={getTitleClassf()}>)</span>
+                  </>
+                </td>
                 <td className={getValueClass()}>
                   {`Days ${leaveDurationDays} (${leaveStartGregorian} to ${leaveEndGregorian})`}
                 </td>
-                       <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e2.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "90px", height: "14px" }} />
-</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/e2.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "90px", height: "14px" }} />
+                </th>
               </tr>
               <tr>
-                                  <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/s3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "80px", height: "15px" }} />
-</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/s3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "80px", height: "15px" }} />
+                </th>
                 <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
                 <td className={getValueClass()}>{leaveStartGregorian}</td>
                 <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "12px" }} />
-</th>
+                  <img src="/e3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "12px" }} />
+                </th>
               </tr>
               <tr>
-                                          <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/ss4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "15px" }} />
-</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/ss4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "15px" }} />
+                </th>
                 <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveEndGregorian)}</td>
                 <td className={getValueClass()}>{leaveEndGregorian}</td>
-                         <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
-</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/e4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+                </th>
               </tr>
               <tr>
-                                                       <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/s5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "125px", height: "17px" }} />
-</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/s5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "125px", height: "17px" }} />
+                </th>
                 <td className={getValueClass()} colSpan={2}>{reportDate}</td>
-                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
-</th>              </tr>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/e5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+                </th>
+              </tr>
               <tr>
-                                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/s6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
-</th>               <td className={getTitleClass()}>{name}</td>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/s6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
+                </th>
+                <td className={getTitleClass()}>{name}</td>
                 <td className={getValueClass()}>{nameEn}</td>
-                                    <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
-</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/e6.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+                </th>
               </tr>
               <tr>
-                                  <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/s7.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "125px", height: "17px" }} />
-</th>                   <td className={getValueClass()} colSpan={2}>{idNumber}</td>
-                                    <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e7.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
-</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/s7.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "125px", height: "17px" }} />
+                </th>
+                <td className={getValueClass()} colSpan={2}>{idNumber}</td>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/e7.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+                </th>
               </tr>
               <tr>
-                                  <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/s8.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
-</th>                   <td className={getTitleClass()}>{nationality}</td>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/s8.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
+                </th>
+                <td className={getTitleClass()}>{nationality}</td>
                 <td className={getValueClass()}>{nationalityEn}</td>
-                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e8.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
-</th>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/e8.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+                </th>
               </tr>
               <tr>
-                              <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/s9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
-</th>                   <td className={getTitleClass()}>{workPlace}</td>
-
-                        <td className={getValueClass()}>{workPlaceEn}</td>
-            
-                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
-</th>              </tr>
-            <tr style={{ height: "75px" }}>
-  <th
-    className={getTitleClass()}
-    style={{
-      textAlign: "center",
-      verticalAlign: "middle",
-      padding: 0,
-    }}
-  >
-    <img
-      src="/s10.png"
-      alt="logo"
-      style={{
-        width: "140px",
-        height: "45px",
-        objectFit: "contain",
-        display: "block",
-        margin: "0 auto",
-      }}
-    />
-  </th>
-
-  <td className={getTitleClass()} style={{ verticalAlign: "middle" }}>
-    {doctorName}
-  </td>
-
-  <td className={getValueClass()} style={{ verticalAlign: "middle" }}>
-    {doctorNameEn}
-  </td>
-
-                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e11.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
-</th>
-</tr>
-
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/s9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
+                </th>
+                <td className={getTitleClass()}>{workPlace}</td>
+                <td className={getValueClass()}>{workPlaceEn}</td>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/e9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+                </th>
+              </tr>
+              <tr style={{ height: "75px" }}>
+                <th
+                  className={getTitleClass()}
+                  style={{
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                    padding: 0,
+                  }}
+                >
+                  <img
+                    src="/s10.png"
+                    alt="logo"
+                    style={{
+                      width: "140px",
+                      height: "45px",
+                      objectFit: "contain",
+                      display: "block",
+                      margin: "0 auto",
+                    }}
+                  />
+                </th>
+                <td className={getTitleClass()} style={{ verticalAlign: "middle" }}>
+                  {doctorName}
+                </td>
+                <td className={getValueClass()} style={{ verticalAlign: "middle" }}>
+                  {doctorNameEn}
+                </td>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/e11.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+                </th>
+              </tr>
               <tr>
-                              <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/s11.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
-</th>                 <td className={getTitleClass()}>{jobTitle}</td>
-
-                      <td className={getValueClass()}>{jobTitleEn}</td>
-                     <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e10.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
-</th>              </tr>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/s11.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "17px" }} />
+                </th>
+                <td className={getTitleClass()}>{jobTitle}</td>
+                <td className={getValueClass()}>{jobTitleEn}</td>
+                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+                  <img src="/e10.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
+                </th>
+              </tr>
             </tbody>
           </table>
         </div>
 
-      <div className="footer-container" style={{ marginTop: '-15px', paddingTop: '0' }}>
-  <div className="vertical-line"></div>
-
-  {/* كتلة الصورة والنص مزاحة لليمين */}
-  <div
-    className="flex flex-col items-center text-center"
-    style={{ transform: 'translateX(50px)' }} // ← تحكم هنا بالانزياح
-  >
-    <img src="/qr.png" alt="m5" className="w-[100px] h-[100px]" />
-
-<div
-  style={{
-    fontFamily: "Cairo, sans-serif",
-    fontSize: "10px",
-    fontWeight: 700,
-    marginBottom: '5px',
-    marginTop: '10px',
-  }}
->
-  للتحقق من بيانات التقرير يرجى التأكد من زيارة موقع منصة صحة
-  <span style={{ display: 'block' }}>الرسمي</span>
+        <div className="footer-container" style={{ marginTop: '15px', paddingTop: '0' }}>
+          <div className="vertical-line"></div>
+          <div className="flex flex-col items-center text-center" style={{ transform: 'translateX(50px)' }}>
+            <img src="/qr.png" alt="m5" className="w-[100px] h-[100px]" />
+            <div
+              style={{
+                fontFamily: "Cairo, sans-serif",
+                fontSize: "10px",
+                fontWeight: 700,
+                marginBottom: '5px',
+                marginTop: '10px',
+              }}
+            >
+              للتحقق من بيانات التقرير يرجى التأكد من زيارة موقع منصة صحة
+              <span style={{ display: 'block' }}>الرسمي</span>
+            </div>
+            <div
+              style={{
+                fontSize: '12px',
+                marginBottom: '5px',
+                fontFamily: 'NotoSerif',
+              }}
+            >
+              To check the report please visit Sehas official website
+            </div>
+            <div className="footer-text">
+              <a
+                href="https://seha-as-com-qj61.vercel.app/verify-leave"
+                style={{
+                  color: 'blue',
+                  textDecoration: 'underline',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                }}
+              >
+                www.seha.sa/#/inquiries/lenguiry
+              </a>
+            </div>
+          </div>
+          <div className="absolute" style={{ left: '435px', transform: 'translateX(50px)' }}>
+            <img src="/m8.png" alt="logo" className="w-[90px] h-[90px] block mx-auto" />
+            <div className="text-center font-[700] text-[12px] font-cairo mt-5">
+              {hospital}
+            </div>
+            <div className="text-center font-[700] text-[12px] font-cairo mt-2">
+              {hospitalEn}
+            </div>
+          </div>
+        </div>
+       <div className="absolute" style={{ right: '50px', bottom: '5px' }}>
+  <img src="/sh1.png" alt="m5" className="w-[150px] h-[80px]" />
 </div>
-    <div
-      style={{
-        fontSize: '12px',
-        marginBottom: '5px',
-        fontFamily: 'NotoSerif',
-      }}
-    >
-      To check the report please visit Sehas official website
-    </div>
-
-    <div className="footer-text">
-      <a
-        href="https://seha-as-com-qj61.vercel.app/verify-leave"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          color: 'blue',
-          textDecoration: 'underline',
-          fontSize: '12px',
-          fontWeight: 'bold',
-        }}
-      >
-        www.seha.sa/#/inquiries/lenguiry
-      </a>
-    </div>
-  </div>
-
-
-
-
-
-  <div
-  className="absolute"
-  style={{ left: '435px', transform: 'translateX(50px)' }} // انعكاس الجهة اليمنى
->
-  <img src="/m8.png" alt="logo" className="w-[90px] h-[90px] block mx-auto" />
-
-  <div className="text-center font-[700] text-[12px] font-cairo mt-5">
-    {hospital}
-  </div>
-
-  <div className="text-center font-[700] text-[12px] font-cairo mt-2">
-    {hospitalEn}
-  </div>
-</div>
-
-</div   >
- <div className="absolute" style={{ right: '50px', }}>
-  <img src="/sh1.png" alt="m5" className="w-[150] h-[80]" />
-</div>
-  {timeDisplay && (
+        {timeDisplay && (
           <div className="text-xs font-bold font-sans">
             {timeDisplay}
           </div>
         )}
- <div
-  style={{
-    fontSize: '12px',
-    fontWeight: 'bold',
-    fontFamily: 'Arial, sans-serif',
-  }}
->
-  {
-    leaveEndGregorian && !isNaN(new Date(leaveEndGregorian).getTime())
-      ? new Intl.DateTimeFormat('en-US', {
-          weekday: 'long',
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
-        }).format(new Date(reportDate))
-      : 'Invalid date'
-  }
-</div>
+        <div
+          style={{
+            fontSize: '12px',
+            fontWeight: 'bold',
+            fontFamily: 'Arial, sans-serif',
+          }}
+        >
+          {
+            leaveEndGregorian && !isNaN(new Date(leaveEndGregorian).getTime())
+              ? new Intl.DateTimeFormat('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                }).format(new Date(reportDate))
+              : 'Invalid date'
+          }
+        </div>
       </div>
     </div>
   );
