@@ -72,21 +72,6 @@ const convertNumbersToEnglish = (value: string): string => {
     .join('');
 };
 
-// دالة لتحويل الحروف الإنجليزية إلى كابتل مع الحفاظ على الأرقام والعربية
-const convertEnglishToUpper = (value: string): string => {
-  return value
-    .split('')
-    .map(char => {
-      // الحفاظ على الحروف العربية والأرقام كما هي
-      if (/[\u0600-\u06FF]/.test(char) || /\d/.test(char)) {
-        return char;
-      }
-      // تحويل الحروف الإنجليزية إلى كابتل
-      return char.toUpperCase();
-    })
-    .join('');
-};
-
 // الجزء الرئيسي من التطبيق
 function MainContent() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -268,7 +253,7 @@ function MainContent() {
     }
   };
 
-  // معالجة التغييرات للحقول الإنجليزية (مع تحويل إلى كابتل عند الحفظ)
+  // معالجة التغييرات للحقول الإنجليزية (بدون تحويل إلى كابتل)
   const handleEnglishFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value } as FormData));
@@ -309,28 +294,22 @@ function MainContent() {
   // حفظ البيانات مع تضمين الوقت
   const saveUserData = async () => {
     // تحويل الأرقام العربية/المشرقية إلى إنجليزية في جميع الحقول
-    const processValue = (value: string): string => {
-      const englishNumbers = convertNumbersToEnglish(value);
-      return convertEnglishToUpper(englishNumbers);
-    };
-
-    // إنشاء كائن جديد لبيانات المستخدم المعالجة
     const processedData = {
       ...formData,
       name: convertNumbersToEnglish(formData.name),
       idNumber: convertNumbersToEnglish(formData.idNumber),
-      nameEn: processValue(formData.nameEn),
-      idNumberEn: processValue(formData.idNumberEn),
+      nameEn: formData.nameEn, // بدون تحويل إلى كابتل
+      idNumberEn: formData.idNumberEn, // بدون تحويل
       nationality: convertNumbersToEnglish(formData.nationality),
-      nationalityEn: processValue(formData.nationalityEn),
+      nationalityEn: formData.nationalityEn, // بدون تحويل
       workPlace: convertNumbersToEnglish(formData.workPlace),
-      workPlaceEn: processValue(formData.workPlaceEn),
+      workPlaceEn: formData.workPlaceEn, // بدون تحويل
       doctorName: convertNumbersToEnglish(formData.doctorName),
-      doctorNameEn: processValue(formData.doctorNameEn),
+      doctorNameEn: formData.doctorNameEn, // بدون تحويل
       jobTitle: convertNumbersToEnglish(formData.jobTitle),
-      jobTitleEn: processValue(formData.jobTitleEn),
+      jobTitleEn: formData.jobTitleEn, // بدون تحويل
       hospital: convertNumbersToEnglish(formData.hospital),
-      hospitalEn: processValue(formData.hospitalEn),
+      hospitalEn: formData.hospitalEn, // بدون تحويل
       leaveCode: convertNumbersToEnglish(formData.leaveCode)
     };
 
