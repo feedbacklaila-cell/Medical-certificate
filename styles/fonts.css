@@ -8,15 +8,15 @@
 }
 @font-face {
   font-family: 'Cairo';
-  src: url('/fonts/cairo/Cairo-Regular.ttf') format('truetype');
-  font-weight: 400;
+  src: url('/fonts/NotoSansArabic-Regular.ttf') format('truetype');
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Tajawal';
-  src: url('/fonts/Tajawal-Regular.ttf') format('woff2');
-  font-weight: 300; /* وزن خفيف */
+  src: url('/fonts/NotoSansArabic-Regular.ttf') format('woff2');
+  font-weight: 500; /* وزن خفيف */
   font-style: normal;
   font-display: swap;
 }

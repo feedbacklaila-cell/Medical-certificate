@@ -126,10 +126,10 @@ function A4PageContent() {
   } = data;
 
 const getTitleClass = () =>
-  `font-tajawal font-light text-base text-[12px] text-right text-[#2b3d77]`;
+  `font-tajawal font-medium font-light text-base text-[12px] text-right text-[#2b3d77]`;
 
 const getTitleClassf = () =>
-  `font-tajawal font-light text-base text-[12px] text-right text-[#fff]`;
+  `font-tajawal font-medium font-light text-base text-[12px] text-right text-[#fff]`;
 const getValueClass = () =>
   `font-notoserif font-medium text-base text-[12px] text-right text-[#fff]`;
   return (
@@ -563,7 +563,7 @@ const getValueClass = () =>
     {hospital}
   </div>
 
-  <div className="text-center font-[700] text-[12px] font-cairo mt-2">
+  <div className="text-center font-[700] text-[12px] font-cairo mt-3">
     {hospitalEn}
   </div>
 </div>
