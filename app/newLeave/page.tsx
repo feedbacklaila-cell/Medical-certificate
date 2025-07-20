@@ -49,44 +49,6 @@ const generateLeaveCode = (): string => {
   return `GLS250763${Math.floor(10000 + Math.random() * 90000)}`;
 };
 
-// دالة لتحويل الأرقام العربية/المشرقية إلى إنجليزية
-const convertNumbersToEnglish = (value: string): string => {
-  // خريطة تحويل الأرقام العربية إلى إنجليزية
-  const arabicToEnglishMap: { [key: string]: string } = {
-    '٠': '0',
-    '١': '1',
-    '٢': '2',
-    '٣': '3',
-    '٤': '4',
-    '٥': '5',
-    '٦': '6',
-    '٧': '7',
-    '٨': '8',
-    '٩': '9',
-    '٫': '.' // النقطة العشرية
-  };
-  
-  return value
-    .split('')
-    .map(char => arabicToEnglishMap[char] || char)
-    .join('');
-};
-
-// دالة لتحويل الحروف الإنجليزية إلى كابتل مع الحفاظ على الأرقام والعربية
-const convertEnglishToUpper = (value: string): string => {
-  return value
-    .split('')
-    .map(char => {
-      // الحفاظ على الحروف العربية والأرقام كما هي
-      if (/[\u0600-\u06FF]/.test(char) || /\d/.test(char)) {
-        return char;
-      }
-      // تحويل الحروف الإنجليزية إلى كابتل
-      return char.toUpperCase();
-    })
-    .join('');
-};
-
 // الجزء الرئيسي من التطبيق
 function MainContent() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -251,7 +213,7 @@ function MainContent() {
     setDoctorSearch("");
   };
 
-  // معالجة التغييرات للحقول العربية
+  // معالجة التغييرات
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
@@ -266,12 +228,6 @@ function MainContent() {
     } else {
       setFormData(prev => ({ ...prev, [name]: value } as FormData));
     }
-  };
-
-  // معالجة التغييرات للحقول الإنجليزية (مع تحويل إلى كابتل عند الحفظ)
-  const handleEnglishFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value } as FormData));
   };
 
   // دالة لتحويل الوقت من 24 ساعة إلى تنسيق 12 ساعة مع AM/PM
@@ -308,54 +264,28 @@ function MainContent() {
 
   // حفظ البيانات مع تضمين الوقت
   const saveUserData = async () => {
-    // تحويل الأرقام العربية/المشرقية إلى إنجليزية في جميع الحقول
-    const processValue = (value: string): string => {
-      const englishNumbers = convertNumbersToEnglish(value);
-      return convertEnglishToUpper(englishNumbers);
-    };
-
-    // إنشاء كائن جديد لبيانات المستخدم المعالجة
-    const processedData = {
-      ...formData,
-      name: convertNumbersToEnglish(formData.name),
-      idNumber: convertNumbersToEnglish(formData.idNumber),
-      nameEn: processValue(formData.nameEn),
-      idNumberEn: processValue(formData.idNumberEn),
-      nationality: convertNumbersToEnglish(formData.nationality),
-      nationalityEn: processValue(formData.nationalityEn),
-      workPlace: convertNumbersToEnglish(formData.workPlace),
-      workPlaceEn: processValue(formData.workPlaceEn),
-      doctorName: convertNumbersToEnglish(formData.doctorName),
-      doctorNameEn: processValue(formData.doctorNameEn),
-      jobTitle: convertNumbersToEnglish(formData.jobTitle),
-      jobTitleEn: processValue(formData.jobTitleEn),
-      hospital: convertNumbersToEnglish(formData.hospital),
-      hospitalEn: processValue(formData.hospitalEn),
-      leaveCode: convertNumbersToEnglish(formData.leaveCode)
-    };
-
     const userData = {
-      leaveDurationGregorian: `${processedData.leaveDuration} Days (${processedData.entryDate} to ${processedData.leaveEnd})`,
-      leaveDurationDays: processedData.leaveDuration,
-      leaveStartGregorian: processedData.entryDate,
-      reportDate: processedData.reportDate,
-      leaveEndGregorian: processedData.leaveEnd,
-      name: processedData.name,
-      nameEn: processedData.nameEn,
-      idNumber: processedData.idNumber,
-      nationality: processedData.nationality,
-      nationalityEn: processedData.nationalityEn,
-      workPlace: processedData.workPlace,
-      workPlaceEn: processedData.workPlaceEn,
-      doctorName: processedData.doctorName,
-      doctorNameEn: processedData.doctorNameEn,
-      jobTitle: processedData.jobTitle,
-      jobTitleEn: processedData.jobTitleEn,
-      leaveCode: processedData.leaveCode,
-      hospital: processedData.hospital,
-      hospitalEn: processedData.hospitalEn,
-      selectedTime: processedData.selectedTime,
-      timeDisplay: processedData.timeDisplay
+      leaveDurationGregorian: `${formData.leaveDuration} Days (${formData.entryDate} to ${formData.leaveEnd})`,
+      leaveDurationDays: formData.leaveDuration,
+      leaveStartGregorian: formData.entryDate,
+      reportDate: formData.reportDate,
+      leaveEndGregorian:formData.leaveEnd,
+      name: formData.name,
+      nameEn: formData.nameEn,
+      idNumber: formData.idNumber,
+      nationality: formData.nationality,
+      nationalityEn: formData.nationalityEn,
+      workPlace: formData.workPlace,
+      workPlaceEn: formData.workPlaceEn,
+      doctorName: formData.doctorName,
+      doctorNameEn: formData.doctorNameEn,
+      jobTitle: formData.jobTitle,
+      jobTitleEn: formData.jobTitleEn,
+      leaveCode: formData.leaveCode,
+      hospital: formData.hospital,
+      hospitalEn: formData.hospitalEn,
+      selectedTime: formData.selectedTime, // حفظ الوقت المحدد
+      timeDisplay: formData.timeDisplay // حفظ تنسيق الوقت للعرض
     };
 
     try {
@@ -365,7 +295,7 @@ function MainContent() {
         alert("تم تعديل البيانات بنجاح");
       } else {
         const checkCode = query(collection(db, "users"), 
-          where("leaveCode", "==", processedData.leaveCode));
+          where("leaveCode", "==", formData.leaveCode));
         const codeDocs = await getDocs(checkCode);
 
         if (codeDocs.size > 0) {
@@ -374,9 +304,9 @@ function MainContent() {
         }
 
         const checkName = query(collection(db, "users"), 
-          where("name", "==", processedData.name));
+          where("name", "==", formData.name));
         const checkID = query(collection(db, "users"), 
-          where("idNumber", "==", processedData.idNumber));
+          where("idNumber", "==", formData.idNumber));
         
         const [nameDocs, idDocs] = await Promise.all([
           getDocs(checkName), 
@@ -436,7 +366,7 @@ function MainContent() {
             />
           </div>
 
-          {/* حقل إدخال الوقت */}
+          {/* إضافة حقل إدخال الوقت */}
           <div>
             <label className="font-semibold mb-1 block">اختر الوقت:</label>
             <div className="flex items-center gap-3">
@@ -514,7 +444,7 @@ function MainContent() {
                     type="text"
                     name={nameEn as string}
                     value={formData[nameEn as keyof FormData] as string}
-                    onChange={handleEnglishFieldChange}
+                    onChange={handleChange}
                     placeholder={placeholderEn as string}
                     className="w-full border border-gray-300 p-2 rounded-lg"
                   />
@@ -578,7 +508,7 @@ function MainContent() {
               type="text"
               name="doctorNameEn"
               value={formData.doctorNameEn}
-              onChange={handleEnglishFieldChange}
+              onChange={handleChange}
               placeholder="Enter doctor name in English"
               className="w-full border border-gray-300 p-2 rounded-lg"
             />
@@ -639,7 +569,7 @@ function MainContent() {
               type="text"
               name="hospitalEn"
               value={formData.hospitalEn}
-              onChange={handleEnglishFieldChange}
+              onChange={(e) => setFormData({ ...formData, hospitalEn: e.target.value })}
               className="w-full border border-gray-300 p-2 rounded-lg text-gray-700"
               placeholder="اكتب أو سيتم تعبئته تلقائيًا"
             />
