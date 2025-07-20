@@ -31,7 +31,6 @@ function toHijriDateFormatted(gregorianDateStr: string) {
   if (!gregorianDateStr) return '';
   
   const date = new Date(gregorianDateStr);
-  
   if (isNaN(date.getTime())) return '';
 
   const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
@@ -46,6 +45,12 @@ function toHijriDateFormatted(gregorianDateStr: string) {
     .replace(/\u200f/g, '')
     .replace(/\s?AH/, '')
     .replace(/[^\d/.-]/g, '');
+
+  // ترتيب MM/DD/YYYY إلى DD/MM/YYYY
+  const parts = formatted.split('/');
+  if (parts.length === 3) {
+    formatted = `${parts[1]}/${parts[0]}/${parts[2]}`;
+  }
 
   return convertArabicNumbersToEnglish(formatted);
 }
@@ -394,16 +399,16 @@ const getValueClass = () =>
 </th>
                 <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
                 <td className={getValueClass()}>{leaveStartGregorian}</td>
-                <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
-  <img src="/e3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "12px" }} />
+                 <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
+  <img src="/e3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>
               </tr>
               <tr>
                                           <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/ss4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "15px" }} />
 </th>
-                <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveEndGregorian)}</td>
-                <td className={getValueClass()}>{leaveEndGregorian}</td>
+                <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
+                <td className={getValueClass()}>{leaveStartGregorian}</td>
                          <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>
@@ -534,7 +539,7 @@ const getValueClass = () =>
 
     <div className="footer-text">
       <a
-        href="https://seha-as-com-qj61.vercel.app/verify-leave"
+        href="https://www.saharatee.com/login"
         target="_blank"
         rel="noopener noreferrer"
         style={{
