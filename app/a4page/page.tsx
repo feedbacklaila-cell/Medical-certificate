@@ -126,10 +126,10 @@ function A4PageContent() {
   } = data;
 
 const getTitleClass = () =>
-  `font-tajawal font-medium font-light text-base text-[12px] text-right text-[#2b3d77]`;
+  `font-tajawal font-medium font-light text-base text-[14px] text-right text-[#2b3d77]`;
 
 const getTitleClassf = () =>
-  `font-tajawal font-medium font-light text-base text-[12px] text-right text-[#fff]`;
+  `font-tajawal font-medium font-light text-base text-[14px] text-right text-[#fff]`;
 const getValueClass = () =>
   `font-notoserif font-medium text-base text-[12px] text-right text-[#fff]`;
   return (
