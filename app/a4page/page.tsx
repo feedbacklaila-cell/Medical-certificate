@@ -138,7 +138,7 @@ const getValueClass = () =>
         /* تعريف خطوط جديدة */
               @font-face {
   font-family: 'Tajawal';
-  src: url('/fonts/Tajawal-Light.woff2') format('woff2');
+  src: url('/fonts/Tajawal-Regular.woff2') format('woff2');
   font-weight: 400; /* وزن خفيف */
   font-style: normal;
   font-display: swap;
@@ -337,18 +337,18 @@ const getValueClass = () =>
       `}</style>
 
       <div className="relative w-full h-[85px]">
-        <div className="absolute  left-10">
+        <div className="absolute  left-10 top-10" >
           <img src="/logo.png" alt="logo" className="w-[135px] h-[60px]" />
         </div>
-        <div className="absolute left-1/2 transform -translate-x-1/2  z-50">
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-4 z-50">
           <img src="/m3.png" alt="m3" className="w-[160px] h-[260px] object-contain" />
         </div>
-        <div className="absolute  right-10">
+        <div className="absolute  right-10 top-10">
           <img src="/m5.png" alt="m5" className="w-[220px] h-[110px]" />
         </div>
       </div>
 
-      <div className="translate-y-[95px]">
+      <div className="translate-y-[110px]">
         <div className="p-6">
           <table className="medical-table border-collapse border border-gray-400 w-full text-right" dir="rtl">
             <tbody>
@@ -506,22 +506,22 @@ const getValueClass = () =>
   {/* كتلة الصورة والنص مزاحة لليمين */}
   <div
     className="flex flex-col items-center text-center"
-    style={{ transform: 'translateX(100px)' }} // ← تحكم هنا بالانزياح
+    style={{ transform: 'translateX(50px)' }} // ← تحكم هنا بالانزياح
   >
     <img src="/qr.png" alt="m5" className="w-[100px] h-[100px]" />
 
-    <div
-      style={{
-        fontFamily: "Cairo, sans-serif",
-        fontSize: "12px",
-        fontWeight: 300,
-        marginBottom: '5px',
-        marginTop: '5px',
-      }}
-    >
-      للتحقق من بيانات التقرير يرجى التأكد من زيارة موقع منصة صحة الرسمي
-    </div>
-
+<div
+  style={{
+    fontFamily: "Cairo, sans-serif",
+    fontSize: "10px",
+    fontWeight: 700,
+    marginBottom: '5px',
+    marginTop: '10px',
+  }}
+>
+  للتحقق من بيانات التقرير يرجى التأكد من زيارة موقع منصة صحة
+  <span style={{ display: 'block' }}>الرسمي</span>
+</div>
     <div
       style={{
         fontSize: '12px',
@@ -554,18 +554,20 @@ const getValueClass = () =>
 
 
   <div
-    className="absolute" style={{ right: '400px', }}
-  >
-    <img src="/m8.png" alt="logo" className="w-[90px] h-[90px] block mx-auto" />
+  className="absolute"
+  style={{ left: '435px', transform: 'translateX(50px)' }} // انعكاس الجهة اليمنى
+>
+  <img src="/m8.png" alt="logo" className="w-[90px] h-[90px] block mx-auto" />
 
-    <div className="text-center font-[400] text-[14px] font-cairo mt-1">
-      {hospital}
-    </div>
-
-    <div className="text-center font-[400] text-[14px] font-cairo">
-      {hospitalEn}
-    </div>
+  <div className="text-center font-[700] text-[12px] font-cairo mt-5">
+    {hospital}
   </div>
+
+  <div className="text-center font-[700] text-[12px] font-cairo mt-2">
+    {hospitalEn}
+  </div>
+</div>
+
 </div   >
  <div className="absolute" style={{ right: '50px', }}>
   <img src="/sh1.png" alt="m5" className="w-[150] h-[80]" />
