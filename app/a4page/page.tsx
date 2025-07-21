@@ -135,10 +135,12 @@ const getTitleClass = () =>
 
 const getTitleClassf = () =>
   `font-tajawal font-medium font-light text-base text-[14px] text-right text-[#fff]`;
+const getTitleClassff = () =>
+  `font-tajawal font-medium font-light text-base text-[12px] text-right text-[#fff]`;
 const getValueClass = () =>
   `font-notoserif font-medium text-base text-[12px] text-right text-[#fff]`;
 const getValueClassF = () =>
-  `font-notoserif font-medium text-base text-[13px] text-right `;
+  `font-notoserif font-medium text-base text-[12px] text-right `;
   return (
     <div className="">
       <style jsx global>{`
@@ -393,13 +395,13 @@ const getValueClassF = () =>
     (
     <span style={{ display: 'inline-flex', alignItems: 'center', margin: 0 }}>
         <span>{leaveEndGregorian ? leaveEndGregorian.split('-').reverse().join('/') : ''}</span>
-      <span style={{ margin: '0 2px' }}>to</span>
+      <span >to</span>
     <span>{leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}</span>
     </span>
     )
   </span>
   {' '}
-  <span className={getValueClassF()} style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+  <span className={getValueClassF()}>
     <span>day</span>
     <span>{leaveDurationDays}</span>
   </span>
