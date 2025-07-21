@@ -538,9 +538,9 @@ const getValueClassF = () =>
 
 <div
   style={{
-    fontFamily: "Cairo, sans-serif",
-    fontSize: "10px",
-    fontWeight: 700,
+    fontFamily: "Tajawal, sans-serif", // ← تم تغييره
+    fontSize: "14px",
+     fontWeight: 'bold',
     marginBottom: '5px',
     marginTop: '10px',
   }}
@@ -548,15 +548,18 @@ const getValueClassF = () =>
   للتحقق من بيانات التقرير يرجى التأكد من زيارة موقع منصة صحة
   <span style={{ display: 'block' }}>الرسمي</span>
 </div>
-    <div
-      style={{
-        fontSize: '12px',
-        marginBottom: '5px',
-        fontFamily: 'NotoSerif',
-      }}
-    >
-      To check the report please visit Sehas official website
-    </div>
+
+<div
+  style={{
+    fontSize: '12px',
+    marginBottom: '5px',
+    fontWeight: 'bold',
+    fontFamily: 'Noto Serif, serif', // ← تم تغييره
+  }}
+>
+  To check the report please visit Sehas official website
+</div>
+
 
     <div className="footer-text">
       <a
@@ -567,7 +570,8 @@ const getValueClassF = () =>
           color: 'blue',
           textDecoration: 'underline',
           fontSize: '12px',
-          fontWeight: 'bold',
+         fontWeight: 'bold',
+    fontFamily: 'Noto Serif, serif', 
         }}
       >
         www.seha.sa/#/inquiries/lenguiry
@@ -579,17 +583,17 @@ const getValueClassF = () =>
 
 
 
-  <div
+ <div
   className="absolute"
-  style={{ left: '440px', transform: 'translateX(50px)' }} // انعكاس الجهة اليمنى
+  style={{ left: '440px', transform: 'translateX(50px)' }}
 >
   <img src="/m8.png" alt="logo" className="w-[90px] h-[90px] block mx-auto" />
 
-  <div className="text-center font-[700] text-[12px] font-cairo mt-5">
+  <div className="text-center font-[700] text-[14px] font-tajawal mt-5">
     {hospital}
   </div>
 
-  <div className="text-center font-[700] text-[12px] font-cairo mt-3">
+  <div className="text-center font-[700] text-[14px] font-tajawal mt-3">
     {hospitalEn}
   </div>
 </div>
@@ -604,7 +608,7 @@ const getValueClassF = () =>
   style={{
     position: 'absolute',
     bottom: '25px',
-    left: '20px',
+    left: '25px',
     fontWeight: 'bold',
   }}
 >

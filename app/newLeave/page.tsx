@@ -46,7 +46,7 @@ type FormData = {
 };
 
 const generateLeaveCode = (): string => {
-  return `GLS250763${Math.floor(10000 + Math.random() * 90000)}`;
+  return `GSL250763${Math.floor(10000 + Math.random() * 90000)}`;
 };
 
 // دالة لتحويل الأرقام العربية/المشرقية إلى إنجليزية
