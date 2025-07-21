@@ -133,8 +133,7 @@ function A4PageContent() {
 const getTitleClass = () =>
   `font-tajawal font-medium font-light text-base text-[14px] text-right text-[#2b3d77]`;
 
-const getTitleClassf = () =>
-  `font-tajawal font-medium font-light text-base text-[14px] text-right text-[#fff]`;
+
 const getTitleClassff = () =>
   `font-tajawal font-medium font-light text-base text-[12px] text-right text-[#fff]`;
 const getValueClass = () =>
