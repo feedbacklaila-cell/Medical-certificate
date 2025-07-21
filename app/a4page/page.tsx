@@ -599,7 +599,7 @@ const getValueClassF = () =>
 </div>
 
 </div   >
- <div className="absolute" style={{ right: '40px', bottom: '-20px' }}>
+ <div className="absolute" style={{ right: '40px', bottom: '-30px' }}>
   <img src="/sh1.png" alt="m5" className="w-[150] h-[80]" />
 </div>
  {timeDisplay && (
@@ -608,7 +608,7 @@ const getValueClassF = () =>
     style={{
       position: 'absolute',
       bottom: '20px',
-      left: '40px',
+      left: '30px',
     }}
   >
     {timeDisplay}
@@ -617,7 +617,7 @@ const getValueClassF = () =>
 
 <div
   style={{
-    left: '40px',
+    left: '30px',
     position: 'absolute',
     bottom: '4px',  // مسافة حوالي 16px تحت الأول، غير الرقم لو تحب أقل أو أكثر
     fontSize: '12px',
