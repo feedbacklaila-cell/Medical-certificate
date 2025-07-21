@@ -379,11 +379,11 @@ const getValueClassF = () =>
     <span className={getValueClassF()}>
       {convertArabicNumbersToEnglish(`${leaveDurationDays}`)}
     </span>
-    <span className={getTitleClassf()}> يوم </span>
+    <span className={getTitleClassff()}> يوم </span>
     <span className={getValueClassF()} style={{ whiteSpace: 'nowrap' }}>
       (
       {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveStartGregorian))}
-      <span className={getTitleClassf()}> الى </span>
+      <span className={getTitleClassff()}> الى </span>
       {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveEndGregorian))}
       )
     </span>
