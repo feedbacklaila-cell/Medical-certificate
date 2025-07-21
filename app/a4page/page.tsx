@@ -394,13 +394,13 @@ const getValueClassF = () =>
     (
     <span style={{ display: 'inline-flex', alignItems: 'center', margin: 0 }}>
         <span>{leaveEndGregorian ? leaveEndGregorian.split('-').reverse().join('/') : ''}</span>
-      <span >to</span>
+      <span style={{ margin: '0 2px' }}>to</span>
     <span>{leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}</span>
     </span>
     )
   </span>
   {' '}
-  <span className={getValueClassF()}>
+  <span className={getValueClassF()} style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
     <span>day</span>
     <span>{leaveDurationDays}</span>
   </span>
