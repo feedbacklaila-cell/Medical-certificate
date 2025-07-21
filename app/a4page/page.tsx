@@ -438,7 +438,7 @@ const getValueClassF = () =>
                                                        <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "125px", height: "17px" }} />
 </th>
-                <td className={getValueClassF()} colSpan={2}>{reportDate}</td>
+                <td className={getValueClassF()} colSpan={2}>{reportDate ? reportDate.split('-').reverse().join('/') : ''}</td>
                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>              </tr>
@@ -603,8 +603,8 @@ const getValueClassF = () =>
     className="text-xs font-bold font-sans"
     style={{
       position: 'absolute',
-      bottom: '20px',
-      left: '30px',
+      bottom: '25px',
+      left: '20px',
     }}
   >
     {timeDisplay}
@@ -613,7 +613,7 @@ const getValueClassF = () =>
 
 <div
   style={{
-    left: '30px',
+    left: '25px',
     position: 'absolute',
     bottom: '4px',  // مسافة حوالي 16px تحت الأول، غير الرقم لو تحب أقل أو أكثر
     fontSize: '12px',
