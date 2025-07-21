@@ -392,9 +392,9 @@ const getValueClassF = () =>
   <span>
     (
     <span style={{ display: 'inline-flex', alignItems: 'center', margin: 0 }}>
-      <span>{leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}</span>
+        <span>{leaveEndGregorian ? leaveEndGregorian.split('-').reverse().join('/') : ''}</span>
       <span style={{ margin: '0 4px' }}>to</span>
-      <span>{leaveEndGregorian ? leaveEndGregorian.split('-').reverse().join('/') : ''}</span>
+    <span>{leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}</span>
     </span>
     )
   </span>
