@@ -599,26 +599,25 @@ const getValueClassF = () =>
   <img src="/sh1.png" alt="m5" className="w-[150] h-[80]" />
 </div>
  {timeDisplay && (
-  <div
-    className="text-xs font-bold font-sans"
-    style={{
-      position: 'absolute',
-      bottom: '25px',
-      left: '20px',
-    }}
-  >
-    {timeDisplay}
-  </div>
+ <div
+  className="font-notoserif font-medium text-base text-[14px] text-right"
+  style={{
+    position: 'absolute',
+    bottom: '25px',
+    left: '20px',
+  }}
+>
+  {timeDisplay}
+</div>
+
 )}
 
 <div
+  className={getValueClassF()}
   style={{
-    left: '25px',
     position: 'absolute',
-    bottom: '4px',  // مسافة حوالي 16px تحت الأول، غير الرقم لو تحب أقل أو أكثر
-    fontSize: '12px',
-    fontWeight: 'bold',
-    fontFamily: 'Arial, sans-serif',
+    bottom: '4px',
+    left: '25px',
   }}
 >
   {
@@ -632,6 +631,7 @@ const getValueClassF = () =>
       : 'Invalid date'
   }
 </div>
+
 
       </div>
     </div>
