@@ -138,7 +138,7 @@ const getTitleClassf = () =>
 const getValueClass = () =>
   `font-notoserif font-medium text-base text-[12px] text-right text-[#fff]`;
 const getValueClassF = () =>
-  `font-notoserif font-medium text-base text-[14px] text-right `;
+  `font-notoserif font-medium text-base text-[13px] text-right `;
   return (
     <div className="">
       <style jsx global>{`
@@ -393,13 +393,13 @@ const getValueClassF = () =>
     (
     <span style={{ display: 'inline-flex', alignItems: 'center', margin: 0 }}>
         <span>{leaveEndGregorian ? leaveEndGregorian.split('-').reverse().join('/') : ''}</span>
-      <span style={{ margin: '0 4px' }}>to</span>
+      <span style={{ margin: '0 2px' }}>to</span>
     <span>{leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}</span>
     </span>
     )
   </span>
   {' '}
-  <span className={getValueClassF()} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+  <span className={getValueClassF()} style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
     <span>day</span>
     <span>{leaveDurationDays}</span>
   </span>
@@ -539,7 +539,7 @@ const getValueClassF = () =>
 <div
   style={{
     fontFamily: "Tajawal, sans-serif", // ← تم تغييره
-    fontSize: "14px",
+    fontSize: "12px",
      fontWeight: 'bold',
     marginBottom: '5px',
     marginTop: '10px',
@@ -551,7 +551,7 @@ const getValueClassF = () =>
 
 <div
   style={{
-    fontSize: '12px',
+    fontSize: '10px',
     marginBottom: '5px',
     fontWeight: 'bold',
     fontFamily: 'Noto Serif, serif', // ← تم تغييره
