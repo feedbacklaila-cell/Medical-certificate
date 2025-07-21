@@ -605,6 +605,7 @@ const getValueClassF = () =>
     position: 'absolute',
     bottom: '25px',
     left: '20px',
+    fontWeight: 'bold',
   }}
 >
   {timeDisplay}
@@ -618,6 +619,7 @@ const getValueClassF = () =>
     position: 'absolute',
     bottom: '4px',
     left: '25px',
+    fontWeight: 'bold',
   }}
 >
   {
