@@ -60,7 +60,11 @@ function convertArabicNumbersToEnglish(str: string) {
   return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
 }
 
-
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return '';
+  const parts = dateStr.split('/');
+  return `${Number(parts[2])}/${Number(parts[1])}/${Number(parts[0])}`;
+};
 export default function A4Page() {
   return (
     <Suspense fallback={<div className="p-4">جاري تحميل البيانات...</div>}>
@@ -137,6 +141,8 @@ const getTitleClassf = () =>
   `font-tajawal font-medium font-light text-base text-[14px] text-right text-[#fff]`;
 const getValueClass = () =>
   `font-notoserif font-medium text-base text-[12px] text-right text-[#fff]`;
+const getValueClassF = () =>
+  `font-notoserif font-medium text-base text-[14px] text-right `;
   return (
     <div className="">
       <style jsx global>{`
@@ -361,7 +367,7 @@ const getValueClass = () =>
                           <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s1.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "60px", height: "15px" }} />
 </th>
-                <td className={getValueClass()} colSpan={2}>{leaveCode}</td>
+                <td className={getValueClassF()} colSpan={2}>{leaveCode}</td>
                 <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e1.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "60px", height: "15px" }} />
 </th>
@@ -370,25 +376,40 @@ const getValueClass = () =>
                 <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s2.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "65px", height: "16px" }} />
 </th>
-                <td className="text-right">
+              <td className="text-right">
   <>
-    <span className={getValueClass()}>
+    <span className={getValueClassF()}>
       {convertArabicNumbersToEnglish(`${leaveDurationDays}`)}
     </span>
-    <span className={getTitleClassf()}> يوم (</span>
-    <span className={getValueClass()}>
+    <span className={getTitleClassf()}> يوم </span>
+    <span className={getValueClassF()} style={{ whiteSpace: 'nowrap' }}>
+      (
       {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveStartGregorian))}
-    </span>
-    <span className={getTitleClassf()}> الى </span>
-    <span className={getValueClass()}>
+      <span className={getTitleClassf()}> الى </span>
       {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveEndGregorian))}
+      )
     </span>
-    <span className={getTitleClassf()}>)</span>
   </>
 </td>
-                <td className={getValueClass()}>
-                  {`Days ${leaveDurationDays} (${leaveStartGregorian} to ${leaveEndGregorian})`}
-                </td>
+
+<td className={getValueClassF()}>
+  <span>
+    (
+    <span style={{ display: 'inline-flex', alignItems: 'center', margin: 0 }}>
+      <span>{leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}</span>
+      <span style={{ margin: '0 4px' }}>to</span>
+      <span>{leaveEndGregorian ? leaveEndGregorian.split('-').reverse().join('/') : ''}</span>
+    </span>
+    )
+  </span>
+  {' '}
+  <span className={getValueClassF()} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+    <span>day</span>
+    <span>{leaveDurationDays}</span>
+  </span>
+</td>
+
+
                        <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e2.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "90px", height: "14px" }} />
 </th>
@@ -397,8 +418,10 @@ const getValueClass = () =>
                                   <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "80px", height: "15px" }} />
 </th>
-                <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
-                <td className={getValueClass()}>{leaveStartGregorian}</td>
+                <td className={getValueClassF()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
+                <td className={getValueClassF()}>
+  {leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}
+</td>
                  <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>
@@ -407,8 +430,10 @@ const getValueClass = () =>
                                           <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/ss4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "15px" }} />
 </th>
-                <td className={getValueClass()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
-                <td className={getValueClass()}>{leaveStartGregorian}</td>
+                <td className={getValueClassF()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
+                <td className={getValueClassF()}>
+ {leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}
+</td>
                          <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>
@@ -417,7 +442,7 @@ const getValueClass = () =>
                                                        <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "125px", height: "17px" }} />
 </th>
-                <td className={getValueClass()} colSpan={2}>{reportDate}</td>
+                <td className={getValueClassF()} colSpan={2}>{reportDate}</td>
                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>              </tr>
@@ -574,16 +599,27 @@ const getValueClass = () =>
 </div>
 
 </div   >
- <div className="absolute" style={{ right: '50px', }}>
+ <div className="absolute" style={{ right: '40px', bottom: '-20px' }}>
   <img src="/sh1.png" alt="m5" className="w-[150] h-[80]" />
 </div>
-  {timeDisplay && (
-          <div className="text-xs font-bold font-sans">
-            {timeDisplay}
-          </div>
-        )}
- <div
+ {timeDisplay && (
+  <div
+    className="text-xs font-bold font-sans"
+    style={{
+      position: 'absolute',
+      bottom: '20px',
+      left: '40px',
+    }}
+  >
+    {timeDisplay}
+  </div>
+)}
+
+<div
   style={{
+    left: '40px',
+    position: 'absolute',
+    bottom: '4px',  // مسافة حوالي 16px تحت الأول، غير الرقم لو تحب أقل أو أكثر
     fontSize: '12px',
     fontWeight: 'bold',
     fontFamily: 'Arial, sans-serif',
@@ -600,6 +636,7 @@ const getValueClass = () =>
       : 'Invalid date'
   }
 </div>
+
       </div>
     </div>
   );
