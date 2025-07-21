@@ -60,11 +60,7 @@ function convertArabicNumbersToEnglish(str: string) {
   return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
 }
 
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return '';
-  const parts = dateStr.split('/');
-  return `${Number(parts[2])}/${Number(parts[1])}/${Number(parts[0])}`;
-};
+
 export default function A4Page() {
   return (
     <Suspense fallback={<div className="p-4">جاري تحميل البيانات...</div>}>
