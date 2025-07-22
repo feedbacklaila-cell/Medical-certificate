@@ -352,21 +352,8 @@ function MainContent() {
           return;
         }
 
-        const checkName = query(collection(db, "users"), 
-          where("name", "==", processedData.name));
-        const checkID = query(collection(db, "users"), 
-          where("idNumber", "==", processedData.idNumber));
-        
-        const [nameDocs, idDocs] = await Promise.all([
-          getDocs(checkName), 
-          getDocs(checkID)
-        ]);
-
-        if (nameDocs.size > 0 || idDocs.size > 0) {
-          alert("الاسم أو رقم الهوية مسجل مسبقاً، استخدم زر التعديل");
-          return;
-        }
-
+        // تم إزالة التحقق من الاسم ورقم الهوية للسماح بحفظ بيانات جديدة
+        // حتى لو كان الاسم أو رقم الهوية موجودين مسبقاً
         await addDoc(collection(db, "users"), userData);
         alert("تم حفظ البيانات بنجاح");
         
