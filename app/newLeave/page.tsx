@@ -41,12 +41,13 @@ type FormData = {
   jobTitleEn: string;
   hospital: string;
   hospitalEn: string;
-  selectedTime: string; // حقل جديد للوقت
-  timeDisplay: string; // حقل جديد لعرض الوقت
+  selectedTime: string;
+  timeDisplay: string;
 };
 
-const generateLeaveCode = (): string => {
-  return `GSL250763${Math.floor(10000 + Math.random() * 90000)}`;
+// دالة لتوليد رمز الإجازة مع البادئة المحددة
+const generateLeaveCode = (prefix: string = "GSL"): string => {
+  return `${prefix}250763${Math.floor(10000 + Math.random() * 90000)}`;
 };
 
 // دالة لتحويل الأرقام العربية/المشرقية إلى إنجليزية
@@ -86,9 +87,12 @@ function MainContent() {
   const [doctorSearch, setDoctorSearch] = useState("");
   const doctorListRef = useRef<HTMLUListElement>(null);
   const searchParams = useSearchParams();
+  
+  // حالة البادئة لرمز الإجازة (GSL أو PSL)
+  const [prefix, setPrefix] = useState<"GSL" | "PSL">("GSL");
 
   const initialFormData: FormData = {
-    leaveCode: generateLeaveCode(),
+    leaveCode: generateLeaveCode(prefix),
     leaveStart: "",
     leaveDuration: 1,
     leaveEnd: "",
@@ -108,11 +112,24 @@ function MainContent() {
     jobTitleEn: "",
     hospital: "",
     hospitalEn: "",
-    selectedTime: "12:00", // قيمة افتراضية للوقت
-    timeDisplay: "12:00 مساءً" // قيمة افتراضية للعرض
+    selectedTime: "12:00",
+    timeDisplay: "12:00 مساءً"
   };
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
+
+  // دالة التبديل بين PSL و GSL
+  const togglePrefix = () => {
+    const newPrefix = prefix === "GSL" ? "PSL" : "GSL";
+    setPrefix(newPrefix);
+    
+    // توليد رمز جديد باستخدام البادئة الجديدة
+    const newCode = generateLeaveCode(newPrefix);
+    setFormData(prev => ({
+      ...prev,
+      leaveCode: newCode
+    }));
+  };
 
   // جلب المستشفيات
   useEffect(() => {
@@ -207,6 +224,13 @@ function MainContent() {
         ...docData,
       } as FormData);
 
+      // تحديث البادئة بناءً على رمز الإجازة المسترجع
+      if (docData.leaveCode?.startsWith("PSL")) {
+        setPrefix("PSL");
+      } else {
+        setPrefix("GSL");
+      }
+
       alert("تم تحميل البيانات. يمكنك الآن تعديلها.");
     } catch (error) {
       console.error("خطأ في جلب البيانات:", error);
@@ -240,7 +264,6 @@ function MainContent() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    // إذا كان الحقل هو selectedTime، نقوم بتحويل القيمة إلى تنسوق عرض مناسب
     if (name === "selectedTime") {
       const formattedTime = formatTimeForDisplay(value);
       setFormData(prev => ({
@@ -253,7 +276,7 @@ function MainContent() {
     }
   };
 
-  // معالجة التغييرات للحقول الإنجليزية (بدون تحويل إلى كابتل)
+  // معالجة التغييرات للحقول الإنجليزية
   const handleEnglishFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value } as FormData));
@@ -264,7 +287,7 @@ function MainContent() {
     if (!time) return "";
     
     const [hours, minutes] = time.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
+    const period = hours >= 12 ? 'مساءً' : 'صباحاً';
     const hours12 = hours % 12 || 12;
     
     return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
@@ -298,18 +321,18 @@ function MainContent() {
       ...formData,
       name: convertNumbersToEnglish(formData.name),
       idNumber: convertNumbersToEnglish(formData.idNumber),
-      nameEn: formData.nameEn, // بدون تحويل إلى كابتل
-      idNumberEn: formData.idNumberEn, // بدون تحويل
+      nameEn: formData.nameEn,
+      idNumberEn: formData.idNumberEn,
       nationality: convertNumbersToEnglish(formData.nationality),
-      nationalityEn: formData.nationalityEn, // بدون تحويل
+      nationalityEn: formData.nationalityEn,
       workPlace: convertNumbersToEnglish(formData.workPlace),
-      workPlaceEn: formData.workPlaceEn, // بدون تحويل
+      workPlaceEn: formData.workPlaceEn,
       doctorName: convertNumbersToEnglish(formData.doctorName),
-      doctorNameEn: formData.doctorNameEn, // بدون تحويل
+      doctorNameEn: formData.doctorNameEn,
       jobTitle: convertNumbersToEnglish(formData.jobTitle),
-      jobTitleEn: formData.jobTitleEn, // بدون تحويل
+      jobTitleEn: formData.jobTitleEn,
       hospital: convertNumbersToEnglish(formData.hospital),
-      hospitalEn: formData.hospitalEn, // بدون تحويل
+      hospitalEn: formData.hospitalEn,
       leaveCode: convertNumbersToEnglish(formData.leaveCode)
     };
 
@@ -352,15 +375,13 @@ function MainContent() {
           return;
         }
 
-        // تم إزالة التحقق من الاسم ورقم الهوية للسماح بحفظ بيانات جديدة
-        // حتى لو كان الاسم أو رقم الهوية موجودين مسبقاً
         await addDoc(collection(db, "users"), userData);
         alert("تم حفظ البيانات بنجاح");
         
-        // إعادة تعيين النموذج بعد الحفظ
+        // إعادة تعيين النموذج بعد الحفظ مع الحفاظ على البادئة الحالية
         setFormData({
           ...initialFormData,
-          leaveCode: generateLeaveCode(),
+          leaveCode: generateLeaveCode(prefix),
         });
       }
     } catch (error) {
@@ -387,8 +408,19 @@ function MainContent() {
           <h1 className="text-3xl font-bold text-purple-700 text-center mb-6">نموذج إصدار شهادة الإجازة</h1>
 
           <div>
-            <div className="font-semibold mb-1">رمز الإجازة:</div>
-            <div className="text-blue-600 text-lg">{formData.leaveCode}</div>
+            <div className="font-semibold mb-1 flex items-center gap-2">
+              <span>رمز الإجازة:</span>
+              <button
+                onClick={togglePrefix}
+                className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors"
+              >
+                {prefix === "GSL" ? "PSL" : "GSL"}
+              </button>
+            </div>
+            <div className="text-blue-600 text-lg flex items-center gap-2">
+              {formData.leaveCode}
+              <span className="text-xs text-gray-500">(اضغط على الزر للتبديل)</span>
+            </div>
           </div>
 
           <div>
@@ -687,6 +719,10 @@ function MainContent() {
               <div>
                 <span className="font-medium">الطبيب المعالج:</span>
                 <span> {formData.doctorName || "غير محدد"}</span>
+              </div>
+              <div>
+                <span className="font-medium">بادئة رمز الإجازة:</span>
+                <span className="font-bold text-blue-700"> {prefix}</span>
               </div>
             </div>
           </div>
