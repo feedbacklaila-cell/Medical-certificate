@@ -1,4 +1,5 @@
 "use client";
+import { toHijri } from 'hijri-converter';
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -25,35 +26,35 @@ interface LeaveData {
   hospitalEn: string;
   timeDisplay: string;
   leaveDurationDays: number;
+  licenseNumber: string;
 }
 
-function toHijriDateFormatted(gregorianDateStr: string) {
+function toHijriDateFormatted(gregorianDateStr: string): string {
   if (!gregorianDateStr) return '';
   
-  const date = new Date(gregorianDateStr);
-  if (isNaN(date.getTime())) return '';
+  try {
+    const date = new Date(gregorianDateStr);
+    if (isNaN(date.getTime())) return '';
 
-  const formatter = new Intl.DateTimeFormat('en-SA-u-ca-islamic', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+    // تحويل التاريخ الميلادي إلى هجري
+    const hijriDate = toHijri(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate()
+    );
 
-  let formatted = formatter.format(date);
+    // تنسيق التاريخ الهجري كـ DD/MM/YYYY
+    const day = hijriDate.hd.toString().padStart(2, '0');
+    const month = hijriDate.hm.toString().padStart(2, '0');
+    const year = hijriDate.hy.toString();
 
-  formatted = formatted
-    .replace(/\u200f/g, '')
-    .replace(/\s?AH/, '')
-    .replace(/[^\d/.-]/g, '');
-
-  // ترتيب MM/DD/YYYY إلى DD/MM/YYYY
-  const parts = formatted.split('/');
-  if (parts.length === 3) {
-    formatted = `${parts[1]}/${parts[0]}/${parts[2]}`;
+    return `${day}/${month}/${year}`;
+  } catch (error) {
+    console.error('Error converting to Hijri date:', error);
+    return '';
   }
-
-  return convertArabicNumbersToEnglish(formatted);
 }
+
 
 function convertArabicNumbersToEnglish(str: string) {
   if (!str) return '';
@@ -128,6 +129,7 @@ function A4PageContent() {
     hospitalEn,
     timeDisplay,
     leaveDurationDays,
+    licenseNumber,
   } = data;
 
 const getTitleClass = () =>
@@ -596,6 +598,9 @@ const getValueClassF = () =>
 
   <div className="text-center font-[700] text-[14px] font-tajawal mt-3">
     {hospitalEn}
+  </div>
+  <div className="text-center font-[700] text-[14px] font-tajawal ">
+    {licenseNumber}
   </div>
 </div>
 

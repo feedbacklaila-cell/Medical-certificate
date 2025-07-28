@@ -7,7 +7,7 @@ import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-// تعريف الأنواع الآمنة مع إضافة حقل الوقت
+// تعريف الأنواع الآمنة مع إضافة حقل رقم الترخيص للمستشفى
 type Doctor = {
   id: string;
   doctorName?: string;
@@ -18,6 +18,7 @@ type Hospital = {
   id: string;
   name?: string;
   nameEn?: string;
+  licenseNumber?: string; // إضافة حقل رقم الترخيص للمستشفى
 };
 
 type FormData = {
@@ -43,6 +44,7 @@ type FormData = {
   hospitalEn: string;
   selectedTime: string;
   timeDisplay: string;
+  licenseNumber: string; // حقل رقم الترخيص
 };
 
 // دالة لتوليد رمز الإجازة مع البادئة المحددة
@@ -113,7 +115,8 @@ function MainContent() {
     hospital: "",
     hospitalEn: "",
     selectedTime: "12:00",
-    timeDisplay: "12:00 مساءً"
+    timeDisplay: "12:00 مساءً",
+    licenseNumber: "" // قيمة ابتدائية لرقم الترخيص
   };
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -127,11 +130,12 @@ function MainContent() {
     const newCode = generateLeaveCode(newPrefix);
     setFormData(prev => ({
       ...prev,
-      leaveCode: newCode
+      leaveCode: newCode,
+      licenseNumber: newPrefix === "GSL" ? "" : prev.licenseNumber // مسح رقم الترخيص عند التبديل إلى GSL
     }));
   };
 
-  // جلب المستشفيات
+  // جلب المستشفيات مع تضمين رقم الترخيص
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "hospitals"), (snapshot) => {
       const list = snapshot.docs.map(doc => {
@@ -139,7 +143,8 @@ function MainContent() {
         return {
           id: doc.id,
           name: data.name || "",
-          nameEn: data.nameEn || ""
+          nameEn: data.nameEn || "",
+          licenseNumber: data.licenseNumber || "" // تضمين رقم الترخيص
         } as Hospital;
       });
       setHospitals(list);
@@ -238,12 +243,13 @@ function MainContent() {
     }
   };
 
-  // اختيار مستشفى
+  // اختيار مستشفى مع تعبئة جميع البيانات
   const selectHospital = (hospital: Hospital) => {
     setFormData({
       ...formData,
       hospital: hospital.name || "",
       hospitalEn: hospital.nameEn || "",
+      licenseNumber: hospital.licenseNumber || "", // تعبئة رقم الترخيص تلقائياً
     });
     setShowHospitalList(false);
     setHospitalSearch("");
@@ -316,6 +322,12 @@ function MainContent() {
 
   // حفظ البيانات مع تضمين الوقت
   const saveUserData = async () => {
+    // التحقق من صحة رقم الترخيص عند اختيار PSL
+    if (prefix === "PSL" && !formData.licenseNumber.trim()) {
+      alert("يرجى إدخال رقم الترخيص لشهادة PSL");
+      return;
+    }
+    
     // تحويل الأرقام العربية/المشرقية إلى إنجليزية في جميع الحقول
     const processedData = {
       ...formData,
@@ -333,7 +345,8 @@ function MainContent() {
       jobTitleEn: formData.jobTitleEn,
       hospital: convertNumbersToEnglish(formData.hospital),
       hospitalEn: formData.hospitalEn,
-      leaveCode: convertNumbersToEnglish(formData.leaveCode)
+      leaveCode: convertNumbersToEnglish(formData.leaveCode),
+      licenseNumber: prefix === "PSL" ? `${convertNumbersToEnglish(formData.licenseNumber)}` : ""
     };
 
     const userData = {
@@ -357,7 +370,8 @@ function MainContent() {
       hospital: processedData.hospital,
       hospitalEn: processedData.hospitalEn,
       selectedTime: processedData.selectedTime,
-      timeDisplay: processedData.timeDisplay
+      timeDisplay: processedData.timeDisplay,
+      licenseNumber: processedData.licenseNumber
     };
 
     try {
@@ -382,6 +396,7 @@ function MainContent() {
         setFormData({
           ...initialFormData,
           leaveCode: generateLeaveCode(prefix),
+          licenseNumber: prefix === "PSL" ? formData.licenseNumber : "" // الحفاظ على قيمة الترخيص إذا كان PSL
         });
       }
     } catch (error) {
@@ -560,7 +575,10 @@ function MainContent() {
                       onClick={() => selectDoctor(doctor)}
                       className="cursor-pointer px-4 py-2 hover:bg-blue-100"
                     >
-                      {doctor.doctorName || "غير معروف"}
+                      <div className="font-medium">{doctor.doctorName || "غير معروف"}</div>
+                      {doctor.doctorNameEn && (
+                        <div className="text-xs text-gray-500">({doctor.doctorNameEn})</div>
+                      )}
                     </li>
                   ))
                 ) : (
@@ -582,7 +600,7 @@ function MainContent() {
             />
           </div>
 
-          {/* حقل المستشفى */}
+          {/* حقل المستشفى المعدل */}
           <div className="relative mb-4">
             <label className="font-semibold mb-1 block">ادخال مستشفى:</label>
             <div className="flex">
@@ -621,7 +639,13 @@ function MainContent() {
                       onClick={() => selectHospital(hospital)}
                       className="cursor-pointer px-4 py-2 hover:bg-blue-100"
                     >
-                      {hospital.name || "غير معروف"}
+                      <div className="font-medium">{hospital.name || "غير معروف"}</div>
+                      {hospital.nameEn && (
+                        <div className="text-xs text-gray-500">({hospital.nameEn})</div>
+                      )}
+                      {hospital.licenseNumber && (
+                        <div className="text-xs text-green-600 mt-1">{hospital.licenseNumber}</div>
+                      )}
                     </li>
                   ))
                 ) : (
@@ -642,6 +666,22 @@ function MainContent() {
               placeholder="اكتب أو سيتم تعبئته تلقائيًا"
             />
           </div>
+
+          {/* حقل رقم الترخيص - يظهر فقط عند اختيار PSL */}
+          {prefix === "PSL" && (
+            <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden shadow-sm">
+              <span className="bg-gray-100 px-4 py-3 text-gray-700 border-r border-gray-300">
+                رقم الترخيص:
+              </span>
+              <input
+                type="text"
+                value={formData.licenseNumber}
+                onChange={(e) => setFormData({...formData, licenseNumber: e.target.value})}
+                placeholder="أدخل رقم الترخيص"
+                className="flex-1 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              />
+            </div>
+          )}
 
           {/* الأزرار */}
           <div className="flex flex-col gap-4 mt-6">
@@ -724,6 +764,14 @@ function MainContent() {
                 <span className="font-medium">بادئة رمز الإجازة:</span>
                 <span className="font-bold text-blue-700"> {prefix}</span>
               </div>
+              
+              {/* عرض رقم الترخيص فقط إذا كان PSL */}
+              {prefix === "PSL" && (
+                <div>
+                  <span className="font-medium">رقم الترخيص:</span>
+                  <span className="text-green-700"> {formData.licenseNumber || "غير محدد"}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

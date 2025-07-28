@@ -9,12 +9,13 @@ type Hospital = {
   id: string;
   name: string;
   nameEn: string;
+  licenseNumber: string; // إضافة حقل رقم الترخيص
 };
 
 export default function AddHospitalPage() {
   const [hospitalName, setHospitalName] = useState("");
   const [hospitalNameEn, setHospitalNameEn] = useState("");
-  // حددنا النوع هنا
+  const [licenseNumber, setLicenseNumber] = useState(""); // حالة لرقم الترخيص
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -36,8 +37,8 @@ export default function AddHospitalPage() {
   }, [fetchHospitals]);
 
   const handleSave = async () => {
-    if (!hospitalName.trim() || !hospitalNameEn.trim()) {
-      alert("يرجى إدخال اسم المستشفى بالعربي والإنجليزي");
+    if (!hospitalName.trim() || !hospitalNameEn.trim() || !licenseNumber.trim()) {
+      alert("يرجى إدخال جميع البيانات المطلوبة");
       return;
     }
 
@@ -47,11 +48,13 @@ export default function AddHospitalPage() {
       await addDoc(collection(db, "hospitals"), {
         name: hospitalName.trim(),
         nameEn: hospitalNameEn.trim(),
+        licenseNumber: `رقم الترخيص: ${licenseNumber.trim()}`, // حفظ النص مع الرقم
       });
 
       alert("✅ تم حفظ المستشفى بنجاح");
       setHospitalName("");
       setHospitalNameEn("");
+      setLicenseNumber("");
       fetchHospitals();
     } catch (error) {
       console.error("حدث خطأ أثناء الحفظ:", error);
@@ -85,6 +88,20 @@ export default function AddHospitalPage() {
             className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 shadow-sm"
           />
 
+          {/* حقل رقم الترخيص */}
+          <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden shadow-sm">
+            <span className="bg-gray-100 px-4 py-3 text-gray-700 border-r border-gray-300">
+              رقم الترخيص:
+            </span>
+            <input
+              type="text"
+              value={licenseNumber}
+              onChange={(e) => setLicenseNumber(e.target.value)}
+              placeholder="أدخل رقم الترخيص"
+              className="flex-1 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+            />
+          </div>
+
           <button
             onClick={handleSave}
             disabled={loading}
@@ -109,10 +126,13 @@ export default function AddHospitalPage() {
                   key={h.id}
                   className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-blue-900 shadow-sm"
                 >
-                  {h.name}
-                  <span className="text-sm text-gray-500 ltr:ml-2 rtl:mr-2">
-                    ({h.nameEn})
-                  </span>
+                  <div>{h.name}</div>
+                  <div className="text-sm text-gray-500">({h.nameEn})</div>
+                  {h.licenseNumber && (
+                    <div className="text-sm font-medium mt-1 text-green-700">
+                      {h.licenseNumber}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
