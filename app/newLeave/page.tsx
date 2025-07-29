@@ -18,7 +18,7 @@ type Hospital = {
   id: string;
   name?: string;
   nameEn?: string;
-  licenseNumber?: string; // إضافة حقل رقم الترخيص للمستشفى
+  licenseNumber?: string;
 };
 
 type FormData = {
@@ -44,17 +44,14 @@ type FormData = {
   hospitalEn: string;
   selectedTime: string;
   timeDisplay: string;
-  licenseNumber: string; // حقل رقم الترخيص
+  licenseNumber: string;
 };
 
-// دالة لتوليد رمز الإجازة مع البادئة المحددة
 const generateLeaveCode = (prefix: string = "GSL"): string => {
   return `${prefix}250763${Math.floor(10000 + Math.random() * 90000)}`;
 };
 
-// دالة لتحويل الأرقام العربية/المشرقية إلى إنجليزية
 const convertNumbersToEnglish = (value: string): string => {
-  // خريطة تحويل الأرقام العربية إلى إنجليزية
   const arabicToEnglishMap: { [key: string]: string } = {
     '٠': '0',
     '١': '1',
@@ -66,7 +63,7 @@ const convertNumbersToEnglish = (value: string): string => {
     '٧': '7',
     '٨': '8',
     '٩': '9',
-    '٫': '.' // النقطة العشرية
+    '٫': '.'
   };
   
   return value
@@ -75,7 +72,6 @@ const convertNumbersToEnglish = (value: string): string => {
     .join('');
 };
 
-// الجزء الرئيسي من التطبيق
 function MainContent() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
@@ -89,9 +85,14 @@ function MainContent() {
   const [doctorSearch, setDoctorSearch] = useState("");
   const doctorListRef = useRef<HTMLUListElement>(null);
   const searchParams = useSearchParams();
-  
-  // حالة البادئة لرمز الإجازة (GSL أو PSL)
   const [prefix, setPrefix] = useState<"GSL" | "PSL">("GSL");
+  const [customDuration, setCustomDuration] = useState<string>("");
+  const [savedCustomDuration, setSavedCustomDuration] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('savedCustomDuration') || "";
+    }
+    return "";
+  });
 
   const initialFormData: FormData = {
     leaveCode: generateLeaveCode(prefix),
@@ -116,26 +117,49 @@ function MainContent() {
     hospitalEn: "",
     selectedTime: "12:00",
     timeDisplay: "12:00 مساءً",
-    licenseNumber: "" // قيمة ابتدائية لرقم الترخيص
+    licenseNumber: ""
   };
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
-  // دالة التبديل بين PSL و GSL
   const togglePrefix = () => {
     const newPrefix = prefix === "GSL" ? "PSL" : "GSL";
     setPrefix(newPrefix);
-    
-    // توليد رمز جديد باستخدام البادئة الجديدة
     const newCode = generateLeaveCode(newPrefix);
     setFormData(prev => ({
       ...prev,
       leaveCode: newCode,
-      licenseNumber: newPrefix === "GSL" ? "" : prev.licenseNumber // مسح رقم الترخيص عند التبديل إلى GSL
+      licenseNumber: newPrefix === "GSL" ? "" : prev.licenseNumber
     }));
   };
 
-  // جلب المستشفيات مع تضمين رقم الترخيص
+  const handleAddCustomDuration = () => {
+    const num = parseInt(customDuration);
+    if (!isNaN(num) && num > 0) {
+      setSavedCustomDuration(customDuration);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('savedCustomDuration', customDuration);
+      }
+      
+      if (formData.leaveStart) {
+        const startDate = new Date(formData.leaveStart);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + num - 1);
+        
+        setFormData({
+          ...formData,
+          leaveDuration: num,
+          leaveEnd: endDate.toISOString().split("T")[0],
+          reportDate: startDate.toISOString().split("T")[0],
+          entryDate: startDate.toISOString().split("T")[0],
+        });
+      }
+      setCustomDuration("");
+    } else {
+      alert("الرجاء إدخال رقم صحيح أكبر من الصفر");
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "hospitals"), (snapshot) => {
       const list = snapshot.docs.map(doc => {
@@ -144,7 +168,7 @@ function MainContent() {
           id: doc.id,
           name: data.name || "",
           nameEn: data.nameEn || "",
-          licenseNumber: data.licenseNumber || "" // تضمين رقم الترخيص
+          licenseNumber: data.licenseNumber || ""
         } as Hospital;
       });
       setHospitals(list);
@@ -152,7 +176,6 @@ function MainContent() {
     return () => unsubscribe();
   }, []);
 
-  // جلب الأطباء
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "doctors"), (snapshot) => {
       const docsData = snapshot.docs.map((doc) => {
@@ -168,7 +191,6 @@ function MainContent() {
     return () => unsubscribe();
   }, []);
 
-  // إخفاء القوائم عند النقر خارجها
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (hospitalListRef.current && !hospitalListRef.current.contains(event.target as Node)) {
@@ -185,7 +207,6 @@ function MainContent() {
     };
   }, []);
 
-  // التحميل التلقائي عند وجود معلمة URL
   useEffect(() => {
     const param = searchParams.get("editSearch");
     if (param) {
@@ -195,7 +216,6 @@ function MainContent() {
     }
   }, [searchParams]);
 
-  // جلب بيانات المستخدم
   const fetchUserData = async (searchValue = editSearch) => {
     if (!searchValue.trim()) {
       alert("يرجى إدخال الاسم أو رقم الهوية");
@@ -229,7 +249,6 @@ function MainContent() {
         ...docData,
       } as FormData);
 
-      // تحديث البادئة بناءً على رمز الإجازة المسترجع
       if (docData.leaveCode?.startsWith("PSL")) {
         setPrefix("PSL");
       } else {
@@ -243,19 +262,17 @@ function MainContent() {
     }
   };
 
-  // اختيار مستشفى مع تعبئة جميع البيانات
   const selectHospital = (hospital: Hospital) => {
     setFormData({
       ...formData,
       hospital: hospital.name || "",
       hospitalEn: hospital.nameEn || "",
-      licenseNumber: hospital.licenseNumber || "", // تعبئة رقم الترخيص تلقائياً
+      licenseNumber: hospital.licenseNumber || "",
     });
     setShowHospitalList(false);
     setHospitalSearch("");
   };
 
-  // اختيار طبيب
   const selectDoctor = (doctor: Doctor) => {
     setFormData({
       ...formData,
@@ -266,7 +283,6 @@ function MainContent() {
     setDoctorSearch("");
   };
 
-  // معالجة التغييرات للحقول العربية
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
@@ -282,24 +298,21 @@ function MainContent() {
     }
   };
 
-  // معالجة التغييرات للحقول الإنجليزية
   const handleEnglishFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value } as FormData));
   };
 
-  // دالة لتحويل الوقت من 24 ساعة إلى تنسيق 12 ساعة مع AM/PM
   const formatTimeForDisplay = (time: string): string => {
     if (!time) return "";
     
     const [hours, minutes] = time.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
+    const period = hours >= 12 ? 'مساءً' : 'صباحاً';
     const hours12 = hours % 12 || 12;
     
     return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
-  // معالجة تغيير مدة الإجازة
   const handleDurationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const days = parseInt(e.target.value);
     if (!formData.leaveStart) {
@@ -320,15 +333,12 @@ function MainContent() {
     });
   };
 
-  // حفظ البيانات مع تضمين الوقت
   const saveUserData = async () => {
-    // التحقق من صحة رقم الترخيص عند اختيار PSL
     if (prefix === "PSL" && !formData.licenseNumber.trim()) {
       alert("يرجى إدخال رقم الترخيص لشهادة PSL");
       return;
     }
     
-    // تحويل الأرقام العربية/المشرقية إلى إنجليزية في جميع الحقول
     const processedData = {
       ...formData,
       name: convertNumbersToEnglish(formData.name),
@@ -392,11 +402,10 @@ function MainContent() {
         await addDoc(collection(db, "users"), userData);
         alert("تم حفظ البيانات بنجاح");
         
-        // إعادة تعيين النموذج بعد الحفظ مع الحفاظ على البادئة الحالية
         setFormData({
           ...initialFormData,
           leaveCode: generateLeaveCode(prefix),
-          licenseNumber: prefix === "PSL" ? formData.licenseNumber : "" // الحفاظ على قيمة الترخيص إذا كان PSL
+          licenseNumber: prefix === "PSL" ? formData.licenseNumber : ""
         });
       }
     } catch (error) {
@@ -405,12 +414,10 @@ function MainContent() {
     }
   };
 
-  // فلترة المستشفيات
   const filteredHospitals = hospitals.filter(h => 
     (h.name || "").toLowerCase().includes(hospitalSearch.toLowerCase())
   );
   
-  // فلترة الأطباء
   const filteredDoctors = doctors.filter(doc => 
     (doc.doctorName || "").toLowerCase().includes(doctorSearch.toLowerCase())
   );
@@ -449,7 +456,6 @@ function MainContent() {
             />
           </div>
 
-          {/* حقل إدخال الوقت */}
           <div>
             <label className="font-semibold mb-1 block">اختر الوقت:</label>
             <div className="flex items-center gap-3">
@@ -468,17 +474,41 @@ function MainContent() {
 
           <div>
             <label className="font-semibold mb-1 block">اختر مدة الإجازة:</label>
-            <select
-              value={formData.leaveDuration}
-              onChange={handleDurationChange}
-              className="w-full border border-gray-300 p-2 rounded-lg"
-            >
-              {[...Array(10)].map((_, i) => (
-                <option key={i} value={i + 1}>
-                  {i + 1} يوم
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2 mb-2">
+              <select
+                value={formData.leaveDuration}
+                onChange={handleDurationChange}
+                className="flex-1 border border-gray-300 p-2 rounded-lg"
+              >
+                {[...Array(10)].map((_, i) => (
+                  <option key={i} value={i + 1}>
+                    {i + 1} يوم
+                  </option>
+                ))}
+                {savedCustomDuration && (
+                  <option value={parseInt(savedCustomDuration)}>
+                    {savedCustomDuration} يوم (مخصص)
+                  </option>
+                )}
+              </select>
+              
+              <div className="flex gap-2" style={{ width: '200px' }}>
+                <input
+                  type="number"
+                  value={customDuration}
+                  onChange={(e) => setCustomDuration(e.target.value)}
+                  placeholder="أيام"
+                  className="flex-1 border border-gray-300 p-2 rounded-lg w-16"
+                  min="1"
+                />
+                <button
+                  onClick={handleAddCustomDuration}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm"
+                >
+                  تأكيد
+                </button>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -765,7 +795,6 @@ function MainContent() {
                 <span className="font-bold text-blue-700"> {prefix}</span>
               </div>
               
-              {/* عرض رقم الترخيص فقط إذا كان PSL */}
               {prefix === "PSL" && (
                 <div>
                   <span className="font-medium">رقم الترخيص:</span>
@@ -780,7 +809,6 @@ function MainContent() {
   );
 }
 
-// المكون الرئيسي مع تغليف Suspense
 export default function Home() {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-2xl text-purple-700">جاري التحميل...</div>}>

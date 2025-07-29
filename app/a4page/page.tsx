@@ -231,6 +231,8 @@ const getValueClassF = () =>
           font-weight: 400;
           font-style: italic;
         }
+
+        
         .medical-table {
           width: 100%;
           border-collapse: separate;
@@ -239,17 +241,21 @@ const getValueClassF = () =>
           font-size: 14px;
           border-radius: 8px;
           overflow: hidden;
-          box-shadow: 0 0 0 1px #CCCCCC;
+          box-shadow: 0 0 0 1px solid rgba(204, 204, 204, 0.5) !important;
+            border-left: 1px solid rgba(204, 204, 204, 0.5);
+  border-right: 1px solid rgba(204, 204, 204, 0.5);
+   border-top: 1px solid rgba(204, 204, 204, 0.5);
+  border-bottom: 1px solid rgba(204, 204, 204, 0.5);
           margin-bottom: 5px;
           transform: scaleX(1.0);
         }
         .medical-table th, 
         .medical-table td {
-          padding: 12px 8px;
+          padding: 10px 8px;
           vertical-align: middle;
-          height: 48px;
+          height: 30px;
           box-sizing: border-box;
-          border: 1px solid #CCCCCC;
+          border: 1px solid rgba(204, 204, 204, 0.5) !important;
           text-align: center;
         }
         .medical-table th {
@@ -279,18 +285,7 @@ const getValueClassF = () =>
         .medical-table tr:nth-child(even):not(:nth-child(2)) {
           background-color: #F7F7F7;
         }
-        .medical-table tr:first-child th:first-child {
-          border-top-right-radius: 8px;
-        }
-        .medical-table tr:first-child th:last-child {
-          border-top-left-radius: 8px;
-        }
-        .medical-table tr:last-child td:first-child {
-          border-bottom-right-radius: 8px;
-        }
-        .medical-table tr:last-child td:last-child {
-          border-bottom-left-radius: 8px;
-        }
+   
         .medical-table td {
           width: 50%;
         }
@@ -310,7 +305,8 @@ const getValueClassF = () =>
           bottom: 0;
           left: 50%; 
           width: 2px;
-          background-color: #CCCCCC;
+           background-color: rgba(204, 204, 204, 0.4);
+           height: 80%; 
         }
         .footer-left {
           text-align: right;
@@ -604,7 +600,7 @@ const getValueClassF = () =>
   </div>
 </div>
 
-</div   >
+</div >
  <div className="absolute" style={{ right: '40px', bottom: '-30px' }}>
   <img src="/sh1.png" alt="m5" className="w-[150] h-[80]" />
 </div>

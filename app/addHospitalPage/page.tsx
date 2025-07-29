@@ -36,33 +36,39 @@ export default function AddHospitalPage() {
     fetchHospitals();
   }, [fetchHospitals]);
 
-  const handleSave = async () => {
-    if (!hospitalName.trim() || !hospitalNameEn.trim() || !licenseNumber.trim()) {
-      alert("يرجى إدخال جميع البيانات المطلوبة");
-      return;
-    }
+ const handleSave = async () => {
+  // التحقق من الحقول الإلزامية فقط (الاسم العربي والإنجليزي)
+  if (!hospitalName.trim() || !hospitalNameEn.trim()) {
+    alert("❗ يرجى إدخال اسم المستشفى (عربي وإنجليزي)");
+    return;
+  }
 
     setLoading(true);
 
-    try {
-      await addDoc(collection(db, "hospitals"), {
-        name: hospitalName.trim(),
-        nameEn: hospitalNameEn.trim(),
-        licenseNumber: `رقم الترخيص: ${licenseNumber.trim()}`, // حفظ النص مع الرقم
-      });
+  try {
+    // البيانات المراد حفظها (لا تضاف الرخصة إذا كانت فارغة)
+    const hospitalData = {
+      name: hospitalName.trim(),
+      nameEn: hospitalNameEn.trim(),
+      ...(licenseNumber.trim() && { 
+        licenseNumber: `رقم الترخيص: ${licenseNumber.trim()}` 
+      }),
+    };
 
-      alert("✅ تم حفظ المستشفى بنجاح");
-      setHospitalName("");
-      setHospitalNameEn("");
-      setLicenseNumber("");
-      fetchHospitals();
-    } catch (error) {
-      console.error("حدث خطأ أثناء الحفظ:", error);
-      alert("❌ حدث خطأ أثناء حفظ المستشفى");
-    } finally {
-      setLoading(false);
-    }
-  };
+    await addDoc(collection(db, "hospitals"), hospitalData);
+
+    alert("✅ تم حفظ المستشفى بنجاح");
+    setHospitalName("");
+    setHospitalNameEn("");
+    setLicenseNumber("");
+    fetchHospitals();
+  } catch (error) {
+    console.error("حدث خطأ أثناء الحفظ:", error);
+    alert("❌ حدث خطأ أثناء حفظ المستشفى");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 sm:px-8 lg:px-24">
