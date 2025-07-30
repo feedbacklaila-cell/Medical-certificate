@@ -197,10 +197,10 @@ export default function HomePage() {
                 <p className="font-cairo font-bold">{user.leaveCode || "—"}</p>
                 <div className="flex justify-center gap-3">
                   <button
-                    onClick={() => {
-                      const idOrName = user.idNumber || user.name || "";
-                      router.push(`/newLeave?editSearch=${encodeURIComponent(idOrName)}`);
-                    }}
+                   onClick={() => {
+  const leaveCode = user.leaveCode || "";
+  router.push(`/newLeave?editSearch=${encodeURIComponent(leaveCode)}`);
+}}
                     className="p-1.5 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
                     title="تعديل"
                   >

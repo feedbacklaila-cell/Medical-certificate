@@ -227,7 +227,7 @@ function MainContent() {
         where("name", "==", searchValue.trim()));
       
       const q2 = query(collection(db, "users"), 
-        where("idNumber", "==", searchValue.trim()));
+        where("leaveCode", "==", searchValue.trim()));
       
       const [snapshot1, snapshot2] = await Promise.all([
         getDocs(q),
