@@ -462,7 +462,7 @@ const getValueClassF = () =>
                                                        <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/s5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "125px", height: "17px" }} />
 </th>
-                <td className={getValueClassF()} colSpan={2}>{reportDate ? reportDate.split('-').reverse().join('/') : ''}</td>
+                <td className={getValueClassF()} colSpan={2}>{reportDate ? reportDate.split('-').reverse().join('-') : ''}</td>
                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e5.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>              </tr>
