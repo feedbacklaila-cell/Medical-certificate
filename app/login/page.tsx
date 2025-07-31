@@ -8,7 +8,7 @@ import { Menu } from "lucide-react";
 interface LeaveData {
   name?: string;
   reportDate?: string;
-  entryDateGregorian?: string;
+  leaveStartGregorian?: string;
   leaveEndGregorian?: string;
   leaveDurationDays?: string | number;
   doctorName?: string;
@@ -264,7 +264,7 @@ export default function VerifyLeavePage() {
                 </div>
                 <div className="flex flex-col items-center space-y-1">
                   <div className="font-semibold text-[#1a3760]">تبدأ من:</div>
-                  <div className="text-gray-700">{userData.entryDateGregorian || "-"}</div>
+                  <div className="text-gray-700">{userData.leaveStartGregorian || "-"}</div>
                 </div>
                 <div className="flex flex-col items-center space-y-1">
                   <div className="font-semibold text-[#1a3760]">وحتى:</div>

@@ -97,7 +97,7 @@ function MainContent() {
   const initialFormData: FormData = {
     leaveCode: generateLeaveCode(prefix),
     leaveStart: "",
-    leaveDuration: 1,
+    leaveDuration: 0,
     leaveEnd: "",
     reportDate: "",
     entryDate: "",
@@ -116,7 +116,7 @@ function MainContent() {
     hospital: "",
     hospitalEn: "",
     selectedTime: "12:00",
-    timeDisplay: "12:00 مساءً",
+    timeDisplay: "12:00 PM",
     licenseNumber: ""
   };
 

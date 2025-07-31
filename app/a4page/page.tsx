@@ -43,18 +43,43 @@ function toHijriDateFormatted(gregorianDateStr: string): string {
       date.getDate()
     );
 
-    // تنسيق التاريخ الهجري كـ DD/MM/YYYY
     const day = hijriDate.hd.toString().padStart(2, '0');
     const month = hijriDate.hm.toString().padStart(2, '0');
     const year = hijriDate.hy.toString();
 
-    return `${day}/${month}/${year}`;
+    return `${day}-${month}-${year}`; // ✅ أصبحت "DD-MM-YYYY" (هجري)
   } catch (error) {
     console.error('Error converting to Hijri date:', error);
     return '';
   }
 }
 
+
+
+
+// للصيغة القديمة DD-MM-YYYY (للعنصر الثاني)
+function toHijriDateFormattedOld(gregorianDateStr: string): string {
+  if (!gregorianDateStr) return '';
+  try {
+    const date = new Date(gregorianDateStr);
+    if (isNaN(date.getTime())) return '';
+
+    const hijriDate = toHijri(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate()
+    );
+
+   const day = hijriDate.hd.toString().padStart(2, '0');
+    const month = hijriDate.hm.toString().padStart(2, '0');
+    const year = hijriDate.hy.toString();
+
+    return `${year}-${month}-${day}`; // الآن يعيد "YYYY-MM-DD"
+  } catch (error) {
+    console.error('Error converting to Hijri date:', error);
+    return '';
+  }
+}
 
 function convertArabicNumbersToEnglish(str: string) {
   if (!str) return '';
@@ -379,9 +404,9 @@ const getValueClassF = () =>
     <span className={getTitleClassff()}> يوم </span>
     <span className={getValueClassF()} style={{ whiteSpace: 'nowrap' }}>
       (
-      {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveStartGregorian))}
+      {toHijriDateFormattedOld(leaveStartGregorian)}
       <span className={getTitleClassff()}> الى </span>
-      {convertArabicNumbersToEnglish(toHijriDateFormatted(leaveEndGregorian))}
+      {convertArabicNumbersToEnglish(toHijriDateFormattedOld(leaveEndGregorian))}
       )
     </span>
   </>
@@ -391,9 +416,9 @@ const getValueClassF = () =>
   <span>
     (
     <span style={{ display: 'inline-flex', alignItems: 'center', margin: 0 }}>
-        <span>{leaveEndGregorian ? leaveEndGregorian.split('-').reverse().join('/') : ''}</span>
+        <span>{leaveEndGregorian ? leaveEndGregorian.split('-').reverse().join('-') : ''}</span>
       <span style={{ margin: '0 2px' }}>to</span>
-    <span>{leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}</span>
+    <span>{leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('-') : ''}</span>
     </span>
     )
   </span>
@@ -415,7 +440,7 @@ const getValueClassF = () =>
 </th>
                 <td className={getValueClassF()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
                 <td className={getValueClassF()}>
-  {leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}
+  {leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('-') : ''}
 </td>
                  <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e3.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
@@ -427,7 +452,7 @@ const getValueClassF = () =>
 </th>
                 <td className={getValueClassF()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
                 <td className={getValueClassF()}>
- {leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('/') : ''}
+ {leaveStartGregorian }
 </td>
                          <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
