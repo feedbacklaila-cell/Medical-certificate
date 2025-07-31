@@ -451,8 +451,8 @@ const getValueClassF = () =>
   <img src="/ss4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "140px", height: "15px" }} />
 </th>
                 <td className={getValueClassF()} dir="ltr">{toHijriDateFormatted(leaveStartGregorian)}</td>
-                <td className={getValueClassF()}>
- {leaveStartGregorian }
+       <td className={getValueClassF()}>
+  {leaveStartGregorian ? leaveStartGregorian.split('-').reverse().join('-') : ''}
 </td>
                          <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e4.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
