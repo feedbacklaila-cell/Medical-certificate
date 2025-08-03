@@ -116,7 +116,7 @@ function MainContent() {
     hospital: "",
     hospitalEn: "",
     selectedTime: "12:00",
-    timeDisplay: "12:00 PM",
+    timeDisplay: "12:00 مساء",
     licenseNumber: ""
   };
 
