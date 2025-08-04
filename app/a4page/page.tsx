@@ -607,23 +607,62 @@ const getValueClassF = () =>
 
 
 
- <div
-  className="absolute"
-  style={{ left: '440px', transform: 'translateX(50px)' }}
->
-  <img src="/m8.png" alt="logo" className="w-[90px] h-[90px] block mx-auto" />
 
-  <div className="text-center font-[700] text-[14px] font-tajawal mt-5">
-    {hospital}
-  </div>
 
-  <div className="text-center font-[700] text-[14px] font-tajawal mt-3">
-    {hospitalEn}
+  {/* كتلة الصورة والنص مزاحة لليمين */}
+    <div className="vertical-line"></div>
+
+  {/* كتلة الصورة والنص مزاحة لليمين */}
+  <div className="flex flex-col items-center text-center" style={{ 
+    position: 'absolute',
+    left: '440px',
+    width: '200px', // عرض ثابت للكتلة
+    transform: 'translateX(20px)'
+  }}>
+    {/* الصورة */}
+    <img 
+      src="/m8.png" 
+      alt="logo" 
+      style={{
+        width: '90px',
+        height: '90px',
+        marginBottom: '10px'
+      }}
+    />
+
+    {/* النصوص */}
+    <div style={{
+      width: '100%',
+      textAlign: 'center',
+      position: 'relative'
+    }}>
+      <div className="font-[700] text-[14px] font-tajawal" style={{
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        marginBottom: '5px'
+      }}>
+        {hospital}
+      </div>
+
+      <div className="font-[700] text-[14px] font-tajawal" style={{
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        marginBottom: '5px'
+      }}>
+        {hospitalEn}
+      </div>
+      
+      <div className="font-[700] text-[14px] font-tajawal" style={{
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      }}>
+        {licenseNumber}
+      </div>
+    </div>
   </div>
-  <div className="text-center font-[700] text-[14px] font-tajawal ">
-    {licenseNumber}
-  </div>
-</div>
 
 </div >
  <div className="absolute" style={{ right: '40px', bottom: '-30px' }}>
