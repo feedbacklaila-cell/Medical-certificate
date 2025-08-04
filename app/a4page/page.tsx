@@ -638,8 +638,6 @@ const getValueClassF = () =>
     }}>
       <div className="font-[700] text-[14px] font-tajawal" style={{
         whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
         marginBottom: '5px'
       }}>
         {hospital}
@@ -647,8 +645,6 @@ const getValueClassF = () =>
 
       <div className="font-[700] text-[14px] font-tajawal" style={{
         whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
         marginBottom: '5px'
       }}>
         {hospitalEn}
