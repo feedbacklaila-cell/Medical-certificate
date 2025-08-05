@@ -87,12 +87,7 @@ function MainContent() {
   const searchParams = useSearchParams();
   const [prefix, setPrefix] = useState<"GSL" | "PSL">("GSL");
   const [customDuration, setCustomDuration] = useState<string>("");
-  const [savedCustomDuration, setSavedCustomDuration] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('savedCustomDuration') || "";
-    }
-    return "";
-  });
+ 
 
   const initialFormData: FormData = {
     leaveCode: generateLeaveCode(prefix),
@@ -133,32 +128,7 @@ function MainContent() {
     }));
   };
 
-  const handleAddCustomDuration = () => {
-    const num = parseInt(customDuration);
-    if (!isNaN(num) && num > 0) {
-      setSavedCustomDuration(customDuration);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('savedCustomDuration', customDuration);
-      }
-      
-      if (formData.leaveStart) {
-        const startDate = new Date(formData.leaveStart);
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + num - 1);
-        
-        setFormData({
-          ...formData,
-          leaveDuration: num,
-          leaveEnd: endDate.toISOString().split("T")[0],
-          reportDate: startDate.toISOString().split("T")[0],
-          entryDate: startDate.toISOString().split("T")[0],
-        });
-      }
-      setCustomDuration("");
-    } else {
-      alert("الرجاء إدخال رقم صحيح أكبر من الصفر");
-    }
-  };
+  
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "hospitals"), (snapshot) => {
@@ -317,26 +287,7 @@ function MainContent() {
     return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
-  const handleDurationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const days = parseInt(e.target.value);
-    if (!formData.leaveStart) {
-      alert("الرجاء اختيار تاريخ بدء الإجازة أولاً");
-      return;
-    }
-    
-    const startDate = new Date(formData.leaveStart);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + days - 1);
-    
-    setFormData({
-      ...formData,
-      leaveDuration: days,
-      leaveEnd: endDate.toISOString().split("T")[0],
-      reportDate: startDate.toISOString().split("T")[0],
-      entryDate: startDate.toISOString().split("T")[0],
-    });
-  };
-
+  
   const saveUserData = async () => {
     if (prefix === "PSL" && !formData.licenseNumber.trim()) {
       alert("يرجى إدخال رقم الترخيص لشهادة PSL");
