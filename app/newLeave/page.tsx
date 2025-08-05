@@ -86,7 +86,7 @@ function MainContent() {
   const doctorListRef = useRef<HTMLUListElement>(null);
   const searchParams = useSearchParams();
   const [prefix, setPrefix] = useState<"GSL" | "PSL">("GSL");
-  const [customDuration, setCustomDuration] = useState<string>("");
+  
  
 
   const initialFormData: FormData = {
