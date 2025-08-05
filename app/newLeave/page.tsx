@@ -116,7 +116,7 @@ function MainContent() {
     hospital: "",
     hospitalEn: "",
     selectedTime: "12:00",
-    timeDisplay: "12:00 مساء",
+    timeDisplay: "12:00 PM",
     licenseNumber: ""
   };
 
@@ -300,7 +300,11 @@ function MainContent() {
 
   const handleEnglishFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value } as FormData));
+    const processedValue = 
+    name === "nameEn" || name === "doctorNameEn" 
+      ? value.toUpperCase() 
+      : value;
+    setFormData(prev => ({ ...prev, [name]: processedValue } as FormData));
   };
 
   const formatTimeForDisplay = (time: string): string => {
@@ -343,14 +347,14 @@ function MainContent() {
       ...formData,
       name: convertNumbersToEnglish(formData.name),
       idNumber: convertNumbersToEnglish(formData.idNumber),
-      nameEn: formData.nameEn,
+       nameEn: formData.nameEn.toUpperCase(),
       idNumberEn: formData.idNumberEn,
       nationality: convertNumbersToEnglish(formData.nationality),
       nationalityEn: formData.nationalityEn,
       workPlace: convertNumbersToEnglish(formData.workPlace),
       workPlaceEn: formData.workPlaceEn,
       doctorName: convertNumbersToEnglish(formData.doctorName),
-      doctorNameEn: formData.doctorNameEn,
+      doctorNameEn: formData.doctorNameEn.toUpperCase(),
       jobTitle: convertNumbersToEnglish(formData.jobTitle),
       jobTitleEn: formData.jobTitleEn,
       hospital: convertNumbersToEnglish(formData.hospital),
@@ -472,44 +476,35 @@ function MainContent() {
             </div>
           </div>
 
-          <div>
-            <label className="font-semibold mb-1 block">اختر مدة الإجازة:</label>
-            <div className="flex gap-2 mb-2">
-              <select
-                value={formData.leaveDuration}
-                onChange={handleDurationChange}
-                className="flex-1 border border-gray-300 p-2 rounded-lg"
-              >
-                {[...Array(10)].map((_, i) => (
-                  <option key={i} value={i + 1}>
-                    {i + 1} يوم
-                  </option>
-                ))}
-                {savedCustomDuration && (
-                  <option value={parseInt(savedCustomDuration)}>
-                    {savedCustomDuration} يوم (مخصص)
-                  </option>
-                )}
-              </select>
-              
-              <div className="flex gap-2" style={{ width: '200px' }}>
-                <input
-                  type="number"
-                  value={customDuration}
-                  onChange={(e) => setCustomDuration(e.target.value)}
-                  placeholder="أيام"
-                  className="flex-1 border border-gray-300 p-2 rounded-lg w-16"
-                  min="1"
-                />
-                <button
-                  onClick={handleAddCustomDuration}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm"
-                >
-                  تأكيد
-                </button>
-              </div>
-            </div>
-          </div>
+       <div>
+  <label className="font-semibold mb-1 block">مدة الإجازة (بالأيام):</label>
+  <div className="flex gap-2">
+    <input
+      type="number"
+      value={formData.leaveDuration}
+      onChange={(e) => {
+        const days = parseInt(e.target.value) || 1;
+        setFormData(prev => ({ ...prev, leaveDuration: days }));
+        
+        if (formData.leaveStart) {
+          const startDate = new Date(formData.leaveStart);
+          const endDate = new Date(startDate);
+          endDate.setDate(startDate.getDate() + days - 1);
+          
+          setFormData(prev => ({
+            ...prev,
+            leaveEnd: endDate.toISOString().split("T")[0],
+            reportDate: startDate.toISOString().split("T")[0],
+            entryDate: startDate.toISOString().split("T")[0],
+          }));
+        }
+      }}
+      min="1"
+      className="w-full border border-gray-300 p-2 rounded-lg"
+      placeholder="أدخل عدد الأيام"
+    />
+  </div>
+</div>
 
           <div>
             <div className="font-semibold mb-1">مدة الإجازة:</div>

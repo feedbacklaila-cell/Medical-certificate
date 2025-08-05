@@ -626,16 +626,19 @@ const getValueClassF = () =>
       style={{
         width: '90px',
         height: '90px',
-        marginBottom: '10px'
+        marginBottom: '20px'
       }}
     />
 
     {/* النصوص */}
     <div style={{
-      width: '100%',
-      textAlign: 'center',
-      position: 'relative'
-    }}>
+  width: '100%',
+  textAlign: 'center',  // توسيط النص
+  position: 'relative',
+  display: 'flex',      // لجعل المحتوى مرنًا (اختياري)
+  flexDirection: 'column', // ترتيب العناصر في عمود
+  alignItems: 'center', // توسيط أفقيًا داخل الفليكس
+}}>
       <div className="font-[700] text-[14px] font-tajawal" style={{
         whiteSpace: 'nowrap',
         marginBottom: '5px'
@@ -643,9 +646,11 @@ const getValueClassF = () =>
         {hospital}
       </div>
 
-      <div className="font-[700] text-[14px] font-tajawal" style={{
+      <div className="font-[700] text-[14px]" style={{
         whiteSpace: 'nowrap',
-        marginBottom: '5px'
+        marginBottom: '5px',
+         fontWeight: 'bold',
+    fontFamily: 'Noto Serif, serif'
       }}>
         {hospitalEn}
       </div>
