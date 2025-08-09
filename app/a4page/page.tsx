@@ -502,7 +502,7 @@ const getValueClassF = () =>
                      <th className={getTitleClass()} style={{ textAlign: "center", verticalAlign: "middle" }}>
   <img src="/e9.png" alt="logo" style={{ display: "inline-block", verticalAlign: "middle", width: "210px", height: "15px" }} />
 </th>              </tr>
-            <tr style={{ height: "75px" }}>
+            <tr style={{ height: "0px" }}>
   <th
     className={getTitleClass()}
     style={{
