@@ -4,7 +4,7 @@ import { useCallback, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, Pencil, Trash2, Printer, Search } from "lucide-react";
 import { FaUserMd, FaCalendarPlus, FaFileAlt, FaStethoscope, FaUserFriends, FaClipboardCheck, FaHospital } from "react-icons/fa";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc, where, query } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 type User = {
@@ -30,6 +30,28 @@ export default function HomePage() {
     { title: "مشهد مراجعة", icon: <FaClipboardCheck className="text-blue-600 text-3xl" />, path: "/reviewnote" },
   ];
 
+   const handleDeleteUser = async (leaveCode: string) => {
+  if (confirm("هل أنت متأكد أنك تريد حذف هذا المستخدم؟")) {
+    try {
+      const q = query(
+        collection(db, "users"),
+        where("leaveCode", "==", leaveCode)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      
+      querySnapshot.forEach(async (document) => {
+        await deleteDoc(doc(db, "users", document.id));
+      });
+      
+      await fetchUsers();
+      alert("تم حذف المستخدم بنجاح");
+    } catch (error) {
+      console.error("حدث خطأ أثناء الحذف:", error);
+      alert("فشل في حذف المستخدم");
+    }
+  }
+};
   const fetchUsers = useCallback(async () => {
     try {
       const snapshot = await getDocs(collection(db, "users"));
@@ -67,6 +89,8 @@ export default function HomePage() {
     };
   }, [open]);
 
+
+  
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
       {/* Header */}
@@ -206,12 +230,13 @@ export default function HomePage() {
                   >
                     <Pencil size={20} />
                   </button>
-                  <button 
-                    className="p-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200" 
-                    title="حذف"
-                  >
-                    <Trash2 size={20} />
-                  </button>
+                <button 
+  onClick={() => user.leaveCode && handleDeleteUser(user.leaveCode)}
+  className="p-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200" 
+  title="حذف"
+>
+  <Trash2 size={20} />
+</button>
                   <button
                     onClick={() => router.push(`/a4page?leaveCode=${encodeURIComponent(user.leaveCode || "")}`)}
                     className="p-1.5 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200"
