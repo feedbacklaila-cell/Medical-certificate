@@ -17,6 +17,8 @@ export default function HomePage() {
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [groupedUsers, setGroupedUsers] = useState<{[key: string]: User[]}>({});
+  const [showGrouped, setShowGrouped] = useState(false);
   const router = useRouter();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -30,37 +32,54 @@ export default function HomePage() {
     { title: "مشهد مراجعة", icon: <FaClipboardCheck className="text-blue-600 text-3xl" />, path: "/reviewnote" },
   ];
 
-   const handleDeleteUser = async (leaveCode: string) => {
-  if (confirm("هل أنت متأكد أنك تريد حذف هذا المستخدم؟")) {
-    try {
-      const q = query(
-        collection(db, "users"),
-        where("leaveCode", "==", leaveCode)
-      );
-      
-      const querySnapshot = await getDocs(q);
-      
-      querySnapshot.forEach(async (document) => {
-        await deleteDoc(doc(db, "users", document.id));
-      });
-      
-      await fetchUsers();
-      alert("تم حذف المستخدم بنجاح");
-    } catch (error) {
-      console.error("حدث خطأ أثناء الحذف:", error);
-      alert("فشل في حذف المستخدم");
+  const handleDeleteUser = async (leaveCode: string) => {
+    if (confirm("هل أنت متأكد أنك تريد حذف هذا المستخدم؟")) {
+      try {
+        const q = query(
+          collection(db, "users"),
+          where("leaveCode", "==", leaveCode)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        querySnapshot.forEach(async (document) => {
+          await deleteDoc(doc(db, "users", document.id));
+        });
+        
+        await fetchUsers();
+        alert("تم حذف المستخدم بنجاح");
+      } catch (error) {
+        console.error("حدث خطأ أثناء الحذف:", error);
+        alert("فشل في حذف المستخدم");
+      }
     }
-  }
-};
+  };
+
   const fetchUsers = useCallback(async () => {
     try {
       const snapshot = await getDocs(collection(db, "users"));
       const data = snapshot.docs.map((doc) => doc.data() as User);
       setUsers(data);
+      
+      // تجميع المستخدمين حسب leaveCode
+      const grouped = data.reduce((acc, user) => {
+        const code = user.leaveCode || 'undefined';
+        if (!acc[code]) {
+          acc[code] = [];
+        }
+        acc[code].push(user);
+        return acc;
+      }, {} as {[key: string]: User[]});
+      
+      setGroupedUsers(grouped);
     } catch (error) {
       console.error("حدث خطأ أثناء جلب المستخدمين:", error);
     }
   }, []);
+
+  const toggleGroupedView = () => {
+    setShowGrouped(!showGrouped);
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -89,8 +108,6 @@ export default function HomePage() {
     };
   }, [open]);
 
-
-  
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 font-sans">
       {/* Header */}
@@ -164,20 +181,27 @@ export default function HomePage() {
           إضافة جديد
         </button>
 
-        <div className="flex items-center border-2 border-blue-600 rounded-xl px-3 py-1 bg-white shadow-md">
+        <div className="flex items-center">
           <button
-            className="mr-2"
-            aria-label="Search"
+            onClick={toggleGroupedView}
+            className={`mr-2 p-2 rounded-md ${showGrouped ? 'bg-green-600 text-white' : 'bg-green-100 text-green-600'} hover:bg-green-200`}
+            title="عرض العناصر المتشابهة"
           >
-            <Search color="#2563EB" size={22} />
+            <Search size={22} />
           </button>
-          <input
-            type="text"
-            placeholder="Search table"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="font-cairo text-sm outline-none placeholder-blue-600 w-32"
-          />
+          
+          <div className="flex items-center border-2 border-blue-600 rounded-xl px-3 py-1 bg-white shadow-md">
+            <button className="mr-2" aria-label="Search">
+              <Search color="#2563EB" size={22} />
+            </button>
+            <input
+              type="text"
+              placeholder="Search table"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="font-cairo text-sm outline-none placeholder-blue-600 w-32"
+            />
+          </div>
         </div>
       </div>
 
@@ -209,44 +233,93 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Table Rows */}
-            {filteredUsers.map((user, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-5 items-center text-center py-4 border-b text-black"
-              >
-                <span className="font-extrabold text-lg">{index + 1}</span>
-                <p className="font-cairo font-bold">{user.name || "—"}</p>
-                <p className="font-cairo font-bold">{user.idNumber || "—"}</p>
-                <p className="font-cairo font-bold">{user.leaveCode || "—"}</p>
-                <div className="flex justify-center gap-3">
-                  <button
-                   onClick={() => {
-  const leaveCode = user.leaveCode || "";
-  router.push(`/newLeave?editSearch=${encodeURIComponent(leaveCode)}`);
-}}
-                    className="p-1.5 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
-                    title="تعديل"
-                  >
-                    <Pencil size={20} />
-                  </button>
-                <button 
-  onClick={() => user.leaveCode && handleDeleteUser(user.leaveCode)}
-  className="p-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200" 
-  title="حذف"
->
-  <Trash2 size={20} />
-</button>
-                  <button
-                    onClick={() => router.push(`/a4page?leaveCode=${encodeURIComponent(user.leaveCode || "")}`)}
-                    className="p-1.5 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200"
-                    title="طباعة"
-                  >
-                    <Printer size={20} />
-                  </button>
+            {/* عرض العناصر المجمعة أو العادية */}
+            {showGrouped ? (
+              Object.entries(groupedUsers)
+                .filter(([code, items]) => items.length > 1)
+                .map(([code, items], groupIndex) => (
+                  <div key={code} className="mb-8">
+                    <div className="bg-gray-100 p-2 rounded-t-lg font-bold">
+                      رمز الإجازة: {code || "غير محدد"} - عدد العناصر: {items.length}
+                    </div>
+                    {items.map((user, index) => (
+                      <div
+                        key={`${code}-${index}`}
+                        className="grid grid-cols-5 items-center text-center py-4 border-b text-black"
+                      >
+                        <span className="font-extrabold text-lg">{groupIndex + 1}.{index + 1}</span>
+                        <p className="font-cairo font-bold">{user.name || "—"}</p>
+                        <p className="font-cairo font-bold">{user.idNumber || "—"}</p>
+                        <p className="font-cairo font-bold">{user.leaveCode || "—"}</p>
+                        <div className="flex justify-center gap-3">
+                          <button
+                            onClick={() => {
+                              const leaveCode = user.leaveCode || "";
+                              router.push(`/newLeave?editSearch=${encodeURIComponent(leaveCode)}`);
+                            }}
+                            className="p-1.5 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
+                            title="تعديل"
+                          >
+                            <Pencil size={20} />
+                          </button>
+                          <button 
+                            onClick={() => user.leaveCode && handleDeleteUser(user.leaveCode)}
+                            className="p-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200" 
+                            title="حذف"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                          <button
+                            onClick={() => router.push(`/a4page?leaveCode=${encodeURIComponent(user.leaveCode || "")}`)}
+                            className="p-1.5 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200"
+                            title="طباعة"
+                          >
+                            <Printer size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))
+            ) : (
+              filteredUsers.map((user, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-5 items-center text-center py-4 border-b text-black"
+                >
+                  <span className="font-extrabold text-lg">{index + 1}</span>
+                  <p className="font-cairo font-bold">{user.name || "—"}</p>
+                  <p className="font-cairo font-bold">{user.idNumber || "—"}</p>
+                  <p className="font-cairo font-bold">{user.leaveCode || "—"}</p>
+                  <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => {
+                        const leaveCode = user.leaveCode || "";
+                        router.push(`/newLeave?editSearch=${encodeURIComponent(leaveCode)}`);
+                      }}
+                      className="p-1.5 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
+                      title="تعديل"
+                    >
+                      <Pencil size={20} />
+                    </button>
+                    <button 
+                      onClick={() => user.leaveCode && handleDeleteUser(user.leaveCode)}
+                      className="p-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200" 
+                      title="حذف"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                    <button
+                      onClick={() => router.push(`/a4page?leaveCode=${encodeURIComponent(user.leaveCode || "")}`)}
+                      className="p-1.5 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200"
+                      title="طباعة"
+                    >
+                      <Printer size={20} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </main>
