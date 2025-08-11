@@ -236,7 +236,7 @@ export default function HomePage() {
             {/* عرض العناصر المجمعة أو العادية */}
             {showGrouped ? (
               Object.entries(groupedUsers)
-                .filter(([code, items]) => items.length > 1)
+                .filter(([_code, items]) => items.length > 1)
                 .map(([code, items], groupIndex) => (
                   <div key={code} className="mb-8">
                     <div className="bg-gray-100 p-2 rounded-t-lg font-bold">
