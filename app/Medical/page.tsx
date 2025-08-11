@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Menu, Pencil, Trash2, Printer } from "lucide-react";
+import { Menu } from "lucide-react";
 import { FaUserMd, FaCalendarPlus, FaFileAlt, FaStethoscope, FaUserFriends, FaClipboardCheck, FaHospital } from "react-icons/fa";
 
 export default function HomePage() {
