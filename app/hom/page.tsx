@@ -236,9 +236,9 @@ export default function HomePage() {
             {/* عرض العناصر المجمعة أو العادية */}
             {showGrouped ? (
               Object.entries(groupedUsers)
-                .filter(([_code, items]) => items.length > 1)
-                .map(([code, items], groupIndex) => (
-                  <div key={code} className="mb-8">
+    .filter(([ , items ]) => items.length > 1)  // هنا التعديل
+    .map(([code, items], groupIndex) => (
+      <div key={code} className="mb-8">
                     <div className="bg-gray-100 p-2 rounded-t-lg font-bold">
                       رمز الإجازة: {code || "غير محدد"} - عدد العناصر: {items.length}
                     </div>
