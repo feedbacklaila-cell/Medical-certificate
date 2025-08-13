@@ -28,7 +28,7 @@ type FormData = {
 
 const generateCertificateNumber = (): string => {
   const randomNum = Math.floor(10000 + Math.random() * 90000);
-  return `HC-${new Date().getFullYear()}-${randomNum}`;
+  return `255${new Date().getFullYear()}${randomNum}`;
 };
 
 export default function HealthCertificateForm() {
