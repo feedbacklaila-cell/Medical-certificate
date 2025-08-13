@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { db } from "../firebaseConfig";
-import { query, where, getDocs, doc, updateDoc } from "firebase/firestore";
-import { collection, addDoc } from "firebase/firestore";
-
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { db } from "../firebaseConfig";
+import { query, where, getDocs, doc, updateDoc, collection, addDoc } from "firebase/firestore";
+import Link from "next/link";
 
 type FormData = {
   amana: string;
@@ -30,7 +29,7 @@ const generateCertificateNumber = (): string => {
   return `255${new Date().getFullYear()}${randomNum}`;
 };
 
-export default function HealthCertificateForm() {
+function HealthCertificateForm() {
   const [formData, setFormData] = useState<FormData>({
     amana: "",
     baladia: "",
@@ -200,6 +199,100 @@ export default function HealthCertificateForm() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">الأمانة</label>
+              <input
+                type="text"
+                name="amana"
+                value={formData.amana}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">البلدية</label>
+              <input
+                type="text"
+                name="baladia"
+                value={formData.baladia}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">الاسم الكامل *</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">رقم الهوية/الإقامة *</label>
+              <input
+                type="text"
+                name="idNumber"
+                value={formData.idNumber}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">الجنس</label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">اختر الجنس</option>
+                <option value="ذكر">ذكر</option>
+                <option value="أنثى">أنثى</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">الجنسية</label>
+              <input
+                type="text"
+                name="nationality"
+                value={formData.nationality}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">المهنة</label>
+              <input
+                type="text"
+                name="jobTitle"
+                value={formData.jobTitle}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">نوع البرنامج التثقيفي</label>
+              <input
+                type="text"
+                name="programType"
+                value={formData.programType}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">رقم الرخصة</label>
               <input
@@ -233,9 +326,8 @@ export default function HealthCertificateForm() {
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-         
+          </div>
 
-          {/* أزرار التحكم */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             {/* <button
               type="submit"
@@ -247,24 +339,32 @@ export default function HealthCertificateForm() {
             {isEditing && (
               <button
                 type="button"
-                // onClick={resetForm}
+                onClick={resetForm}
                 className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md font-medium"
               >
                 نموذج جديد
               </button>
             )} */}
 
-            
+            <Link href="/" passHref>
               <button
                 type="button"
-                className="w- bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium"
               >
                 العودة للرئيسية
               </button>
-            
+            </Link>
           </div>
         </form>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center">جاري تحميل النموذج...</div>}>
+      <HealthCertificateForm />
+    </Suspense>
   );
 }
