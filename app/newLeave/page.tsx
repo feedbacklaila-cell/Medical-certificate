@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import { query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 import { collection, addDoc } from "firebase/firestore";
-// import Link from "next/link";
+
 import { useSearchParams } from "next/navigation";
 
 type FormData = {
@@ -20,7 +20,7 @@ type FormData = {
   licenseNumber: string;
   establishmentName: string;
   establishmentNumber: string;
-  // الحقول الجديدة للتواريخ
+
   certificateIssueDate: string;
   healthCertificateIssueDate: string;
   programEndDate: string;
