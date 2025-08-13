@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import { query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 import { collection, addDoc } from "firebase/firestore";
-import Link from "next/link";
+
 import { useSearchParams } from "next/navigation";
 
 type FormData = {
@@ -20,7 +20,6 @@ type FormData = {
   licenseNumber: string;
   establishmentName: string;
   establishmentNumber: string;
-  // الحقول الجديدة للتواريخ
   certificateIssueDate: string;
   healthCertificateIssueDate: string;
   programEndDate: string;
@@ -68,6 +67,8 @@ export default function HealthCertificateForm() {
     }
 
     try {
+      if (!db) throw new Error("Firebase not initialized");
+
       const certificateData = {
         ...formData,
         createdAt: new Date().toISOString(),
@@ -122,6 +123,8 @@ export default function HealthCertificateForm() {
   useEffect(() => {
     const fetchData = async (idNumber: string) => {
       try {
+        if (!db) throw new Error("Firebase not initialized");
+
         const q = query(collection(db, "healthCertificates"), 
           where("idNumber", "==", idNumber));
         const querySnapshot = await getDocs(q);
@@ -155,14 +158,12 @@ export default function HealthCertificateForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* معلومات الشهادة */}
           <div className="bg-blue-50 p-4 rounded-lg">
             <div className="flex justify-between items-center mb-2">
               <span className="font-bold text-blue-800">رقم الشهادة:</span>
               <span className="font-mono text-lg">{formData.healthCertificateNumber}</span>
             </div>
             
-            {/* حقول التواريخ الجديدة */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ إصدار الشهادة</label>
@@ -198,100 +199,6 @@ export default function HealthCertificateForm() {
               </div>
             </div>
           </div>
-          {/* المعلومات الشخصية */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">الأمانة</label>
-              <input
-                type="text"
-                name="amana"
-                value={formData.amana}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">البلدية</label>
-              <input
-                type="text"
-                name="baladia"
-                value={formData.baladia}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">الاسم الكامل *</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">رقم الهوية/الإقامة *</label>
-              <input
-                type="text"
-                name="idNumber"
-                value={formData.idNumber}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">الجنس</label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">اختر الجنس</option>
-                <option value="ذكر">ذكر</option>
-                <option value="أنثى">أنثى</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">الجنسية</label>
-              <input
-                type="text"
-                name="nationality"
-                value={formData.nationality}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">المهنة</label>
-              <input
-                type="text"
-                name="jobTitle"
-                value={formData.jobTitle}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">نوع البرنامج التثقيفي</label>
-              <input
-                type="text"
-                name="programType"
-                value={formData.programType}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">رقم الرخصة</label>
@@ -326,7 +233,7 @@ export default function HealthCertificateForm() {
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-          </div>
+         
 
           {/* أزرار التحكم */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
