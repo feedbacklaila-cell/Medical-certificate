@@ -329,7 +329,7 @@ function HealthCertificateForm() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            {/* <button
+            <button
               type="submit"
               className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium"
             >
@@ -344,7 +344,7 @@ function HealthCertificateForm() {
               >
                 نموذج جديد
               </button>
-            )} */}
+            )}
 
             <Link href="/" passHref>
               <button
