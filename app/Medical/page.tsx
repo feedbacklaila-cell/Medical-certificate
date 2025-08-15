@@ -1,18 +1,37 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Grid } from "lucide-react"; // أيقونة بديلة لـ Menu
-import { motion } from "framer-motion"; // مكتبة الأنيميشن
+import { Menu } from "lucide-react"; // زر Menu بدل Grid
+import { motion } from "framer-motion";
 
 export default function HomePage() {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  // لإغلاق sidebar عند الضغط خارجها
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
 
   return (
     <motion.div
       className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white font-sans"
-      initial={{ opacity: 0, y: 20 }} // بداية الحركة
-      animate={{ opacity: 1, y: 0 }} // نهاية الحركة
-      transition={{ duration: 0.6, ease: "easeOut" }} // مدة وتأثير الحركة
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
     >
       {/* Header */}
       <header className="mx-4 mt-4 rounded-xl flex items-center justify-between bg-white px-6 py-4 shadow-md">
@@ -30,11 +49,73 @@ export default function HomePage() {
             }}
           />
         </div>
-        {/* أيقونة Grid داخل دائرة */}
-        <div className="p-2 rounded-full text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors cursor-default">
-          <Grid className="w-6 h-6" />
+
+        {/* زر Menu */}
+        <div
+          className="p-2 rounded-full text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer"
+          onClick={() => setOpen(!open)}
+        >
+          <Menu className="w-6 h-6" />
         </div>
       </header>
+
+      {/* Sidebar (نفس القائمة والأيقونات كما في الكود الأول) */}
+      {open && (
+        <motion.div
+          ref={sidebarRef}
+          className="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6"
+          initial={{ x: 300 }}
+          animate={{ x: 0 }}
+          exit={{ x: 300 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <h2 className="text-xl font-bold text-blue-700 mb-6 text-right">القائمة</h2>
+          <ul className="space-y-4 text-right">
+            <li>
+    <button onClick={() => router.push("/AmanatData")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
+      <span className="text-blue-800 font-medium">إدارة الأمانات والبلديات</span>
+      <span className="text-blue-600 text-3xl">🏛️</span>
+    </button>
+  </li>
+            {/* <li>
+              <button onClick={() => router.push("/newLeave")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
+                <span className="text-blue-800 font-medium">إجازة جديدة</span>
+                <span className="text-blue-600 text-3xl">📅</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => router.push("/a4page")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
+                <span className="text-blue-800 font-medium">تقرير</span>
+                <span className="text-blue-600 text-3xl">📄</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => router.push("/addHospitalPage")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
+                <span className="text-blue-800 font-medium">إضافة مستشفى</span>
+                <span className="text-blue-600 text-3xl">🏥</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => router.push("/medicalreport")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
+                <span className="text-blue-800 font-medium">تقرير طبي</span>
+                <span className="text-blue-600 text-3xl">🩺</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => router.push("/companion")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
+                <span className="text-blue-800 font-medium">مرافق مريض</span>
+                <span className="text-blue-600 text-3xl">👥</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => router.push("/reviewnote")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
+                <span className="text-blue-800 font-medium">مشهد مراجعة</span>
+                <span className="text-blue-600 text-3xl">📝</span>
+              </button>
+            </li> */}
+          </ul>
+        </motion.div>
+      )}
 
       {/* زر إضافة جديد */}
       <motion.div
