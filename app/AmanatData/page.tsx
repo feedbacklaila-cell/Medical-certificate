@@ -176,7 +176,7 @@ export default function AmanatPage() {
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  صورة الأمانة (اختياري)
+                  صورة المنطقه (اختياري)
                 </label>
                 <input
                   type="file"
