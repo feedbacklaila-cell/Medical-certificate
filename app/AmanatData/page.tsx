@@ -6,6 +6,7 @@ import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import Link from "next/link";
 
 type AmanatData = {
+    id?: string;
   amanaName: string;
   baladiaName: string;
   imageUrl: string;
@@ -121,12 +122,20 @@ export default function AmanatPage() {
 
   const fetchAmanat = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "amanat"));
-      const data = querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id,
-      })) as AmanatData[];
-      setAmanatList(data);
+  const querySnapshot = await getDocs(collection(db, "amanat"));
+const data: AmanatData[] = querySnapshot.docs.map(doc => {
+  const docData = doc.data();
+  return {
+    id: doc.id,
+    amanaName: docData.amanaName || "",
+    baladiaName: docData.baladiaName || "",
+    imageUrl: docData.imageUrl || "",
+    createdAt: docData.createdAt || "",
+  };
+});
+setAmanatList(data);
+
+
     } catch (error) {
       console.error("Error fetching amanat:", error);
     }
