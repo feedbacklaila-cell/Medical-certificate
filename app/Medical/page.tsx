@@ -76,14 +76,16 @@ export default function HomePage() {
       <span className="text-blue-800 font-medium">إدارة الأمانات والبلديات</span>
       <span className="text-blue-600 text-3xl">🏛️</span>
     </button>
-  </li>
+  </li><li>
+  <button
+    onClick={() => router.push("/Name")}
+    className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100"
+  >
+    <span className="text-blue-800 font-medium">إضافة مستخدم</span>
+    <span className="text-blue-600 text-3xl">🧑‍🤝‍🧑</span>
+  </button>
+</li>
             {/* <li>
-              <button onClick={() => router.push("/newLeave")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
-                <span className="text-blue-800 font-medium">إجازة جديدة</span>
-                <span className="text-blue-600 text-3xl">📅</span>
-              </button>
-            </li>
-            <li>
               <button onClick={() => router.push("/a4page")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
                 <span className="text-blue-800 font-medium">تقرير</span>
                 <span className="text-blue-600 text-3xl">📄</span>
