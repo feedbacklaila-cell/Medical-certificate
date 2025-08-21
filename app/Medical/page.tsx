@@ -85,25 +85,37 @@ export default function HomePage() {
     <span className="text-blue-600 text-3xl">🧑‍🤝‍🧑</span>
   </button>
 </li>
+           <li>
+  <button 
+    onClick={() => router.push("/EducationalPrograms")} 
+    className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100"
+  >
+    <span className="text-blue-800 font-medium">إدارة البرامج التثقيفية</span>
+    <span className="text-blue-600 text-3xl">🎓</span>
+  </button>
+</li>
+
+<li>
+  <button 
+    onClick={() => router.push("/Establishments")} 
+    className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100"
+  >
+    <span className="text-blue-800 font-medium">إدارة المنشآت</span>
+    <span className="text-blue-600 text-3xl">🏢</span>
+  </button>
+</li>
+
+           {/* <li>
+  <button 
+    onClick={() => router.push("/newLeave")} 
+    className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100"
+  >
+    <span className="text-blue-800 font-medium">نموذج الشهادة الصحية</span>
+    <span className="text-blue-600 text-3xl">📜</span>
+  </button>
+</li> */}
+
             {/* <li>
-              <button onClick={() => router.push("/a4page")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
-                <span className="text-blue-800 font-medium">تقرير</span>
-                <span className="text-blue-600 text-3xl">📄</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={() => router.push("/addHospitalPage")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
-                <span className="text-blue-800 font-medium">إضافة مستشفى</span>
-                <span className="text-blue-600 text-3xl">🏥</span>
-              </button>
-            </li>
-            <li>
-              <button onClick={() => router.push("/medicalreport")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
-                <span className="text-blue-800 font-medium">تقرير طبي</span>
-                <span className="text-blue-600 text-3xl">🩺</span>
-              </button>
-            </li>
-            <li>
               <button onClick={() => router.push("/companion")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
                 <span className="text-blue-800 font-medium">مرافق مريض</span>
                 <span className="text-blue-600 text-3xl">👥</span>

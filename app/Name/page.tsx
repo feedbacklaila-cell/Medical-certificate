@@ -348,7 +348,7 @@ export default function MedicalCertificatePage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {item.nationality}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        {/* <td className="px-6 py-4 whitespace-nowrap">
                           {item.imageUrl ? (
                             <img 
                               src={item.imageUrl} 
@@ -360,7 +360,7 @@ export default function MedicalCertificatePage() {
                               <span className="text-gray-500 text-xs">لا يوجد صورة</span>
                             </div>
                           )}
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>
