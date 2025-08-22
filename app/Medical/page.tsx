@@ -105,7 +105,7 @@ export default function HomePage() {
   </button>
 </li>
 
-           {/* <li>
+           <li>
   <button 
     onClick={() => router.push("/newLeave")} 
     className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100"
@@ -113,7 +113,7 @@ export default function HomePage() {
     <span className="text-blue-800 font-medium">نموذج الشهادة الصحية</span>
     <span className="text-blue-600 text-3xl">📜</span>
   </button>
-</li> */}
+</li>
 
             {/* <li>
               <button onClick={() => router.push("/companion")} className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-blue-100">
