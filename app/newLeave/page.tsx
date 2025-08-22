@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { db } from "../firebaseConfig";
-import { query, where, getDocs, doc, updateDoc, collection, addDoc } from "firebase/firestore";
+import { query, where, getDocs, collection } from "firebase/firestore";
 import Link from "next/link";
 // import QRCode from 'qrcode';
 // import { v4 as uuidv4 } from 'uuid';
@@ -114,7 +114,7 @@ function HealthCertificateForm() {
   const [amanatList, setAmanatList] = useState<AmanaData[]>([]);
   const [filteredAmanat, setFilteredAmanat] = useState<AmanaData[]>([]);
   const [showAmanaSuggestions, setShowAmanaSuggestions] = useState(false);
-  const [selectedAmana, setSelectedAmana] = useState<AmanaData | null>(null);
+  const [, setSelectedAmana] = useState<AmanaData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [, setEditingDocId] = useState<string | null>(null);
   const [personsList, setPersonsList] = useState<PersonData[]>([]);
