@@ -114,7 +114,7 @@ function HealthCertificateForm() {
   const [amanatList, setAmanatList] = useState<AmanaData[]>([]);
   const [filteredAmanat, setFilteredAmanat] = useState<AmanaData[]>([]);
   const [showAmanaSuggestions, setShowAmanaSuggestions] = useState(false);
-  const [, setSelectedAmana] = useState<AmanaData | null>(null);
+  const [selectedAmana, setSelectedAmana] = useState<AmanaData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [, setEditingDocId] = useState<string | null>(null);
   const [personsList, setPersonsList] = useState<PersonData[]>([]);
