@@ -56,27 +56,27 @@ export default function HomePage() {
   }, [fetchCertificates]);
 
   // حذف شهادة
-  const handleDelete = async (healthCertificateNumber: string) => {
-    if (confirm("هل تريد حذف هذه الشهادة الطبية؟")) {
-      try {
-        const q = query(
-          collection(db, "healthCertificates"),
-          where("healthCertificateNumber", "==", healthCertificateNumber)
-        );
-        const snapshot = await getDocs(q);
+  // const handleDelete = async (healthCertificateNumber: string) => {
+  //   if (confirm("هل تريد حذف هذه الشهادة الطبية؟")) {
+  //     try {
+  //       const q = query(
+  //         collection(db, "healthCertificates"),
+  //         where("healthCertificateNumber", "==", healthCertificateNumber)
+  //       );
+  //       const snapshot = await getDocs(q);
 
-        snapshot.forEach(async (document) => {
-          await deleteDoc(doc(db, "healthCertificates", document.id));
-        });
+  //       snapshot.forEach(async (document) => {
+  //         await deleteDoc(doc(db, "healthCertificates", document.id));
+  //       });
 
-        await fetchCertificates();
-        alert("تم حذف الشهادة بنجاح ✅");
-      } catch (error) {
-        console.error("فشل الحذف:", error);
-        alert("حدث خطأ أثناء الحذف ❌");
-      }
-    }
-  };
+  //       await fetchCertificates();
+  //       alert("تم حذف الشهادة بنجاح ✅");
+  //     } catch (error) {
+  //       console.error("فشل الحذف:", error);
+  //       alert("حدث خطأ أثناء الحذف ❌");
+  //     }
+  //   }
+  // };
 
   // فلترة البحث
   const filteredCertificates = certificates.filter((c) => {
