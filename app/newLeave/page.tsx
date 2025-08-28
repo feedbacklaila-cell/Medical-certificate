@@ -7,7 +7,7 @@ import { query, where, getDocs, doc, updateDoc, collection, addDoc } from "fireb
 import Link from "next/link";
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 type FormData = {
   amana: string;
   baladia: string;
