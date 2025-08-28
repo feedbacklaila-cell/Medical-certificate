@@ -3,10 +3,10 @@
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { db } from "../firebaseConfig";
-import { query, where, getDocs, collection } from "firebase/firestore";
+import { query, where, getDocs, doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import Link from "next/link";
-// import QRCode from 'qrcode';
-// import { v4 as uuidv4 } from 'uuid';
+import QRCode from 'qrcode';
+import { v4 as uuidv4 } from 'uuid';
 
 type FormData = {
   amana: string;
@@ -26,6 +26,7 @@ type FormData = {
   programEndDate: string;
   amanaImageUrl: string;
   personImageUrl: string;
+  certificateType: string;
   certificateId?: string;
   qrCodeImageUrl?: string;
   createdAt?: string;
@@ -69,26 +70,26 @@ const generateCertificateNumber = (): string => {
   return `255${new Date().getFullYear()}${randomNum}`;
 };
 
-// const uploadToCloudinary = async (dataUrl: string): Promise<string> => {
-//   try {
-//     const response = await fetch(dataUrl);
-//     const blob = await response.blob();
-//     const formData = new FormData();
-//     formData.append('file', blob);
-//     formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
+const uploadToCloudinary = async (dataUrl: string): Promise<string> => {
+  try {
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+    const formData = new FormData();
+    formData.append('file', blob);
+    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
 
-//     const uploadResponse = await fetch(
-//       `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-//       { method: 'POST', body: formData }
-//     );
+    const uploadResponse = await fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      { method: 'POST', body: formData }
+    );
 
-//     const data = await uploadResponse.json();
-//     return data.secure_url;
-//   } catch (error) {
-//     console.error("Error uploading image to Cloudinary:", error);
-//     throw error;
-//   }
-// };
+    const data = await uploadResponse.json();
+    return data.secure_url;
+  } catch (error) {
+    console.error("Error uploading image to Cloudinary:", error);
+    throw error;
+  }
+};
 
 function HealthCertificateForm() {
   const [formData, setFormData] = useState<FormData>({
@@ -108,7 +109,8 @@ function HealthCertificateForm() {
     healthCertificateIssueDate: "",
     programEndDate: "",
     amanaImageUrl: "",
-    personImageUrl: ""
+    personImageUrl: "",
+    certificateType: ""
   });
 
   const [amanatList, setAmanatList] = useState<AmanaData[]>([]);
@@ -116,18 +118,18 @@ function HealthCertificateForm() {
   const [showAmanaSuggestions, setShowAmanaSuggestions] = useState(false);
   const [selectedAmana, setSelectedAmana] = useState<AmanaData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [, setEditingDocId] = useState<string | null>(null);
+  const [editingDocId, setEditingDocId] = useState<string | null>(null);
   const [personsList, setPersonsList] = useState<PersonData[]>([]);
   const [filteredPersons, setFilteredPersons] = useState<PersonData[]>([]);
   const [showPersonSuggestions, setShowPersonSuggestions] = useState(false);
-  const [, setSelectedPerson] = useState<PersonData | null>(null);
-  // const [showProgramSuggestions, setShowProgramSuggestions] = useState(false);
-  // const [filteredPrograms, setFilteredPrograms] = useState<EducationalProgram[]>([]);
-  const [, setProgramsList] = useState<EducationalProgram[]>([]);
-  // const [showLicenseSuggestions, setShowLicenseSuggestions] = useState(false);
-  // const [filteredLicenses, setFilteredLicenses] = useState<Establishment[]>([]);
-  const [, setEstablishmentsList] = useState<Establishment[]>([]);
-  const [, setQrCodeUrl] = useState<string | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<PersonData | null>(null);
+  const [showProgramSuggestions, setShowProgramSuggestions] = useState(false);
+  const [filteredPrograms, setFilteredPrograms] = useState<EducationalProgram[]>([]);
+  const [programsList, setProgramsList] = useState<EducationalProgram[]>([]);
+  const [showLicenseSuggestions, setShowLicenseSuggestions] = useState(false);
+  const [filteredLicenses, setFilteredLicenses] = useState<Establishment[]>([]);
+  const [establishmentsList, setEstablishmentsList] = useState<Establishment[]>([]);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
   const searchParams = useSearchParams();
@@ -296,70 +298,70 @@ function HealthCertificateForm() {
     setShowPersonSuggestions(false);
   };
 
-  // const handleProgramInputFocus = () => {
-  //   setFilteredPrograms(programsList);
-  //   setShowProgramSuggestions(true);
-  // };
+  const handleProgramInputFocus = () => {
+    setFilteredPrograms(programsList);
+    setShowProgramSuggestions(true);
+  };
 
-  // const handleProgramInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = e.target.value;
-  //   setFormData(prev => ({ ...prev, programType: value, programEndDate: "" }));
+  const handleProgramInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData(prev => ({ ...prev, programType: value, programEndDate: "" }));
     
-  //   if (value.length > 0) {
-  //     const filtered = programsList.filter(item =>
-  //       item.programType.toLowerCase().includes(value.toLowerCase())
-  //     );
-  //     setFilteredPrograms(filtered);
-  //   } else {
-  //     setFilteredPrograms(programsList);
-  //   }
-  //   setShowProgramSuggestions(true);
-  // };
+    if (value.length > 0) {
+      const filtered = programsList.filter(item =>
+        item.programType.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredPrograms(filtered);
+    } else {
+      setFilteredPrograms(programsList);
+    }
+    setShowProgramSuggestions(true);
+  };
 
-  // const selectProgram = (program: EducationalProgram) => {
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     programType: program.programType,
-  //     programEndDate: program.endDate
-  //   }));
-  //   setShowProgramSuggestions(false);
-  // };
+  const selectProgram = (program: EducationalProgram) => {
+    setFormData(prev => ({
+      ...prev,
+      programType: program.programType,
+      programEndDate: program.endDate
+    }));
+    setShowProgramSuggestions(false);
+  };
 
-  // const handleLicenseInputFocus = () => {
-  //   setFilteredLicenses(establishmentsList);
-  //   setShowLicenseSuggestions(true);
-  // };
+  const handleLicenseInputFocus = () => {
+    setFilteredLicenses(establishmentsList);
+    setShowLicenseSuggestions(true);
+  };
 
-  // const handleLicenseInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = e.target.value;
-  //   setFormData(prev => ({ 
-  //     ...prev, 
-  //     licenseNumber: value,
-  //     establishmentName: "",
-  //     establishmentNumber: ""
-  //   }));
+  const handleLicenseInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData(prev => ({ 
+      ...prev, 
+      licenseNumber: value,
+      establishmentName: "",
+      establishmentNumber: ""
+    }));
     
-  //   if (value.length > 0) {
-  //     const filtered = establishmentsList.filter(item =>
-  //       item.licenseNumber.toLowerCase().includes(value.toLowerCase()) ||
-  //       item.establishmentName.toLowerCase().includes(value.toLowerCase())
-  //     );
-  //     setFilteredLicenses(filtered);
-  //   } else {
-  //     setFilteredLicenses(establishmentsList);
-  //   }
-  //   setShowLicenseSuggestions(true);
-  // };
+    if (value.length > 0) {
+      const filtered = establishmentsList.filter(item =>
+        item.licenseNumber.toLowerCase().includes(value.toLowerCase()) ||
+        item.establishmentName.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredLicenses(filtered);
+    } else {
+      setFilteredLicenses(establishmentsList);
+    }
+    setShowLicenseSuggestions(true);
+  };
 
-  // const selectLicense = (establishment: Establishment) => {
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     licenseNumber: establishment.licenseNumber,
-  //     establishmentName: establishment.establishmentName,
-  //     establishmentNumber: establishment.establishmentNumber
-  //   }));
-  //   setShowLicenseSuggestions(false);
-  // };
+  const selectLicense = (establishment: Establishment) => {
+    setFormData(prev => ({
+      ...prev,
+      licenseNumber: establishment.licenseNumber,
+      establishmentName: establishment.establishmentName,
+      establishmentNumber: establishment.establishmentNumber
+    }));
+    setShowLicenseSuggestions(false);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -369,47 +371,48 @@ function HealthCertificateForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.idNumber || !formData.establishmentName) {
-      alert("الرجاء إدخال البيانات المطلوبة (الاسم، رقم الهوية، اسم المنشأة)");
+    if (!formData.name || !formData.idNumber || !formData.establishmentName || !formData.certificateType) {
+      alert("الرجاء إدخال البيانات المطلوبة (الاسم، رقم الهوية، اسم المنشأة، نوع الشهادة)");
       return;
     }
 
     setLoading(true);
 
-    // try {
-    //   // إنشاء معرف فريد للشهادة
-    //   const certificateId = formData.healthCertificateNumber || uuidv4();
-    //   const certificateUrl = `http://localhost:3000/login?certificateNumber=${encodeURIComponent(certificateId)}`;
+    try {
+      // عند التعديل، نحتفظ بمعرف الشهادة والباركود الأصلي
+      const certificateId = isEditing ? formData.certificateId : uuidv4();
+      const certificateUrl = `${window.location.origin}/login?certificateNumber=${encodeURIComponent(certificateId)}`;
       
-    //   // إنشاء صورة الباركود
-    //   const qrCodeDataUrl = await QRCode.toDataURL(certificateUrl);
+      // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
+      let qrCodeImageUrl = formData.qrCodeImageUrl;
+      if (!isEditing) {
+        const qrCodeDataUrl = await QRCode.toDataURL(certificateUrl);
+        qrCodeImageUrl = await uploadToCloudinary(qrCodeDataUrl);
+      }
       
-    //   // رفع صورة الباركود إلى Cloudinary
-    //   const qrCodeImageUrl = await uploadToCloudinary(qrCodeDataUrl);
-      
-    //   // حفظ البيانات في Firebase
-    //   const certificateData = {
-    //     ...formData,
-    //     certificateId,
-    //     qrCodeImageUrl,
-    //     createdAt: formData.createdAt || new Date().toISOString(),
-    //     updatedAt: new Date().toISOString()
-    //   };
+      // حفظ البيانات في Firebase
+      const certificateData = {
+        ...formData,
+        certificateId,
+        qrCodeImageUrl,
+        createdAt: formData.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
 
-    //   if (isEditing && editingDocId) {
-    //     await updateDoc(doc(db, "healthCertificates", editingDocId), certificateData);
-    //     alert("تم تحديث البيانات بنجاح");
-    //   } else {
-    //     await addDoc(collection(db, "healthCertificates"), certificateData);
-    //     alert("تم حفظ البيانات بنجاح");
-    //     setQrCodeUrl(qrCodeImageUrl);
-    //   }
-    // } catch (error) {
-    //   console.error("حدث خطأ:", error);
-    //   alert("حدث خطأ أثناء حفظ البيانات");
-    // } finally {
-    //   setLoading(false);
-    // }
+      if (isEditing && editingDocId) {
+        await updateDoc(doc(db, "healthCertificates", editingDocId), certificateData);
+        alert("تم تحديث البيانات بنجاح");
+      } else {
+        await addDoc(collection(db, "healthCertificates"), certificateData);
+        alert("تم حفظ البيانات بنجاح");
+        setQrCodeUrl(qrCodeImageUrl || '');
+      }
+    } catch (error) {
+      console.error("حدث خطأ:", error);
+      alert("حدث خطأ أثناء حفظ البيانات");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resetForm = () => {
@@ -430,7 +433,8 @@ function HealthCertificateForm() {
       healthCertificateIssueDate: "",
       programEndDate: "",
       amanaImageUrl: "",
-      personImageUrl: ""
+      personImageUrl: "",
+      certificateType: ""
     });
     setSelectedAmana(null);
     setSelectedPerson(null);
@@ -440,10 +444,10 @@ function HealthCertificateForm() {
   };
 
   useEffect(() => {
-    const fetchData = async (idNumber: string) => {
+    const fetchData = async (certificateNumber: string) => {
       try {
         const q = query(collection(db, "healthCertificates"), 
-          where("idNumber", "==", idNumber));
+          where("healthCertificateNumber", "==", certificateNumber));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -481,9 +485,9 @@ function HealthCertificateForm() {
       }
     };
 
-    const idNumber = searchParams.get("id");
-    if (idNumber) {
-      fetchData(idNumber);
+    const certificateNumber = searchParams.get("certificateNumber");
+    if (certificateNumber) {
+      fetchData(certificateNumber);
     }
   }, [searchParams, amanatList, personsList]);
 
@@ -491,7 +495,9 @@ function HealthCertificateForm() {
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
         <div className="bg-blue-600 py-4 px-6">
-          <h1 className="text-xl font-bold text-white">نموذج الشهادة الصحية</h1>
+          <h1 className="text-xl font-bold text-white">
+            {isEditing ? "تعديل الشهادة الصحية" : "نموذج الشهادة الصحية"}
+          </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -499,6 +505,20 @@ function HealthCertificateForm() {
             <div className="flex justify-between items-center mb-2">
               <span className="font-bold text-blue-800">رقم الشهادة:</span>
               <span className="font-mono text-lg">{formData.healthCertificateNumber}</span>
+            </div>
+            
+            {/* حقل نوع الشهادة */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">نوع الشهادة *</label>
+              <input
+                type="text"
+                name="certificateType"
+                value={formData.certificateType}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="أدخل نوع الشهادة"
+              />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
@@ -627,7 +647,7 @@ function HealthCertificateForm() {
                     </ul>
                   )}
                 </div>
-                <Link href="/Name1" passHref>
+                <Link href="/Name" passHref>
                   <button
                     type="button"
                     className="mt-6 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-md h-[42px]"
@@ -668,7 +688,7 @@ function HealthCertificateForm() {
               </select>
             </div>
 
-            {/* <div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">الجنسية</label>
               <input
                 type="text"
@@ -688,7 +708,7 @@ function HealthCertificateForm() {
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-            </div> */}
+            </div>
 
             {/* {formData.personImageUrl && (
               <div className="md:col-span-2">
@@ -701,7 +721,7 @@ function HealthCertificateForm() {
               </div>
             )} */}
 
-            {/* <div className="relative">
+            <div className="relative">
               <div className="flex gap-2">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">نوع البرنامج التثقيفي</label>
@@ -744,9 +764,9 @@ function HealthCertificateForm() {
                   </button>
                 </Link>
               </div>
-            </div> */}
+            </div>
 
-            {/* <div className="relative">
+            <div className="relative">
               <div className="flex gap-2">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">رقم الرخصة</label>
@@ -787,9 +807,9 @@ function HealthCertificateForm() {
                   </button>
                 </Link>
               </div>
-            </div> */}
+            </div>
 
-            {/* <div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">اسم المنشأة *</label>
               <input
                 type="text"
@@ -800,9 +820,9 @@ function HealthCertificateForm() {
                 readOnly
                 className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
               />
-            </div> */}
+            </div>
 
-            {/* <div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">رقم المنشأة</label>
               <input
                 type="text"
@@ -812,7 +832,7 @@ function HealthCertificateForm() {
                 readOnly
                 className="w-full p-2 border border-gray-300 rounded-md bg-gray-100"
               />
-            </div> */}
+            </div>
           </div>
 
           {/* قسم عرض الباركود */}
