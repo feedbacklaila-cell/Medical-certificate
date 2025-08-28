@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { db } from "../firebaseConfig";
 import { query, where, getDocs, doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import Link from "next/link";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
 /* eslint-disable @typescript-eslint/no-unused-vars */
