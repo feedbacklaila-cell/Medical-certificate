@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, Pencil, Search, UserPlus, Building, GraduationCap, Castle } from "lucide-react";
 import { motion } from "framer-motion";
-import { collection, getDocs, deleteDoc, doc, query, where } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 type HealthCertificate = {
