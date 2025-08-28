@@ -41,15 +41,42 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // جلب البيانات من فايربيس
-  const fetchCertificates = useCallback(async () => {
-    try {
-      const snapshot = await getDocs(collection(db, "healthCertificates"));
-      const data = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as HealthCertificate));
-      setCertificates(data);
-    } catch (error) {
-      console.error("خطأ أثناء جلب البيانات:", error);
-    }
-  }, []);
+const fetchCertificates = useCallback(async () => {
+  try {
+    const snapshot = await getDocs(collection(db, "healthCertificates"));
+    const data = snapshot.docs.map((doc) => {
+      const docData = doc.data();
+      return {
+        name: docData.name || "",
+        idNumber: docData.idNumber || "",
+        healthCertificateNumber: docData.healthCertificateNumber || "",
+        certificateType: docData.certificateType || "",
+        qrCodeImageUrl: docData.qrCodeImageUrl,
+        amana: docData.amana,
+        baladia: docData.baladia,
+        gender: docData.gender,
+        nationality: docData.nationality,
+        jobTitle: docData.jobTitle,
+        programType: docData.programType,
+        licenseNumber: docData.licenseNumber,
+        establishmentName: docData.establishmentName,
+        establishmentNumber: docData.establishmentNumber,
+        certificateIssueDate: docData.certificateIssueDate,
+        healthCertificateIssueDate: docData.healthCertificateIssueDate,
+        programEndDate: docData.programEndDate,
+        amanaImageUrl: docData.amanaImageUrl,
+        personImageUrl: docData.personImageUrl,
+        certificateId: docData.certificateId,
+        createdAt: docData.createdAt,
+        updatedAt: docData.updatedAt,
+        id: doc.id
+      } as HealthCertificate;
+    });
+    setCertificates(data);
+  } catch (error) {
+    console.error("خطأ أثناء جلب البيانات:", error);
+  }
+}, []);
 
   useEffect(() => {
     fetchCertificates();
