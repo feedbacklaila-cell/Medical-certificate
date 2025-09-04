@@ -80,7 +80,7 @@ export default function VerifyLeavePage() {
     setCertificateData(staticData);
   }, []);
 
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
