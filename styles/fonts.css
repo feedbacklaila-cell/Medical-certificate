@@ -15,17 +15,48 @@
 }
 @font-face {
   font-family: 'Tajawal';
-  src: url('/fonts/NotoSansArabic-Regular.ttf') format('woff2');
-  font-weight: 500; /* وزن خفيف */
+  src: url('/fonts/JannatLT-Bold.ttf') format('woff2');
+  font-weight: 700; 
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'IBM';
-  src: url('/fonts/IBMPlexSansArabic-Regular.woff2') format('woff2');
-  font-weight: 300; /* وزن خفيف */
+  font-family: 'Tajawal';
+  src: url('/fonts/JannatLT-Regular.ttf') format('woff2');
+  font-weight: 500; 
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: 'IBM';
+  src: url('/fonts/IBMPlexSansArabic-Regular.ttf') format('woff2');
+  font-weight: 700; 
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM';
+  src: url('/fonts/IBMPlexSansArabic-Regular.ttf') format('woff2');
+  font-weight: 500; 
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Tanseek';
+  src: url('/fonts/TanseekModernProArabic.ttf') format('woff2');
+  font-weight: 700; 
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Droid';
+  src: url('/fonts/Droid.Arabic.Kufi.ttf') format('woff2');
+  font-weight: 700; 
+  font-style: normal;
+  font-display: swap;
+}
+
 

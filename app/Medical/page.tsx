@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Menu, Pencil, Search, UserPlus, Building, GraduationCap, Castle } from "lucide-react";
+import { Menu, Pencil, Search, UserPlus, Printer,Building, GraduationCap, Castle } from "lucide-react";
 import { motion } from "framer-motion";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
@@ -309,7 +309,7 @@ const fetchCertificates = useCallback(async () => {
                       <Trash2 size={18} />
                       <span className="font-cairo text-sm font-medium">حذف</span>
                     </button> */}
-                    {/* <button
+                    <button
                       onClick={() => {
                         const printUrl = `/health-certificate?certificateNumber=${encodeURIComponent(c.healthCertificateNumber)}`;
                         window.open(printUrl, '_blank');
@@ -319,7 +319,7 @@ const fetchCertificates = useCallback(async () => {
                     >
                       <Printer size={18} />
                       <span className="font-cairo text-sm font-medium">طباعة</span>
-                    </button> */}
+                    </button>
                   </div>
                 </motion.div>
               ))
