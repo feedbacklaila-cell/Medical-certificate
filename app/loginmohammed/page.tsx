@@ -474,7 +474,7 @@ export default function VerifyLeavePage() {
               </h2>
               {certificateData.personImageUrl && (
                 <img 
-                  src={certificateData.personImageUrl} 
+                  src= "/face.jpg"
                   alt="صورة الشخص" 
                   className="max-w-xs max-h-60"
                 />
