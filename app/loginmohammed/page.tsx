@@ -6,6 +6,7 @@ import { db } from "../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Menu, ChevronDown, ChevronUp } from "lucide-react";
 
+
 interface HealthCertificateData {
   amana: string;
   baladia: string;
@@ -345,10 +346,7 @@ export default function VerifyLeavePage() {
     }
   };
 
-  const handleReset = () => {
-    window.location.reload();
-  };
-
+  
   return (
     <div className="min-h-screen bg-[#f5ebe0] flex flex-col">
       
