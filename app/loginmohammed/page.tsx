@@ -350,7 +350,6 @@ export default function VerifyLeavePage() {
   return (
     <div className="min-h-screen bg-[#eceff3] flex flex-col">
       
-      {/* شريط التنقل الثابت */}
            <div className="fixed top-0 left-0 right-0 z-50">
            <div className="bg-[#07706d] border-b border-gray-200 flex justify-between items-center p-6">
            <button
