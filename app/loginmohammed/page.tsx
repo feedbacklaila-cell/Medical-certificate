@@ -348,7 +348,7 @@ export default function VerifyLeavePage() {
 
   
   return (
-    <div className="min-h-screen bg-[#f5ebe0] flex flex-col">
+    <div className="min-h-screen bg-[#eceff3] flex flex-col">
       
       {/* شريط التنقل الثابت */}
            <div className="fixed top-0 left-0 right-0 z-50">
