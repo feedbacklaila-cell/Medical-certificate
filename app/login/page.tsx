@@ -641,7 +641,7 @@ export default function VerifyLeavePage() {
         className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
         style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
       >
-        تاريخ إصدار الشهادة هجري
+       تاريخ إصدار الشهادة الصحية هجري
       </span>
     </div>
     <div 
@@ -659,7 +659,7 @@ export default function VerifyLeavePage() {
         className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
         style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
       >
-        تاريخ إصدار الشهادة الميلادي
+        تاريخ إصدار الشهادة الصحية ميلادي
       </span>
     </div>
     <div 
@@ -679,7 +679,7 @@ export default function VerifyLeavePage() {
         className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
         style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
       >
-        تاريخ انتهاء الشهادة هجري
+        تاريخ نهاية الشهادة الصحية هجري
       </span>
     </div>
     <div 
@@ -698,7 +698,7 @@ export default function VerifyLeavePage() {
         className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
         style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
       >
-        تاريخ انتهاء الشهادة الميلادي
+        تاريخ نهاية الشهادة الصحية ميلادي
       </span>
     </div>
     <div 
@@ -736,7 +736,8 @@ export default function VerifyLeavePage() {
         className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
         style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
       >
-        تاريخ انتهاء البرنامج هجري
+        
+تاريخ انتهاء البرنامج التثقيفى
       </span>
     </div>
     <div 
