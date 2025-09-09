@@ -6,7 +6,6 @@ import { db } from "../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Menu, ChevronDown, ChevronUp } from "lucide-react";
 
-
 interface HealthCertificateData {
   amana: string;
   baladia: string;
@@ -28,7 +27,6 @@ interface HealthCertificateData {
   qrCodeImageUrl: string;
 }
 
-// دالة لتحويل التاريخ الميلادي إلى هجري
 function convertToHijri(gregorianDateStr: string): string {
   if (!gregorianDateStr) return '';
   
@@ -36,7 +34,6 @@ function convertToHijri(gregorianDateStr: string): string {
     const date = new Date(gregorianDateStr);
     if (isNaN(date.getTime())) return '';
 
-    // تحويل التاريخ الميلادي إلى هجري
     const hijriDate = toHijri(
       date.getFullYear(),
       date.getMonth() + 1,
@@ -54,7 +51,6 @@ function convertToHijri(gregorianDateStr: string): string {
   }
 }
 
-// بيانات القوائم الفرعية (يمكن استبدالها ببيانات حقيقية)
 const menuItemsData = {
   "عن بلدي": [
     { 
@@ -294,7 +290,6 @@ export default function VerifyLeavePage() {
     }
   }, []);
 
-  // إغلاق القوائم عند النقر خارجها
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -314,7 +309,6 @@ export default function VerifyLeavePage() {
     setError("");
 
     try {
-      // محاكاة وقت التحميل لمشاهدة تأثير التحميل
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       const q = query(
@@ -350,74 +344,81 @@ export default function VerifyLeavePage() {
   return (
     <div className="min-h-screen bg-[#eceff3] flex flex-col">
       
-           <div className="fixed top-0 left-0 right-0 z-50">
-           <div className="bg-[#07706d] border-b border-gray-200 flex justify-between items-center p-6">
-           <button
+      {/* شريط التنقل المعدل */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <div className="bg-[#07706d] flex justify-between items-center p-6 relative">
+          <button
             className="p-2 rounded-md text-white hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-10"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
-           >
-            <Menu className="w-6 h-6" />
-           </button>
-           <div className="flex items-center space-x-2 ml-6">
-           <img src="/logoll.png" alt="logo" style={{ width: "110px", height: "50px" }} />
-           </div>
-            </div>
-
-           {/* الشريط الأبيض تحت شريط التنقل */}
-        <div className="h-4 bg-white w-full"></div>
-
-        {/* القائمة المنسدلة */}
-        {isMenuOpen && (
-          <div 
-            ref={menuRef}
-            className="bg-[#07706d] shadow-lg rounded-b-md p-4 flex flex-col space-y-3 text-white w-full"
           >
-            {Object.entries(menuItemsData).map(([menuName, subItems]) => (
-              <div key={menuName} className="relative">
-                <button
-                  onClick={() => toggleSubMenu(menuName)}
-                  className="hover:bg-[#055e5b] flex items-center justify-end space-x-2 py-3 px-4 rounded-md w-full"
-                >
-                  {openSubMenu === menuName ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                  <span>{menuName}</span>
-                </button>
-
-                {/* القائمة الفرعية */}
-                {openSubMenu === menuName && (
-                  <div className="bg-white rounded-md shadow-md overflow-hidden mt-2">
-                    {subItems.map((item) => (
-                      <div
-                        key={item.title}
-                        className="block px-4 py-1 hover:bg-gray-50 transition-colors"
-                      >
-                        {/* العنوان الرئيسي */}
-                        <div className="font-bold text-gray-800 text-right mb-4"
-                          style={{ fontFamily: 'Tajawal', fontWeight: 700 }}>
-                          {item.title}
-                        </div>
-
-                        {/* النصوص الفرعية */}
-                        <div 
-                          className="text-sm text-gray-800 text-right space-y-1"
-                          style={{ fontFamily: 'Tajawal', fontWeight: 400 }}
-                        >
-                          {item.descriptions.map((desc, index) => (
-                            <div key={index}>{desc}</div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+            <Menu className="w-6 h-6" />
+          </button>
+          <div className="flex items-center space-x-2 ml-6">
+            <img src="/logoll.png" alt="logo" style={{ width: "110px", height: "50px" }} />
           </div>
-        )}
+
+          {/* القائمة المنسدلة - تم نقلها داخل شريط التنقل */}
+          {isMenuOpen && (
+            <div 
+              ref={menuRef}
+              className="absolute top-full left-0 right-0 bg-[#07706d] shadow-lg rounded-b-md p-4 flex flex-col space-y-3 text-white"
+              style={{ marginTop: '0' }}
+            >
+              {Object.entries(menuItemsData).map(([menuName, subItems]) => (
+                <div key={menuName} className="relative">
+                  <button
+                    onClick={() => toggleSubMenu(menuName)}
+                    className="hover:bg-[#055e5b] flex items-center justify-end space-x-2 py-3 px-4 rounded-md w-full"
+                  >
+                    {openSubMenu === menuName ? (
+                      <ChevronUp className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                     <span 
+                      className="text-white"
+                      style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+                    >
+                      {menuName}
+                    </span>
+                  </button>
+
+                  {/* القائمة الفرعية */}
+                  {openSubMenu === menuName && (
+                    <div className="bg-white rounded-none shadow-md overflow-hidden mt-2">
+                      {subItems.map((item) => (
+                        <div
+                          key={item.title}
+                          className="block px-4 py-1 hover:bg-gray-50 transition-colors"
+                        >
+                          {/* العنوان الرئيسي */}
+                          <div className="font-bold text-gray-800 text-right mb-4"
+                            style={{ fontFamily: 'Tajawal', fontWeight: 700 }}>
+                            {item.title}
+                          </div>
+
+                          {/* النصوص الفرعية */}
+                          <div 
+                            className="text-sm text-gray-800 text-right space-y-1"
+                            style={{ fontFamily: 'Tajawal', fontWeight: 400 }}
+                          >
+                            {item.descriptions.map((desc, index) => (
+                              <div key={index}>{desc}</div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* الشريط الأبيض تحت شريط التنقل */}
+        <div className="h-4 bg-white w-full"></div>
       </div>
 
       {/* مساحة لتعويض ارتفاع الشريط الثابت */}
@@ -458,7 +459,7 @@ export default function VerifyLeavePage() {
       {certificateData && !loading && (
          <div className="flex justify-center px-0 md:px-4 pb-10 mt-4">
           {/* مربع النتائج - على الهواتف يكون ممتدًا بالكامل، وعلى الأجهزة الكبيرة يكون بعرض محدد */}
-  <div className="w-full md:max-w-4xl rounded-lg overflow-hidden bg-white shadow-lg">
+  <div className="w-full md:max-w-4xl rounded-none overflow-hidden bg-white shadow-lg">
             {/* محتوى البطاقة */}
            
             {/* صورة الشخص مع العنوان فوقها مباشرة */}
@@ -518,6 +519,7 @@ export default function VerifyLeavePage() {
                   {certificateData.baladia}
                 </div>
               </div>
+              
             </div>
 
             {/* البيانات الأساسية */}
@@ -632,6 +634,83 @@ export default function VerifyLeavePage() {
   </div>
 </div>
 
+ {/* تاريخ إصدار الشهادة هجري */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ إصدار الشهادة هجري
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {convertToHijri(certificateData.certificateIssueDate) || "-"}
+    </div>
+  </div>
+
+  {/* تاريخ إصدار الشهادة ميلادي */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ إصدار الشهادة الميلادي
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.certificateIssueDate 
+        ? certificateData.certificateIssueDate.replace(/-/g, "/") 
+        : "-"}
+    </div>
+  </div>
+
+  {/* تاريخ انتهاء الشهادة هجري */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ انتهاء الشهادة هجري
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {convertToHijri(certificateData.healthCertificateIssueDate) || "-"}
+    </div>
+  </div>
+
+
+  {/* تاريخ انتهاء الشهادة ميلادي */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ انتهاء الشهادة الميلادي
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.healthCertificateIssueDate 
+        ? certificateData.healthCertificateIssueDate.replace(/-/g, "/") 
+        : "-"}
+    </div>
+  </div>
+
 {/* نوع البرنامج التثقيفي */}
 <div className="relative">
   <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
@@ -650,6 +729,24 @@ export default function VerifyLeavePage() {
   </div>
 </div>
 
+ {/* تاريخ انتهاء البرنامج هجري */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ انتهاء البرنامج هجري
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {convertToHijri(certificateData.programEndDate) || "-"}
+    </div>
+  </div>
+  
 {/* رقم الرخصة */}
 <div className="relative">
   <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
@@ -705,122 +802,6 @@ export default function VerifyLeavePage() {
 </div>
 </div>
             
-            {/* التواريخ - 6 مربعات */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 px-4 md:px-6">
-  {/* تاريخ إصدار الشهادة ميلادي */}
-  <div className="relative">
-    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
-      <span 
-        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
-        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
-      >
-        تاريخ إصدار الشهادة الميلادي
-      </span>
-    </div>
-    <div 
-      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
-      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
-    >
-      {certificateData.certificateIssueDate 
-        ? certificateData.certificateIssueDate.replace(/-/g, "/") 
-        : "-"}
-    </div>
-  </div>
-
-  {/* تاريخ إصدار الشهادة هجري */}
-  <div className="relative">
-    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
-      <span 
-        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
-        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
-      >
-        تاريخ إصدار الشهادة هجري
-      </span>
-    </div>
-    <div 
-      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
-      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
-    >
-      {convertToHijri(certificateData.certificateIssueDate) || "-"}
-    </div>
-  </div>
-
-  {/* تاريخ انتهاء الشهادة ميلادي */}
-  <div className="relative">
-    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
-      <span 
-        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
-        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
-      >
-        تاريخ انتهاء الشهادة الميلادي
-      </span>
-    </div>
-    <div 
-      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
-      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
-    >
-      {certificateData.healthCertificateIssueDate 
-        ? certificateData.healthCertificateIssueDate.replace(/-/g, "/") 
-        : "-"}
-    </div>
-  </div>
-
-  {/* تاريخ انتهاء الشهادة هجري */}
-  <div className="relative">
-    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
-      <span 
-        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
-        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
-      >
-        تاريخ انتهاء الشهادة هجري
-      </span>
-    </div>
-    <div 
-      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
-      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
-    >
-      {convertToHijri(certificateData.healthCertificateIssueDate) || "-"}
-    </div>
-  </div>
-
-  {/* تاريخ انتهاء البرنامج ميلادي */}
-  <div className="relative">
-    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
-      <span 
-        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
-        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
-      >
-        تاريخ انتهاء البرنامج الميلادي
-      </span>
-    </div>
-    <div 
-      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
-      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
-    >
-      {certificateData.programEndDate 
-        ? certificateData.programEndDate.replace(/-/g, "/") 
-        : "-"}
-    </div>
-  </div>
-
-  {/* تاريخ انتهاء البرنامج هجري */}
-  <div className="relative">
-    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
-      <span 
-        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
-        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
-      >
-        تاريخ انتهاء البرنامج هجري
-      </span>
-    </div>
-    <div 
-      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-6 rounded-sm h-15 flex items-center justify-end text-lg font-light" 
-      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
-    >
-      {convertToHijri(certificateData.programEndDate) || "-"}
-    </div>
-  </div>
-</div>
 
           </div>
         </div>
