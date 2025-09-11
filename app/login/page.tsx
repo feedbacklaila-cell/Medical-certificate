@@ -4,8 +4,8 @@ import '../../styles/fonts.css';
 import { useState, useEffect, useRef } from "react";
 import { db } from "../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { Menu, ChevronDown, ChevronUp, X } from "lucide-react";
-
+import { Menu, ChevronDown, ChevronUp } from "lucide-react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 interface HealthCertificateData {
   amana: string;
   baladia: string;
