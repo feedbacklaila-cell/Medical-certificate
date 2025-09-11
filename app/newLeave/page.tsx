@@ -67,7 +67,7 @@ type Establishment = {
 
 const generateCertificateNumber = (): string => {
   const randomNum = Math.floor(10000 + Math.random() * 90000);
-  return `255${new Date().getFullYear()}${randomNum}`;
+  return `455${new Date().getFullYear()}${randomNum}`;
 };
 
 const uploadToCloudinary = async (dataUrl: string): Promise<string> => {
