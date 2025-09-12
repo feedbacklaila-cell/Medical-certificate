@@ -51,12 +51,28 @@ function convertToHijri(gregorianDateStr: string): string {
   }
 }
 
-const menuItemsData = {
+const menuStyles = `
+  @keyframes pulse-scale {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  .animate-pulse-scale {
+    animation: pulse-scale 1s infinite ease-in-out;
+  }
+
+  .bg-custom-teal {
+    transition: max-height 0.3s ease;
+  }
+  .bg-custom-teal.expanded {
+    max-height: 600px;
+  }
+`;
+
+const menuItemsData = { 
   "عن بلدي": [
     { 
       title: " من نحن", 
       descriptions: [
-        "من نحن",
         "الهيكل التنظيمي",
         "الهيكل الإستراتيجي للوزارة",
          "السياسات والاستراتيجيات",
@@ -303,6 +319,7 @@ export default function VerifyLeavePage() {
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeMobileMenu, setActiveMobileMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -329,6 +346,7 @@ export default function VerifyLeavePage() {
         setIsMenuOpen(false);
         setOpenSubMenu(null);
         setActiveMenu(null);
+        setActiveMobileMenu(null);
       }
     }
 
@@ -369,10 +387,9 @@ export default function VerifyLeavePage() {
   const toggleSubMenu = (menuName: string) => {
     if (openSubMenu === menuName) {
       setOpenSubMenu(null);
-      setActiveMenu(null);
     } else {
       setOpenSubMenu(menuName);
-      setActiveMenu(menuName);
+      setActiveMobileMenu(menuName);
     }
   };
 
@@ -380,7 +397,6 @@ export default function VerifyLeavePage() {
     setIsMenuOpen(!isMenuOpen);
     if (isMenuOpen) {
       setOpenSubMenu(null);
-      setActiveMenu(null);
     }
   };
 
@@ -393,123 +409,188 @@ export default function VerifyLeavePage() {
   };
 
   
-  return (
-    <div className="min-h-screen bg-[#eceff3] flex flex-col">
-      
-      {/* شريط التنقل المعدل */}
-      <div className="fixed top-0 left-0 right-0 z-50">
-        <div className="bg-[#07706d] flex justify-between items-center p-4 md:p-2 relative">
-          {/* زر القائمة للهواتف فقط - تم التعديل هنا */}
-          {isMobile && (
-            <button
-              className="p-2 rounded-md text-white hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
-              onClick={toggleMobileMenu}
-              aria-label="Toggle menu"
-            >
-              {/* تم التعديل هنا - إظهار Menu دائمًا */}
-              <Menu className="w-6 h-6" />
-            </button>
-          )}
-
-          {/* عناصر القائمة لأجهزة الكمبيوتر */}
-          {!isMobile && (
-           <div className="flex-1 flex justify-end space-x-9 rtl:space-x-reverse mr-6">
-  {Object.keys(menuItemsData).reverse().map((menuName) => (
-    <div key={menuName} className="relative flex flex-col items-center">
-      <button
-        onClick={() => handleMenuClick(menuName)}
-        className="text-white hover:text-blue-200 flex flex-col items-center transition-colors"
-        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
-      >
-        <span>{menuName}</span>
-        {activeMenu === menuName ? (
-          <ChevronUp className="w-4 h-4 mt-1" />
-        ) : (
-          <ChevronDown className="w-4 h-4 mt-1" />
+return (
+  
+  
+  <div className="min-h-screen bg-[#eceff3] flex flex-col">
+    
+    {/* شريط التنقل المعدل */}
+    <div className="fixed top-0 left-0 right-0 z-50">
+      <div className="bg-[#07706d] flex justify-between items-center p-4 md:p-2 relative">
+        
+        {/* زر القائمة للهواتف فقط */}
+        {isMobile && (
+          <button
+            className="p-2 rounded-md text-white hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
         )}
-      </button>
-    </div>
-  ))}
-</div>
-          )}
 
-          {/* الشعار */}
-          <div className="flex items-center">
-            <img src="/logoll.png" alt="logo" style={{ width: "110px", height: "50px" }} />
+        {/* عناصر القائمة لأجهزة الكمبيوتر */}
+        {!isMobile && (
+          <div className="flex-1 flex justify-end space-x-9 rtl:space-x-reverse mr-6">
+            {Object.keys(menuItemsData).reverse().map((menuName) => (
+              <div key={menuName} className="relative flex flex-col items-center">
+                <button
+                  onClick={() => handleMenuClick(menuName)}
+                  className="text-white hover:text-blue-200 flex flex-col items-center transition-colors"
+                  style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+                >
+                  <span>{menuName}</span>
+                  {activeMenu === menuName ? (
+                    <ChevronUp className="w-4 h-4 mt-1" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 mt-1" />
+                  )}
+                </button>
+              </div>
+            ))}
           </div>
+        )}
 
-          {/* القائمة المنسدلة للهواتف */}
+        {/* الشعار */}
+        <div className="flex items-center">
+          <img src="/logoll.png" alt="logo" style={{ width: "110px", height: "50px" }} />
+        </div>
+    <style>{menuStyles}</style>
+
+        {/* القائمة المنسدلة للهواتف */}
         {isMobile && isMenuOpen && (
-  <div 
+          
+         
+  <div
     ref={menuRef}
-    className="absolute top-full left-0 right-0 bg-[#07706d] shadow-lg rounded-b-md p-4 flex flex-col text-white"
-    style={{ marginTop: '0' }}
+    className="absolute top-full left-0 right-0 bg-[#07706d] shadow-lg rounded-b-md p-4 flex flex-col text-white bg-custom-teal"
+    style={{
+      transition: "max-height 0.3s ease",
+      overflow: "visible",
+    }}
   >
     {Object.entries(menuItemsData).map(([menuName, subItems]) => (
       <div key={menuName} className="relative">
-        <button
-          onClick={() => toggleSubMenu(menuName)}
-          className="hover:bg-[#055e5b] flex items-center justify-end py-3 px-4 rounded-md w-full"
-        >
-          <span 
-            className="text-white flex items-center"
-            style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+        {/* زر القائمة الرئيسية */}
+        <div className={menuName === "عن بلدي" ? "mr-30" : ""}>
+          <button
+            onClick={() => toggleSubMenu(menuName)}
+            className={`hover:bg-[#055e5b] flex items-center justify-end py-3 rounded-md w-full ${
+              activeMobileMenu === menuName ? "text-[#68a12d]" : "text-white"
+            }`}
           >
-            {openSubMenu === menuName ? (
-              <ChevronUp className="w-4 h-4 ml-1" />
-            ) : (
-              <ChevronDown className="w-4 h-4 ml-1" />
-            )}
-            <span className="text-right">{menuName}</span>
-          </span>
-        </button>
+            <span className="flex items-center" style={{ fontFamily: "Tajawal", fontWeight: 700 }}>
+              {openSubMenu === menuName ? (
+                <ChevronUp className="w-4 h-4 ml-1" />
+              ) : (
+                <ChevronDown className="w-4 h-4 ml-1" />
+              )}
+              <span className="text-right">{menuName}</span>
+            </span>
+          </button>
+        </div>
 
-        {/* القائمة الفرعية للهواتف */}
+        {/* القائمة الفرعية - التعديل هنا فقط لعنصر "عن بلدي" */}
         {openSubMenu === menuName && (
-          <div className="bg-white rounded-none shadow-md overflow-hidden">
-            {subItems.map((item, index) => (
-              <div
-                key={item.title}
-                className="block px-4 hover:bg-gray-50 transition-colors"
-              >
-                {/* العنوان الرئيسي مع إضافة أيقونة للمشاركة الإلكترونية فقط */}
-               <div
-  className="font-bold text-gray-800 text-right flex items-center justify-end"
+          <div
+         className={
+    menuName === "عن بلدي"
+      ? `bg-white rounded-none shadow-md pt-2 pb-4 mt-1 overflow-auto absolute left-0 right-0 z-10 bg-custom-teal ${openSubMenu === "عن بلدي" ? 'expanded' : ''}`
+      : "bg-white rounded-none shadow-md pt-2 pb-4 w-[80%] ml-auto"
+  }
   style={{
-    fontFamily: 'Tajawal',
-    fontWeight: 700,
-    marginBottom: '4px'
+    minWidth: menuName === "عن بلدي" ? "150px" : "unset",
+    maxWidth: menuName === "عن بلدي" ? "260px" : undefined,
+    maxHeight: menuName === "عن بلدي" ? "555px" : undefined,
+    transition: "max-height 0.3s ease",
   }}
 >
-  {item.title === "المشاركة الإلكترونية" && (
-    <img 
-      src="sher.png"
-      alt="icon" 
-      className="mr-1 w-3 h-3 cursor-pointer"
-    />
-  )}
-  {item.title}
-</div>
-
-
-                {/* النصوص الفرعية */}
+            {subItems.map((item) => (
+              <div key={item.title} className="block px-2 hover:bg-gray-50 transition-colors">
                 <div
-                  className="text-sm text-gray-600 text-right space-y-1"
-                  style={{ fontFamily: 'Tajawal', fontWeight: 400 }}
+                  className="font-bold text-gray-800 text-right flex items-center justify-end"
+                  style={{ fontFamily: "Tajawal", fontWeight: 700, marginBottom: "4px" }}
                 >
-                  {item.descriptions.map((desc, i) => (
-                    <div key={i} className="py-1">{desc}</div>
-                  ))}
+                  {item.title === "المشاركة الإلكترونية" && (
+                    <img src="sher.png" alt="icon" className="mr-1 w-3 h-3 cursor-pointer" />
+                  )}
+                  {item.title}
                 </div>
-            
-
-        {/* الخط الفاصل البني */}
       
+<style>
+{`
+  @keyframes pulse-scale {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1); /* خففت التكبير شوية */
+    }
+  }
+
+  .animate-pulse-scale {
+    animation: pulse-scale 1s infinite ease-in-out; /* أسرع شوية */
+  }
+`}
+</style>
+
+{/* النصوص الفرعية مع إضافة الأيقونة الجديدة */}
+<div
+  className="text-sm text-[#666b71] text-right space-y-3"
+  style={{ fontFamily: 'Tajawal', fontWeight: 400 }}
+>
+  {item.descriptions.map((desc, i) => {
+    // تحديد لون النص حسب الوصف
+    const textColor =
+      desc === "لوحة التحكم"
+        ? "text-[#b2d48f]"
+        : desc === "بلدي أعمال"
+        ? "text-[#698be1]"
+        : "text-gray-600";
+
+    const badgeColor =
+      desc === "لوحة التحكم"
+        ? "bg-[#b2d48f] text-white"
+        : desc === "بلدي أعمال"
+        ? "bg-[#698be1] text-white"
+        : "";
+
+    return (
+      <div key={i} className={`py-1 flex items-center justify-end ${i === 0 ? 'mt-5' : ''}`}
+      >
+        
+        {/* كلمة جديد */}
+        {(desc === "لوحة التحكم" || desc === "بلدي أعمال") && (
+          <span
+            className={`
+              ml-2 px-1 py-0.5 text-xs rounded-sm 
+              ${badgeColor}
+              animate-pulse-scale
+            `}
+          >
+            جديد
+          </span>
+        )}
+
+        {/* النص بلون مطابق */}
+        <span className={`ml-2 ${textColor}`}>{desc}</span>
+        
+        {/* المستطيل / صورة PNG مع النزول قليلًا */}
+        <img 
+          src="sher2.png"  // ضع هنا مسار الصورة الصحيح
+          alt="أيقونة" 
+          className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
+          style={{ top: '3px' }} // نزول قليل للأسفل
+        />
+      </div>
+    );
+  })}
+</div>
       </div>
     ))}
   </div>
+)}
 
-                  )}
                 </div>
               ))}
             </div>

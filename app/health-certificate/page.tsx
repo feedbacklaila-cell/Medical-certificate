@@ -105,7 +105,7 @@ function convertToHijri(gregorianDateStr: string): string {
       {/* الصورة الأساسية للشهادة */}
       <div className="relative w-full" style={{ paddingTop: "62.65%" }}>
         <Image
-          src="/tr2.png"
+          src="/tr3.png"
           alt="الشهادة الصحية"
           fill
           className="object-cover"
