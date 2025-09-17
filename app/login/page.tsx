@@ -502,76 +502,84 @@ return (
     {/* عن بلدي في الأعلى على اليسار */}
     <div className=" mb-17 relative flex justify-between">
       {/* عن بلدي على اليسار */}
-      <div className="flex-1 ml-5 ">
-        {Object.entries(menuItemsData)
-          .filter(([menuName]) => menuName === "عن بلدي")
-          .map(([menuName, subItems]) => (
-            <div key={menuName} className="relative ">
-
-
-              {openSubMenu === menuName && (
-                <div className="relative">
-                  {/* القائمة الفرعية نفسها */}
+   {/* عن بلدي على اليسار */}
+<div className="flex-1 ml-5">
+  {Object.entries(menuItemsData)
+    .filter(([menuName]) => menuName === "عن بلدي")
+    .map(([menuName, subItems]) => (
+      <div key={menuName} className="relative">
+        {openSubMenu === menuName && (
+          <div className="relative">
+            {/* القائمة الفرعية نفسها */}
+            <div
+              className="absolute left-0 bg-white rounded-none shadow-md pt-2 pb-4 mt-1 overflow-auto w-[80%]"
+              style={{
+                minWidth: "50px",
+                maxWidth: "185px",
+                maxHeight: "605px",
+                transition: "max-height 0.3s ease",
+                zIndex: 20,
+              }}
+            >
+              {subItems.map((item) => (
+                <div
+                  key={item.title}
+                  className="block px-2 hover:bg-gray-50 transition-colors"
+                >
+                  {/* العنوان مع إضافة أيقونة للمشاركة الإلكترونية */}
                   <div
-                    className="absolute left-0 bg-white rounded-none shadow-md pt-2 pb-4 mt-1 overflow-auto w-[80%]"
+                    className="font-bold text-gray-800 text-right flex items-center justify-end mb-1"
                     style={{
-                      minWidth: "50px",
-                      maxWidth: "185px",
-                      maxHeight: "605px",
-                      transition: "max-height 0.3s ease",
-                      zIndex: 20,
+                      fontFamily: "Tajawal",
+                      fontWeight: 700,
                     }}
                   >
-                   {subItems.map((item) => (
-  <div
-    key={item.title}
-    className="block px-2 hover:bg-gray-50 transition-colors"
-  >
-    {/* العنوان */}
-    <div
-      className="font-bold text-gray-800 text-right flex items-center justify-end mb-1"
-      style={{
-        fontFamily: "Tajawal",
-        fontWeight: 700,
-      }}
-    >
-      {item.title}
-    </div>
-
-    {/* الوصف */}
-    <div
-      className="text-sm text-[#666b71] text-right space-y-3"
-      style={{ fontFamily: "Tajawal", fontWeight: 400 }}
-    >
-      {item.descriptions.map((desc, i) => (
-        <div
-          key={i}
-          className={`py-1 flex items-center justify-end ${i === 0 ? "mt-5" : ""}`}
-        >
-          <span className="ml-2">{desc}</span>
-          <img
-            src="sher2.png"
-            alt="أيقونة"
-            className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
-            style={{ top: "3px" }}
-          />
-        </div>
-      ))}
-    </div>
-  </div>
-))}
-
+                    {item.title === "المشاركة الإلكترونية" && (
+                      <img
+                        src="sher2.png"
+                        alt="icon"
+                        className="mr-1 w-3.1 h-2.5 cursor-pointer"
+                      />
+                    )}
+                    {item.title}
                   </div>
 
-                  {/* هذا الجزء الشفاف يخلي القائمة الرئيسية تطول بنفس ارتفاع القائمة الفرعية */}
-<div
-  className=" w-screen" // w-screen يجعل العرض كامل شاشة الجهاز
-  style={{ height: "555px", zIndex: 10 }}
-/>                </div>
-              )}
+                  {/* الوصف */}
+                  <div
+                    className="text-sm text-[#666b71] text-right space-y-3"
+                    style={{ fontFamily: "Tajawal", fontWeight: 400 }}
+                  >
+                    {item.descriptions.map((desc, i) => (
+                      <div
+                        key={i}
+                        className={`py-1 flex items-center justify-end ${
+                          i === 0 ? "mt-5" : ""
+                        }`}
+                      >
+                        <span className="ml-2">{desc}</span>
+                        <img
+                          src="sher2.png"
+                          alt="أيقونة"
+                          className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
+                          style={{ top: "3px" }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+
+            {/* هذا الجزء الشفاف يخلي القائمة الرئيسية تطول بنفس ارتفاع القائمة الفرعية */}
+            <div
+              className="w-screen"
+              style={{ height: "555px", zIndex: 10 }}
+            />
+          </div>
+        )}
       </div>
+    ))}
+</div>
     </div>
   </div>
 )}
@@ -594,123 +602,125 @@ return (
   `}
 </style>
 
-   {/* باقي عناصر القائمة */}
-    <div className="flex flex-col">
-      {Object.entries(menuItemsData)
-        .filter(([menuName]) => menuName !== "عن بلدي")
-        .map(([menuName, subItems]) => (
-          <div key={menuName} className="relative">
-            <button
-              onClick={() => toggleSubMenu(menuName)}
-              className={`hover:bg-[#055e5b] flex items-center justify-end py-3 px-2 rounded-md w-full ${
-                activeMobileMenu === menuName ? "text-[#68a12d]" : "text-white"
-              }`}
-            >
-              <span
-                className="flex items-center"
-                style={{ fontFamily: "Tajawal", fontWeight: 700 }}
-              >
-                {openSubMenu === menuName ? (
-                  <ChevronUp className="w-4 h-4 ml-1" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 ml-1" />
-                )}
-                <span className="text-right">{menuName}</span>
-              </span>
-            </button>
-
-            {/* القوائم الفرعية لباقي العناصر */}
-            {openSubMenu === menuName && (
-              <div
-                className="bg-white rounded-none shadow-md pt-2 pb-2 w-[80%] ml-auto mr-2"
-                style={{
-                  minWidth: "200px",
-                  maxWidth: "95%",
-                  transition: "max-height 0.3s ease",
-                }}
-              >
-                {subItems.map((item) => (
-                  <div
-                    key={item.title}
-                    className="block px-2 hover:bg-gray-50 transition-colors"
-                  >
-                    <div
-                      className="font-bold text-gray-800 text-right flex items-center justify-end mb-1"
-                      style={{
-                        fontFamily: "Tajawal",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {/* إضافة الأيقونة للعناصر الرئيسية في المنصات وتواصل معنا */}
-                      {(menuName === "المنصات" || menuName === "تواصل معنا") && (
-                        <img 
-                          src="sher2.png" 
-                          alt="أيقونة" 
-                          className="w-3.1 h-2.5 ml-2 flex-shrink-0 relative"
-                          style={{ top: "3px" }}
-                        />
-                      )}
-                      {item.title}
-                    </div>
-
-                    {/* النصوص الفرعية مع إضافة الأيقونة الجديدة */}
-                    <div
-                      className="text-sm text-[#666b71] text-right space-y-2"
-                      style={{ fontFamily: "Tajawal", fontWeight: 400 }}
-                    >
-                      {item.descriptions.map((desc, i) => {
-                        // تحديد لون النص حسب الوصف
-                        const textColor =
-                          desc === "لوحة التحكم"
-                            ? "text-[#b2d48f]"
-                            : desc === "بلدي أعمال"
-                            ? "text-[#698be1]"
-                            : "text-gray-600";
-
-                        const badgeColor =
-                          desc === "لوحة التحكم"
-                            ? "bg-[#b2d48f] text-white"
-                            : desc === "بلدي أعمال"
-                            ? "bg-[#698be1] text-white"
-                            : "";
-
-                        return (
-                          <div
-                            key={i}
-                            className={`py-1 flex items-center justify-end ${
-                              i === 0 ? "mt-5" : ""
-                            }`}
-                          >
-                            {/* كلمة جديد */}
-                            {(desc === "لوحة التحكم" || desc === "بلدي أعمال") && (
-                              <span
-                                className={`ml-2 px-1 py-0.5 text-xs rounded-sm ${badgeColor} animate-pulse-scale`}
-                              >
-                                جديد
-                              </span>
-                            )}
-
-                            {/* النص بلون مطابق */}
-                            <span className={`ml-2 ${textColor}`}>{desc}</span>
-
-                            {/* المستطيل / صورة PNG مع النزول قليلًا */}
-                            <img
-                              src="sher2.png"
-                              alt="أيقونة"
-                              className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
-                              style={{ top: "3px" }}
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
+<div className="flex flex-col">
+  {Object.entries(menuItemsData)
+    .filter(([menuName]) => menuName !== "عن بلدي")
+    .map(([menuName, subItems]) => (
+      <div key={menuName} className="relative">
+        <button
+          onClick={() => toggleSubMenu(menuName)}
+          className={`hover:bg-[#055e5b] flex items-center justify-end py-3 px-2 rounded-md w-full ${
+            activeMobileMenu === menuName ? "text-[#68a12d]" : "text-white"
+          }`}
+        >
+          <span
+            className="flex items-center"
+            style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+          >
+            {openSubMenu === menuName ? (
+              <ChevronUp className="w-4 h-4 ml-1" />
+            ) : (
+              <ChevronDown className="w-4 h-4 ml-1" />
             )}
-          </div>
-        ))}
-    </div>
+            <span className="text-right">{menuName}</span>
+          </span>
+        </button>
+
+        {/* القوائم الفرعية لباقي العناصر */}
+       {/* القوائم الفرعية لباقي العناصر */}
+{openSubMenu === menuName && (
+  <div
+    className="bg-white rounded-none shadow-md pt-2 pb-2 w-[80%] ml-auto mr-2"
+    style={{
+      minWidth: "200px",
+      maxWidth: "95%",
+      transition: "max-height 0.3s ease",
+    }}
+  >
+    {subItems.map((item) => (
+      <div
+        key={item.title}
+        className="block px-2 hover:bg-gray-50 transition-colors"
+      >
+        {/* العنوان مع الإيقونة للمنصات وتواصل معنا فقط */}
+        <div
+          className="font-bold text-gray-800 text-right flex items-center justify-end mb-1 py-2"
+          style={{
+            fontFamily: "Tajawal",
+            fontWeight: 700,
+          }}
+        >
+          <span className="ml-2">{item.title}</span>
+          {/* إظهار الأيقونة فقط لقسمي المنصات وتواصل معنا */}
+          {(menuName === "المنصات" || menuName === "تواصل معنا") && (
+            <img
+              src="sher2.png"
+              alt="أيقونة"
+              className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
+              style={{ top: "3px" }}
+            />
+          )}
+        </div>
+
+        {/* النصوص الفرعية مع إضافة الأيقونة الجديدة */}
+        <div
+          className="text-sm text-[#666b71] text-right space-y-2"
+          style={{ fontFamily: "Tajawal", fontWeight: 400 }}
+        >
+          {item.descriptions.map((desc, i) => {
+            // تحديد لون النص حسب الوصف
+            const textColor =
+              desc === "لوحة التحكم"
+                ? "text-[#b2d48f]"
+                : desc === "بلدي أعمال"
+                ? "text-[#698be1]"
+                : "text-gray-600";
+
+            const badgeColor =
+              desc === "لوحة التحكم"
+                ? "bg-[#b2d48f] text-white"
+                : desc === "بلدي أعمال"
+                ? "bg-[#698be1] text-white"
+                : "";
+
+            return (
+              <div
+                key={i}
+                className={`py-1 flex items-center justify-end ${
+                  i === 0 ? "mt-5" : ""
+                }`}
+              >
+                {/* كلمة جديد */}
+                {(desc === "لوحة التحكم" || desc === "بلدي أعمال") && (
+                  <span
+                    className={`ml-2 px-1 py-0.5 text-xs rounded-sm ${badgeColor} animate-pulse-scale`}
+                  >
+                    جديد
+                  </span>
+                )}
+
+                {/* النص بلون مطابق */}
+                <span className={`ml-2 ${textColor}`}>{desc}</span>
+
+                {/* المستطيل / صورة PNG مع النزول قليلًا */}
+                <img
+                  src="sher2.png"
+                  alt="أيقونة"
+                  className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
+                  style={{ top: "3px" }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+      </div>
+    ))}
+</div>
+
   </div>
 )}
 
@@ -719,9 +729,7 @@ return (
         </div>
 
         {/* القائمة المنسدلة لأجهزة الكمبيوتر */}
-   
-
-{!isMobile && activeMenu && (
+     {!isMobile && activeMenu && (
   <div 
     ref={menuRef}
     className="absolute top-full left-0 right-0 bg-white shadow-lg rounded-b-md pr-12"
@@ -732,29 +740,14 @@ return (
         {(menuItemsData[activeMenu as keyof typeof menuItemsData] || []).map((item, index) => (
           <div key={item.title} className="text-right" style={{direction: 'ltr'}}>
             <div 
-              className="font-bold text-black mb-3 flex items-center justify-end" 
+              className="font-bold text-black mb-3" 
               style={{ fontSize: '15px', fontFamily: 'Tajawal', fontWeight: 700, textAlign: 'right' }}
             >
-              {/* إضافة الأيقونة sher2.png للعناصر الرئيسية في المنصات */}
-              <img 
-                src="sher2.png" 
-                alt="أيقونة" 
-                className="w-3.1 h-2.5 ml-2 flex-shrink-0 relative"
-                style={{ top: "3px" }}
-              />
               {item.title}
             </div>
             <div className="text-base text-black space-y-3 pb-8" style={{ fontFamily: 'Tajawal', fontWeight: 400, textAlign: 'right' }}>
               {item.descriptions.map((desc, i) => (
-                <div key={i} className="hover:text-[#055e5b] cursor-pointer transition-colors flex items-center justify-end">
-                  <span>{desc}</span>
-                  <img 
-                    src="sher2.png" 
-                    alt="أيقونة" 
-                    className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
-                    style={{ top: "3px" }}
-                  />
-                </div>
+                <div key={i} className="hover:text-[#055e5b] cursor-pointer transition-colors">{desc}</div>
               ))}
             </div>
           </div>
@@ -767,16 +760,9 @@ return (
           {(menuItemsData[activeMenu as keyof typeof menuItemsData] || []).slice(0, 3).map((item, index) => (
             <div key={item.title} className="text-right" style={{direction: 'ltr'}}>
               <div 
-                className="font-bold text-black mb-3 flex items-center justify-end" 
+                className="font-bold text-black mb-3" 
                 style={{ fontSize: '15px', fontFamily: 'Tajawal', fontWeight: 700, textAlign: 'right' }}
               >
-                {/* إضافة الأيقونة sher2.png للعناصر الرئيسية في تواصل معنا */}
-                <img 
-                  src="sher2.png" 
-                  alt="أيقونة" 
-                  className="w-3.1 h-2.5 ml-2 flex-shrink-0 relative"
-                  style={{ top: "3px" }}
-                />
                 {item.title}
               </div>
             </div>
@@ -788,16 +774,9 @@ return (
           {(menuItemsData[activeMenu as keyof typeof menuItemsData] || []).slice(3, 6).map((item, index) => (
             <div key={item.title} className="text-right" style={{direction: 'ltr'}}>
               <div 
-                className="font-bold text-black mb-3 flex items-center justify-end" 
+                className="font-bold text-black mb-3" 
                 style={{ fontSize: '15px', fontFamily: 'Tajawal', fontWeight: 700, textAlign: 'right' }}
               >
-                {/* إضافة الأيقونة sher2.png للعناصر الرئيسية في تواصل معنا */}
-                <img 
-                  src="sher2.png" 
-                  alt="أيقونة" 
-                  className="w-3.1 h-2.5 ml-2 flex-shrink-0 relative"
-                  style={{ top: "3px" }}
-                />
                 {item.title}
               </div>
             </div>
@@ -810,16 +789,9 @@ return (
             {(menuItemsData[activeMenu as keyof typeof menuItemsData] || []).slice(6).map((item, index) => (
               <div key={item.title}>
                 <div 
-                  className="font-bold text-black mb-3 flex items-center justify-end" 
+                  className="font-bold text-black mb-3" 
                   style={{ fontSize: '15px', fontFamily: 'Tajawal', fontWeight: 700, textAlign: 'right' }}
                 >
-                  {/* إضافة الأيقونة sher2.png للعناصر الرئيسية في تواصل معنا */}
-                  <img 
-                    src="sher2.png" 
-                    alt="أيقونة" 
-                    className="w-3.1 h-2.5 ml-2 flex-shrink-0 relative"
-                    style={{ top: "3px" }}
-                  />
                   {item.title}
                 </div>
               </div>
@@ -831,31 +803,25 @@ return (
       <div className="max-w-8xl ml-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4" style={{direction: 'rtl'}}>
         {(menuItemsData[activeMenu as keyof typeof menuItemsData] || []).map((item, index) => (
           <div key={item.title} className="text-right" style={{direction: 'ltr'}}>
-            {/* العناصر الأخرى تبقى كما هي */}
-            <div 
-              className="font-bold text-black mb-3 flex items-center justify-end" 
-              style={{ fontSize: '15px', fontFamily: 'Tajawal', fontWeight: 700, textAlign: 'right' }}
-            >
-              {item.title === "المشاركة الإلكترونية" && (
-                <img 
-                  src="sher.png"   
-                  alt="icon" 
-                  className="mr-1 w-3 h-3 cursor-pointer"
-                />
-              )}
-              {item.title}
-            </div>
+            {/* إضافة أيقونة فقط لعنصر "المشاركة الإلكترونية" */}
+          <div 
+  className="font-bold text-black mb-3 flex items-center justify-end" 
+  style={{ fontSize: '15px', fontFamily: 'Tajawal', fontWeight: 700, textAlign: 'right' }}
+>
+  {item.title === "المشاركة الإلكترونية" && (
+    <img 
+      src="sher.png"   // حط هنا مسار الصورة الصحيح
+      alt="icon" 
+      className="mr-1 w-3 h-3 cursor-pointer"  // ml-2 لو تبغى مسافة بسيطة عن الكلمة
+      // onClick={() => window.open('https://example.com/participation', '_blank')}
+    />
+  )}
+  {item.title}
+</div>
+
             <div className="text-base text-black space-y-3 pb-8" style={{ fontFamily: 'Tajawal', fontWeight: 400, textAlign: 'right' }}>
               {item.descriptions.map((desc, i) => (
-                <div key={i} className="hover:text-[#055e5b] cursor-pointer transition-colors flex items-center justify-end">
-                  <span>{desc}</span>
-                  <img 
-                    src="sher2.png" 
-                    alt="أيقونة" 
-                    className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
-                    style={{ top: "3px" }}
-                  />
-                </div>
+                <div key={i} className="hover:text-[#055e5b] cursor-pointer transition-colors">{desc}</div>
               ))}
             </div>
           </div>
@@ -864,8 +830,6 @@ return (
     )}
   </div>
 )}
-
-
 
         {/* الشريط الأبيض تحت شريط التنقل */}
         <div className="h-7 bg-white w-full"></div>
