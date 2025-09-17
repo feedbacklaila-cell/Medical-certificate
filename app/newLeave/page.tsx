@@ -869,7 +869,7 @@ function HealthCertificateForm() {
               </button>
             )}
 
-            <Link href="/" passHref>
+            <Link href="/Medical" passHref>
               <button
                 type="button"
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium"
