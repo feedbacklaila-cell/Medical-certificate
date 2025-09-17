@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Menu, Pencil, Search, UserPlus, Printer,Building, GraduationCap, Castle } from "lucide-react";
+import { Menu, Pencil, Trash2, Printer, Search, UserPlus, Building, GraduationCap, Castle } from "lucide-react";
 import { motion } from "framer-motion";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 type HealthCertificate = {
@@ -41,7 +41,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // جلب البيانات من فايربيس
-const fetchCertificates = useCallback(async () => {
+  const fetchCertificates = useCallback(async () => {
   try {
     const snapshot = await getDocs(collection(db, "healthCertificates"));
     const data = snapshot.docs.map((doc) => {
@@ -83,27 +83,27 @@ const fetchCertificates = useCallback(async () => {
   }, [fetchCertificates]);
 
   // حذف شهادة
-  // const handleDelete = async (healthCertificateNumber: string) => {
-  //   if (confirm("هل تريد حذف هذه الشهادة الطبية؟")) {
-  //     try {
-  //       const q = query(
-  //         collection(db, "healthCertificates"),
-  //         where("healthCertificateNumber", "==", healthCertificateNumber)
-  //       );
-  //       const snapshot = await getDocs(q);
+  const handleDelete = async (healthCertificateNumber: string) => {
+    if (confirm("هل تريد حذف هذه الشهادة الطبية؟")) {
+      try {
+        const q = query(
+          collection(db, "healthCertificates"),
+          where("healthCertificateNumber", "==", healthCertificateNumber)
+        );
+        const snapshot = await getDocs(q);
 
-  //       snapshot.forEach(async (document) => {
-  //         await deleteDoc(doc(db, "healthCertificates", document.id));
-  //       });
+        snapshot.forEach(async (document) => {
+          await deleteDoc(doc(db, "healthCertificates", document.id));
+        });
 
-  //       await fetchCertificates();
-  //       alert("تم حذف الشهادة بنجاح ✅");
-  //     } catch (error) {
-  //       console.error("فشل الحذف:", error);
-  //       alert("حدث خطأ أثناء الحذف ❌");
-  //     }
-  //   }
-  // };
+        await fetchCertificates();
+        alert("تم حذف الشهادة بنجاح ✅");
+      } catch (error) {
+        console.error("فشل الحذف:", error);
+        alert("حدث خطأ أثناء الحذف ❌");
+      }
+    }
+  };
 
   // فلترة البحث
   const filteredCertificates = certificates.filter((c) => {
@@ -301,14 +301,14 @@ const fetchCertificates = useCallback(async () => {
                       <Pencil size={18} />
                       <span className="font-cairo text-sm font-medium">تعديل</span>
                     </button>
-                    {/* <button
+                    <button
                       onClick={() => handleDelete(c.healthCertificateNumber)}
                       className="p-2 bg-rose-100/80 hover:bg-rose-200/70 text-rose-600 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-1"
                       title="حذف"
                     >
                       <Trash2 size={18} />
                       <span className="font-cairo text-sm font-medium">حذف</span>
-                    </button> */}
+                    </button>
                     <button
                       onClick={() => {
                         const printUrl = `/health-certificate?certificateNumber=${encodeURIComponent(c.healthCertificateNumber)}`;
