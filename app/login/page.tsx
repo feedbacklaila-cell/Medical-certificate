@@ -511,7 +511,7 @@ return (
 
               {openSubMenu === menuName && (
                 <div className="relative">
-                  {/* القائمة الفرعية نفسها */}
+                 
                   <div
                     className="absolute left-0 bg-white rounded-none shadow-md pt-2 pb-4 mt-1 overflow-auto w-[80%]"
                     style={{
@@ -581,7 +581,7 @@ return (
         
     </div>
 
-   {/* إضافة CSS للأنيميشن */}
+
 <style>
   {`
     @keyframes pulse-scale {
@@ -594,114 +594,125 @@ return (
   `}
 </style>
 
-<div className="flex flex-col">
-  {Object.entries(menuItemsData)
-    .filter(([menuName]) => menuName !== "عن بلدي")
-    .map(([menuName, subItems]) => (
-      <div key={menuName} className="relative">
-        <button
-          onClick={() => toggleSubMenu(menuName)}
-          className={`hover:bg-[#055e5b] flex items-center justify-end py-3 px-2 rounded-md w-full ${
-            activeMobileMenu === menuName ? "text-[#68a12d]" : "text-white"
-          }`}
-        >
-          <span
-            className="flex items-center"
-            style={{ fontFamily: "Tajawal", fontWeight: 700 }}
-          >
-            {openSubMenu === menuName ? (
-              <ChevronUp className="w-4 h-4 ml-1" />
-            ) : (
-              <ChevronDown className="w-4 h-4 ml-1" />
-            )}
-            <span className="text-right">{menuName}</span>
-          </span>
-        </button>
-
-        {/* القوائم الفرعية لباقي العناصر */}
-        {openSubMenu === menuName && (
-          <div
-            className="bg-white rounded-none shadow-md pt-2 pb-2 w-[80%] ml-auto mr-2"
-            style={{
-              minWidth: "200px",
-              maxWidth: "95%",
-              transition: "max-height 0.3s ease",
-            }}
-          >
-            {subItems.map((item) => (
-              <div
-                key={item.title}
-                className="block px-2 hover:bg-gray-50 transition-colors"
+ {/* باقي عناصر القائمة */}
+    <div className="flex flex-col">
+      {Object.entries(menuItemsData)
+        .filter(([menuName]) => menuName !== "عن بلدي")
+        .map(([menuName, subItems]) => (
+          <div key={menuName} className="relative">
+            <button
+              onClick={() => toggleSubMenu(menuName)}
+              className={`hover:bg-[#055e5b] flex items-center justify-end py-3 px-2 rounded-md w-full ${
+                activeMobileMenu === menuName ? "text-[#68a12d]" : "text-white"
+              }`}
+            >
+              <span
+                className="flex items-center"
+                style={{ fontFamily: "Tajawal", fontWeight: 700 }}
               >
-                <div
-                  className="font-bold text-gray-800 text-right flex items-center justify-end mb-1"
-                  style={{
-                    fontFamily: "Tajawal",
-                    fontWeight: 700,
-                  }}
-                >
-                  {item.title}
-                </div>
+                {openSubMenu === menuName ? (
+                  <ChevronUp className="w-4 h-4 ml-1" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                )}
+                
+                {/* إضافة الأيقونة للعناصر الرئيسية في المنصات وتواصل معنا */}
+                {(menuName === "المنصات" || menuName === "تواصل معنا") && (
+                  <img 
+                    src="sher2.png" 
+                    alt="أيقونة" 
+                    className="w-3.1 h-2.5 ml-2 flex-shrink-0 relative"
+                    style={{ top: "3px" }}
+                  />
+                )}
+                
+                <span className="text-right">{menuName}</span>
+              </span>
+            </button>
 
-                {/* النصوص الفرعية مع إضافة الأيقونة الجديدة */}
-                <div
-                  className="text-sm text-[#666b71] text-right space-y-2"
-                  style={{ fontFamily: "Tajawal", fontWeight: 400 }}
-                >
-                  {item.descriptions.map((desc, i) => {
-                    // تحديد لون النص حسب الوصف
-                    const textColor =
-                      desc === "لوحة التحكم"
-                        ? "text-[#b2d48f]"
-                        : desc === "بلدي أعمال"
-                        ? "text-[#698be1]"
-                        : "text-gray-600";
+            {/* القوائم الفرعية لباقي العناصر */}
+            {openSubMenu === menuName && (
+              <div
+                className="bg-white rounded-none shadow-md pt-2 pb-2 w-[80%] ml-auto mr-2"
+                style={{
+                  minWidth: "200px",
+                  maxWidth: "95%",
+                  transition: "max-height 0.3s ease",
+                }}
+              >
+                {subItems.map((item) => (
+                  <div
+                    key={item.title}
+                    className="block px-2 hover:bg-gray-50 transition-colors"
+                  >
+                    <div
+                      className="font-bold text-gray-800 text-right flex items-center justify-end mb-1"
+                      style={{
+                        fontFamily: "Tajawal",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {item.title}
+                    </div>
 
-                    const badgeColor =
-                      desc === "لوحة التحكم"
-                        ? "bg-[#b2d48f] text-white"
-                        : desc === "بلدي أعمال"
-                        ? "bg-[#698be1] text-white"
-                        : "";
+                    {/* النصوص الفرعية مع إضافة الأيقونة الجديدة */}
+                    <div
+                      className="text-sm text-[#666b71] text-right space-y-2"
+                      style={{ fontFamily: "Tajawal", fontWeight: 400 }}
+                    >
+                      {item.descriptions.map((desc, i) => {
+                        // تحديد لون النص حسب الوصف
+                        const textColor =
+                          desc === "لوحة التحكم"
+                            ? "text-[#b2d48f]"
+                            : desc === "بلدي أعمال"
+                            ? "text-[#698be1]"
+                            : "text-gray-600";
 
-                    return (
-                      <div
-                        key={i}
-                        className={`py-1 flex items-center justify-end ${
-                          i === 0 ? "mt-5" : ""
-                        }`}
-                      >
-                        {/* كلمة جديد */}
-                        {(desc === "لوحة التحكم" || desc === "بلدي أعمال") && (
-                          <span
-                            className={`ml-2 px-1 py-0.5 text-xs rounded-sm ${badgeColor} animate-pulse-scale`}
+                        const badgeColor =
+                          desc === "لوحة التحكم"
+                            ? "bg-[#b2d48f] text-white"
+                            : desc === "بلدي أعمال"
+                            ? "bg-[#698be1] text-white"
+                            : "";
+
+                        return (
+                          <div
+                            key={i}
+                            className={`py-1 flex items-center justify-end ${
+                              i === 0 ? "mt-5" : ""
+                            }`}
                           >
-                            جديد
-                          </span>
-                        )}
+                            {/* كلمة جديد */}
+                            {(desc === "لوحة التحكم" || desc === "بلدي أعمال") && (
+                              <span
+                                className={`ml-2 px-1 py-0.5 text-xs rounded-sm ${badgeColor} animate-pulse-scale`}
+                              >
+                                جديد
+                              </span>
+                            )}
 
-                        {/* النص بلون مطابق */}
-                        <span className={`ml-2 ${textColor}`}>{desc}</span>
+                            {/* النص بلون مطابق */}
+                            <span className={`ml-2 ${textColor}`}>{desc}</span>
 
-                        {/* المستطيل / صورة PNG مع النزول قليلًا */}
-                        <img
-                          src="sher2.png" // ضع هنا مسار الصورة الصحيح
-                          alt="أيقونة"
-                          className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
-                          style={{ top: "3px" }} // نزول قليل للأسفل
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
+                            {/* المستطيل / صورة PNG مع النزول قليلًا */}
+                            <img
+                              src="sher2.png"
+                              alt="أيقونة"
+                              className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
+                              style={{ top: "3px" }}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
-      </div>
-    ))}
-</div>
-
+        ))}
+    </div>
   </div>
 )}
 
