@@ -594,7 +594,7 @@ return (
   `}
 </style>
 
-{/* باقي عناصر القائمة */}
+   {/* باقي عناصر القائمة */}
     <div className="flex flex-col">
       {Object.entries(menuItemsData)
         .filter(([menuName]) => menuName !== "عن بلدي")
@@ -716,11 +716,10 @@ return (
 
 
 
-
         </div>
 
         {/* القائمة المنسدلة لأجهزة الكمبيوتر */}
-     // ... الكود الحالي ...
+   
 
 {!isMobile && activeMenu && (
   <div 
@@ -866,7 +865,7 @@ return (
   </div>
 )}
 
-// ... باقي الكود ...
+
 
         {/* الشريط الأبيض تحت شريط التنقل */}
         <div className="h-7 bg-white w-full"></div>
