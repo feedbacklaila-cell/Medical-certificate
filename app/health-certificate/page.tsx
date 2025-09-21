@@ -122,8 +122,11 @@ function convertToHijri(gregorianDateStr: string): string {
     height: "30%"
   }}
 >
+
+     
+   
   <img
-    src= "/face.jpg"
+     src={certificateData?.personImageUrl}
     alt="صورة الشخص"
     style={{ width: "100%", height: "100%", objectFit: "fill" }}
   />
@@ -140,7 +143,7 @@ function convertToHijri(gregorianDateStr: string): string {
   }}
 >
   <img
-     src= "/qr1.png"
+    src={certificateData?.qrCodeImageUrl}
     alt="QR Code"
     style={{ width: "100%", height: "100%", objectFit: "fill" }}
   />

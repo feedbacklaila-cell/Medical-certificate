@@ -1,8 +1,8 @@
 "use client";
 import { toHijri } from 'hijri-converter';
-import '../../styles/fonts.css';
+import '../../../../../styles/fonts.css';
 import { useState, useEffect, useRef } from "react";
-import { db } from "../firebaseConfig";
+import { db } from "../../../../firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Menu, ChevronDown, ChevronUp } from "lucide-react";
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -25,6 +25,7 @@ interface HealthCertificateData {
   programEndDate: string;
   personImageUrl: string;
   qrCodeImageUrl: string;
+  certificateId: string;
 }
 
 function convertToHijri(gregorianDateStr: string): string {
@@ -345,7 +346,7 @@ export default function VerifyLeavePage() {
       
       const q = query(
         collection(db, "healthCertificates"),
-        where("healthCertificateNumber", "==", certificateNumber)
+        where("certificateId", "==", certificateNumber)
       );
 
       const querySnapshot = await getDocs(q);
