@@ -237,7 +237,7 @@ setAmanatList(data);
                 مسح النموذج
               </button>
 
-              <Link href="/Medical" passHref>
+              <Link href="/newLeave" passHref>
                 <button
                   type="button"
                   className="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded-md font-medium"

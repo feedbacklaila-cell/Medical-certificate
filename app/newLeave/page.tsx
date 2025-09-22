@@ -368,6 +368,22 @@ function HealthCertificateForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const checkCertificateExists = async (certificateNumber: string): Promise<{ exists: boolean; docId?: string }> => {
+    try {
+      const q = query(collection(db, "healthCertificates"), 
+        where("healthCertificateIssueDate", "==", certificateNumber));
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        return { exists: true, docId: querySnapshot.docs[0].id };
+      }
+      return { exists: false };
+    } catch (error) {
+      console.error("Error checking certificate existence:", error);
+      return { exists: false };
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -379,6 +395,23 @@ function HealthCertificateForm() {
     setLoading(true);
 
     try {
+      // التحقق من وجود الشهادة بنفس الرقم
+      const { exists, docId } = await checkCertificateExists(formData.healthCertificateIssueDate);
+      
+      if (exists && !isEditing) {
+        const shouldEdit = confirm("رقم الشهادة مسجل مسبقاً. هل تريد تعديل البيانات بدلاً من حفظ جديد؟");
+        if (shouldEdit) {
+          // تحويل إلى وضع التحرير
+          setEditingDocId(docId || null);
+          setIsEditing(true);
+          setLoading(false);
+          return;
+        } else {
+          setLoading(false);
+          return;
+        }
+      }
+
       // عند التعديل، نحتفظ بمعرف الشهادة والباركود الأصلي
       const certificateId = isEditing ? formData.healthCertificateIssueDate : uuidv4();
       const certificateUrl = `$https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
@@ -407,6 +440,10 @@ function HealthCertificateForm() {
         alert("تم حفظ البيانات بنجاح");
         setQrCodeUrl(qrCodeImageUrl || '');
       }
+
+      // تفريغ النموذج بعد الحفظ الناجح
+      resetForm();
+
     } catch (error) {
       console.error("حدث خطأ:", error);
       alert("حدث خطأ أثناء حفظ البيانات");
@@ -534,12 +571,13 @@ function HealthCertificateForm() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ انتها الشهادة الصحية</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ انتها الشهادة الصحية *</label>
                 <input
                   type="date"
                   name="healthCertificateIssueDate"
                   value={formData.healthCertificateIssueDate}
                   onChange={handleChange}
+                  required
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
