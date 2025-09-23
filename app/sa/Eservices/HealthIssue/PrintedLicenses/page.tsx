@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { toHijri } from 'hijri-converter';
 import '../../../../../styles/fonts.css';
 import { useState, useEffect, useRef } from "react";
@@ -536,11 +537,13 @@ return (
                     }}
                   >
                     {item.title === "المشاركة الإلكترونية" && (
-                      <img
-                        src="sher2.png"
-                        alt="icon"
-                        className="mr-1 w-3.1 h-2.5 cursor-pointer"
-                      />
+                     <Image
+  src="/sher2.png"      // لاحظ / لأنها داخل public
+  alt="icon"
+  width={50}            // بدل w-3.1 (تقريبًا 0.77rem × 64px = 49px)
+  height={40}           // بدل h-2.5 (تقريبًا 0.625rem × 64px = 40px)
+  className="mr-1 cursor-pointer"
+/>
                     )}
                     {item.title}
                   </div>
@@ -558,12 +561,13 @@ return (
                         }`}
                       >
                         <span className="ml-2">{desc}</span>
-                        <img
-                          src="sher2.png"
-                          alt="أيقونة"
-                          className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
-                          style={{ top: "3px" }}
-                        />
+                       <Image
+  src="/sher2.png"      // لاحظ / لأنها داخل public
+  alt="icon"
+  width={50}            // بدل w-3.1 (تقريبًا 0.77rem × 64px = 49px)
+  height={40}           // بدل h-2.5 (تقريبًا 0.625rem × 64px = 40px)
+  className="mr-1 cursor-pointer"
+/>
                       </div>
                     ))}
                   </div>
@@ -654,12 +658,13 @@ return (
           <span className="ml-2">{item.title}</span>
           {/* إظهار الأيقونة فقط لقسمي المنصات وتواصل معنا */}
           {(menuName === "المنصات" || menuName === "تواصل معنا") && (
-            <img
-              src="sher2.png"
-              alt="أيقونة"
-              className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
-              style={{ top: "3px" }}
-            />
+            <Image
+  src="/sher2.png"      // لاحظ / لأنها داخل public
+  alt="icon"
+  width={50}            // بدل w-3.1 (تقريبًا 0.77rem × 64px = 49px)
+  height={40}           // بدل h-2.5 (تقريبًا 0.625rem × 64px = 40px)
+  className="mr-1 cursor-pointer"
+/>
           )}
         </div>
 
@@ -704,12 +709,13 @@ return (
                 <span className={`ml-2 ${textColor}`}>{desc}</span>
 
                 {/* المستطيل / صورة PNG مع النزول قليلًا */}
-                <img
-                  src="sher2.png"
-                  alt="أيقونة"
-                  className="w-3.1 h-2.5 m-2 flex-shrink-0 relative"
-                  style={{ top: "3px" }}
-                />
+               <Image
+  src="/sher2.png"      // لاحظ / لأنها داخل public
+  alt="icon"
+  width={50}            // بدل w-3.1 (تقريبًا 0.77rem × 64px = 49px)
+  height={40}           // بدل h-2.5 (تقريبًا 0.625rem × 64px = 40px)
+  className="mr-1 cursor-pointer"
+/>
               </div>
             );
           })}
