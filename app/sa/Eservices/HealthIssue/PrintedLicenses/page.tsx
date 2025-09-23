@@ -714,7 +714,7 @@ return (
   alt="icon"
  width={7}            // بدل w-3.1 (تقريبًا 0.77rem × 64px = 49px)
   height={6}           // بدل h-2.5 (تقريبًا 0.625rem × 64px = 40px)
-  className="mr-1 cursor-pointer"
+  className="mr-1.5 cursor-pointer"
 />
               </div>
             );
