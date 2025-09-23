@@ -411,35 +411,34 @@ function HealthCertificateForm() {
           return;
         }
       }
+ const certificateId = isEditing ? (formData.certificateId || formData.healthCertificateIssueDate) : uuidv4();
+    const certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
+    
+    // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
+    let qrCodeImageUrl = formData.qrCodeImageUrl;
+    if (!isEditing) {
+      const qrCodeDataUrl = await QRCode.toDataURL(certificateUrl);
+      qrCodeImageUrl = await uploadToCloudinary(qrCodeDataUrl);
+    }
+    
+    // 🔥 **هذا هو التعديل المهم: إضافة certificateUrl إلى البيانات**
+    const certificateData = {
+      ...formData,
+      certificateId,
+      certificateUrl,  // ← إضافة هذا السطر
+      qrCodeImageUrl,
+      createdAt: formData.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
 
-      // عند التعديل، نحتفظ بمعرف الشهادة والباركود الأصلي
-      const certificateId = isEditing ? formData.healthCertificateIssueDate : uuidv4();
-      const certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
-      
-      // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
-      let qrCodeImageUrl = formData.qrCodeImageUrl;
-      if (!isEditing) {
-        const qrCodeDataUrl = await QRCode.toDataURL(certificateUrl);
-        qrCodeImageUrl = await uploadToCloudinary(qrCodeDataUrl);
-      }
-      
-      // حفظ البيانات في Firebase
-      const certificateData = {
-        ...formData,
-        certificateId,
-        qrCodeImageUrl,
-        createdAt: formData.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      if (isEditing && editingDocId) {
-        await updateDoc(doc(db, "healthCertificates", editingDocId), certificateData);
-        alert("تم تحديث البيانات بنجاح");
-      } else {
-        await addDoc(collection(db, "healthCertificates"), certificateData);
-        alert("تم حفظ البيانات بنجاح");
-        setQrCodeUrl(qrCodeImageUrl || '');
-      }
+    if (isEditing && editingDocId) {
+      await updateDoc(doc(db, "healthCertificates", editingDocId), certificateData);
+      alert("تم تحديث البيانات بنجاح");
+    } else {
+      await addDoc(collection(db, "healthCertificates"), certificateData);
+      alert("تم حفظ البيانات بنجاح");
+      setQrCodeUrl(qrCodeImageUrl || '');
+    }
 
       // تفريغ النموذج بعد الحفظ الناجح
       resetForm();

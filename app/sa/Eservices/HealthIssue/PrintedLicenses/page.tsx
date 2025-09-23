@@ -886,7 +886,7 @@ return (
         <div className="flex flex-col items-center mb-3 pt-6">
           <h2 className="text-xl font-semibold text-[#306db5] mb-2">
             <span 
-              className="relative font-bold -top-2 text-[35px] text-[#484e56]" 
+              className="relative font-bold -top-2 text-[32px] text-[#484e56]" 
               style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
             >
               {certificateData.certificateType}
