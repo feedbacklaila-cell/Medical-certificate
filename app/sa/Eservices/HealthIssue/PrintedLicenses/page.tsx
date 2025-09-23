@@ -894,7 +894,7 @@ return (
           </h2>
           {certificateData.personImageUrl && (
             <img 
-              src= "/face.jpg"
+src={certificateData?.personImageUrl}
               alt="صورة الشخص" 
 className="w-[200px] h-[200px] object-contain"            />
           )}
