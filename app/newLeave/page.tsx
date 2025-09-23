@@ -414,7 +414,7 @@ function HealthCertificateForm() {
 
       // عند التعديل، نحتفظ بمعرف الشهادة والباركود الأصلي
       const certificateId = isEditing ? formData.healthCertificateIssueDate : uuidv4();
-      const certificateUrl = `$https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
+      const certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
       
       // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
       let qrCodeImageUrl = formData.qrCodeImageUrl;
