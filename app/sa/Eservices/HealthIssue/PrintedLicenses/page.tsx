@@ -892,12 +892,12 @@ return (
               {certificateData.certificateType}
             </span>
           </h2>
-          {certificateData.personImageUrl && (
+         
             <img 
 src={certificateData?.personImageUrl}
               alt="صورة الشخص" 
 className="w-[200px] h-[200px] object-contain"            />
-          )}
+          
         </div>
 
         
@@ -1234,7 +1234,7 @@ className="w-[200px] h-[200px] object-contain"            />
   </h2>
   {certificateData.personImageUrl && (
     <img 
-      src="/face.jpg"
+     src={certificateData?.personImageUrl}
       alt="صورة الشخص" 
       className="max-w-[200px] max-h-[200px] "
     />
