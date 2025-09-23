@@ -896,8 +896,7 @@ return (
             <img 
               src= "/face.jpg"
               alt="صورة الشخص" 
-              className="max-w-xs max-h-60"
-            />
+className="w-[200px] h-[200px] object-contain"            />
           )}
         </div>
 
