@@ -540,8 +540,8 @@ return (
                      <Image
   src="/sher2.png"      // لاحظ / لأنها داخل public
   alt="icon"
-  width={5}            // بدل w-3.1 (تقريبًا 0.77rem × 64px = 49px)
-  height={4}           // بدل h-2.5 (تقريبًا 0.625rem × 64px = 40px)
+  width={8}            // بدل w-3.1 (تقريبًا 0.77rem × 64px = 49px)
+  height={6}           // بدل h-2.5 (تقريبًا 0.625rem × 64px = 40px)
   className="mr-1 cursor-pointer"
 />
                     )}
