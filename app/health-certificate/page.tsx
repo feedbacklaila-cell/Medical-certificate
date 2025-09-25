@@ -160,7 +160,7 @@ function convertToHijri(gregorianDateStr: string): string {
   }}
 >
   <img
-       src= "/up.png"
+        src={certificateData?.amanaImageUrl}
     alt="الشعار"
     style={{ width: "100%", height: "100%", objectFit: "fill" }}
   />

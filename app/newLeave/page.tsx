@@ -136,6 +136,54 @@ function HealthCertificateForm() {
   const amanaInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
+  // دالة لحفظ البيانات قبل الانتقال
+  const saveFormDataBeforeNavigation = () => {
+    sessionStorage.setItem('pendingFormData', JSON.stringify(formData));
+    sessionStorage.setItem('formStatus', 'editing');
+  };
+
+  // دالة الانتقال لصفحة Name مع حفظ البيانات
+  const navigateToNamePageWithData = () => {
+    if (!formData.name || !formData.idNumber) {
+      alert("الرجاء اختيار شخص أولاً");
+      return;
+    }
+
+    saveFormDataBeforeNavigation();
+    
+    const personData = {
+      fullName: formData.name,
+      idNumber: formData.idNumber,
+      gender: formData.gender,
+      nationality: formData.nationality,
+      profession: formData.jobTitle,
+      imageUrl: formData.personImageUrl
+    };
+    
+    sessionStorage.setItem('editingPerson', JSON.stringify(personData));
+    sessionStorage.setItem('returnUrl', window.location.href);
+    
+    window.location.href = "/Name";
+  };
+
+  // استعادة البيانات عند العودة
+  useEffect(() => {
+    const restoreFormData = () => {
+      const savedFormData = sessionStorage.getItem('pendingFormData');
+      const formStatus = sessionStorage.getItem('formStatus');
+      
+      if (savedFormData && formStatus === 'editing') {
+        const parsedData = JSON.parse(savedFormData);
+        setFormData(parsedData);
+        
+        sessionStorage.removeItem('pendingFormData');
+        sessionStorage.removeItem('formStatus');
+      }
+    };
+
+    restoreFormData();
+  }, []);
+
   useEffect(() => {
     const fetchAmanat = async () => {
       try {
@@ -212,6 +260,71 @@ function HealthCertificateForm() {
     fetchPrograms();
     fetchEstablishments();
   }, []);
+
+  // استعادة البيانات أيضاً عند تحميل المكون أول مرة
+  useEffect(() => {
+    const certificateNumber = searchParams.get("certificateNumber");
+    if (certificateNumber) {
+      const fetchData = async (certificateNumber: string) => {
+        try {
+          const q = query(collection(db, "healthCertificates"), 
+            where("healthCertificateNumber", "==", certificateNumber));
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot.empty) {
+            alert("لا يوجد بيانات مسجلة بهذا الرقم");
+            return;
+          }
+
+          const docData = querySnapshot.docs[0].data() as FormData;
+          setEditingDocId(querySnapshot.docs[0].id);
+          setFormData(docData);
+          setQrCodeUrl(docData.qrCodeImageUrl || null);
+          
+          if (docData.amana) {
+            const foundAmana = amanatList.find(
+              item => item.amanaName === docData.amana && item.baladiaName === docData.baladia
+            );
+            if (foundAmana) {
+              setSelectedAmana(foundAmana);
+            }
+          }
+          
+          if (docData.name) {
+            const foundPerson = personsList.find(
+              person => person.fullName === docData.name && person.idNumber === docData.idNumber
+            );
+            if (foundPerson) {
+              setSelectedPerson(foundPerson);
+            }
+          }
+          
+          setIsEditing(true);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          alert("حدث خطأ أثناء جلب البيانات");
+        }
+      };
+
+      fetchData(certificateNumber);
+    } else {
+      // إذا لم يكن في وضع تعديل، تحقق من وجود بيانات محفوظة
+      const restoreFormData = () => {
+        const savedFormData = sessionStorage.getItem('pendingFormData');
+        const formStatus = sessionStorage.getItem('formStatus');
+        
+        if (savedFormData && formStatus === 'editing') {
+          const parsedData = JSON.parse(savedFormData);
+          setFormData(parsedData);
+          
+          sessionStorage.removeItem('pendingFormData');
+          sessionStorage.removeItem('formStatus');
+        }
+      };
+      
+      restoreFormData();
+    }
+  }, [searchParams, amanatList, personsList]);
 
   const handleAmanaInputFocus = () => {
     setFilteredAmanat(amanatList);
@@ -368,10 +481,16 @@ function HealthCertificateForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // إزالة التحقق من وجود الشهادة في الحفظ الجديد
   const checkCertificateExists = async (certificateNumber: string): Promise<{ exists: boolean; docId?: string }> => {
+    // لا داعي للتحقق في الحفظ الجديد
+    if (!isEditing) {
+      return { exists: false };
+    }
+
     try {
       const q = query(collection(db, "healthCertificates"), 
-        where("healthCertificateIssueDate", "==", certificateNumber));
+        where("healthCertificateNumber", "==", certificateNumber));
       const querySnapshot = await getDocs(q);
       
       if (!querySnapshot.empty) {
@@ -395,52 +514,54 @@ function HealthCertificateForm() {
     setLoading(true);
 
     try {
-      // التحقق من وجود الشهادة بنفس الرقم
-      const { exists, docId } = await checkCertificateExists(formData.healthCertificateIssueDate);
-      
-      if (exists && !isEditing) {
-        const shouldEdit = confirm("رقم الشهادة مسجل مسبقاً. هل تريد تعديل البيانات بدلاً من حفظ جديد؟");
-        if (shouldEdit) {
-          // تحويل إلى وضع التحرير
-          setEditingDocId(docId || null);
-          setIsEditing(true);
-          setLoading(false);
-          return;
-        } else {
-          setLoading(false);
-          return;
+      // التحقق من وجود الشهادة فقط في وضع التحرير
+      let shouldProceed = true;
+      let existingDocId = editingDocId;
+
+      if (isEditing) {
+        const { exists, docId } = await checkCertificateExists(formData.healthCertificateNumber);
+        if (exists && docId !== editingDocId) {
+          shouldProceed = confirm("رقم الشهادة مسجل مسبقاً. هل تريد تعديل البيانات بدلاً من حفظ جديد؟");
+          if (shouldProceed) {
+            setEditingDocId(docId || null);
+          }
         }
       }
- const certificateId = isEditing ? (formData.certificateId || formData.healthCertificateIssueDate) : uuidv4();
-    const certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
-    
-    // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
-    let qrCodeImageUrl = formData.qrCodeImageUrl;
-    if (!isEditing) {
-      const qrCodeDataUrl = await QRCode.toDataURL(certificateUrl);
-      qrCodeImageUrl = await uploadToCloudinary(qrCodeDataUrl);
-    }
-    
-    // 🔥 **هذا هو التعديل المهم: إضافة certificateUrl إلى البيانات**
-    const certificateData = {
-      ...formData,
-      certificateId,
-      certificateUrl,  // ← إضافة هذا السطر
-      qrCodeImageUrl,
-      createdAt: formData.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
 
-    if (isEditing && editingDocId) {
-      await updateDoc(doc(db, "healthCertificates", editingDocId), certificateData);
-      alert("تم تحديث البيانات بنجاح");
-    } else {
-      await addDoc(collection(db, "healthCertificates"), certificateData);
-      alert("تم حفظ البيانات بنجاح");
-      setQrCodeUrl(qrCodeImageUrl || '');
-    }
+      if (!shouldProceed) {
+        setLoading(false);
+        return;
+      }
 
-      // تفريغ النموذج بعد الحفظ الناجح
+      const certificateId = isEditing ? (formData.certificateId || formData.healthCertificateNumber) : uuidv4();
+      const certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
+      
+      // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
+      let qrCodeImageUrl = formData.qrCodeImageUrl;
+      if (!isEditing) {
+        const qrCodeDataUrl = await QRCode.toDataURL(certificateUrl);
+        qrCodeImageUrl = await uploadToCloudinary(qrCodeDataUrl);
+      }
+      
+      const certificateData = {
+        ...formData,
+        certificateId,
+        certificateUrl,
+        qrCodeImageUrl,
+        createdAt: formData.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      if (isEditing && existingDocId) {
+        await updateDoc(doc(db, "healthCertificates", existingDocId), certificateData);
+        alert("تم تحديث البيانات بنجاح");
+      } else {
+        await addDoc(collection(db, "healthCertificates"), certificateData);
+        alert("تم حفظ البيانات بنجاح");
+        setQrCodeUrl(qrCodeImageUrl || '');
+      }
+
+      // تفريغ النموذج بعد الحفظ الناجح مع توليد رقم شهادة جديد
       resetForm();
 
     } catch (error) {
@@ -452,6 +573,8 @@ function HealthCertificateForm() {
   };
 
   const resetForm = () => {
+    const newCertificateNumber = generateCertificateNumber();
+    
     setFormData({
       amana: "",
       baladia: "",
@@ -459,7 +582,7 @@ function HealthCertificateForm() {
       idNumber: "",
       gender: "",
       nationality: "السعودية",
-      healthCertificateNumber: generateCertificateNumber(),
+      healthCertificateNumber: newCertificateNumber,
       jobTitle: "",
       programType: "",
       licenseNumber: "",
@@ -477,56 +600,11 @@ function HealthCertificateForm() {
     setIsEditing(false);
     setEditingDocId(null);
     setQrCodeUrl(null);
+    
+    // تنظيف البيانات المحفوظة أيضاً
+    sessionStorage.removeItem('pendingFormData');
+    sessionStorage.removeItem('formStatus');
   };
-
-  useEffect(() => {
-    const fetchData = async (certificateNumber: string) => {
-      try {
-        const q = query(collection(db, "healthCertificates"), 
-          where("healthCertificateNumber", "==", certificateNumber));
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
-          alert("لا يوجد بيانات مسجلة بهذا الرقم");
-          return;
-        }
-
-        const docData = querySnapshot.docs[0].data() as FormData;
-        setEditingDocId(querySnapshot.docs[0].id);
-        setFormData(docData);
-        setQrCodeUrl(docData.qrCodeImageUrl || null);
-        
-        if (docData.amana) {
-          const foundAmana = amanatList.find(
-            item => item.amanaName === docData.amana && item.baladiaName === docData.baladia
-          );
-          if (foundAmana) {
-            setSelectedAmana(foundAmana);
-          }
-        }
-        
-        if (docData.name) {
-          const foundPerson = personsList.find(
-            person => person.fullName === docData.name && person.idNumber === docData.idNumber
-          );
-          if (foundPerson) {
-            setSelectedPerson(foundPerson);
-          }
-        }
-        
-        setIsEditing(true);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        alert("حدث خطأ أثناء جلب البيانات");
-      }
-    };
-
-    const certificateNumber = searchParams.get("certificateNumber");
-    if (certificateNumber) {
-      fetchData(certificateNumber);
-    }
-  }, [searchParams, amanatList, personsList]);
-
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
@@ -685,16 +763,17 @@ function HealthCertificateForm() {
                   )}
                 </div>
                 <Link href="/Name" passHref>
-                  <button
-                    type="button"
-                    className="mt-6 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-md h-[42px]"
-                    title="الانتقال إلى صفحة الأسماء"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                </Link>
+  <button
+    type="button"
+    onClick={navigateToNamePageWithData} // إضافة هذا السطر
+    className="mt-6 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-md h-[42px]"
+    title="الانتقال إلى صفحة الأسماء"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+    </svg>
+  </button>
+</Link>
               </div>
             </div>
 
