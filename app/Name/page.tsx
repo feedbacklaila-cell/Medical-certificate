@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { db } from "../firebaseConfig";
 import { collection, addDoc, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
 import Link from "next/link";
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 type MedicalCertificate = {
   id?: string;
   fullName: string;
