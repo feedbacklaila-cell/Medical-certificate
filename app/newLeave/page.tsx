@@ -516,17 +516,17 @@ function HealthCertificateForm() {
     try {
       // التحقق من وجود الشهادة فقط في وضع التحرير
       let shouldProceed = true;
-      let existingDocId = editingDocId;
+   const existingDocId = editingDocId; // تغيير let إلى const
 
-      if (isEditing) {
-        const { exists, docId } = await checkCertificateExists(formData.healthCertificateNumber);
-        if (exists && docId !== editingDocId) {
-          shouldProceed = confirm("رقم الشهادة مسجل مسبقاً. هل تريد تعديل البيانات بدلاً من حفظ جديد؟");
-          if (shouldProceed) {
-            setEditingDocId(docId || null);
-          }
-        }
-      }
+if (isEditing) {
+  const { exists, docId } = await checkCertificateExists(formData.healthCertificateNumber);
+  if (exists && docId !== editingDocId) {
+    shouldProceed = confirm("رقم الشهادة مسجل مسبقاً. هل تريد تعديل البيانات بدلاً من حفظ جديد؟");
+    if (shouldProceed) {
+      setEditingDocId(docId || null);
+    }
+  }
+}
 
       if (!shouldProceed) {
         setLoading(false);
