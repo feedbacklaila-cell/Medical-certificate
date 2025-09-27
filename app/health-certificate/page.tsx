@@ -185,20 +185,45 @@ function convertToHijri(gregorianDateStr: string): string {
         </div>
 
         {/* البيانات */}
-        <div
-          className="absolute flex items-center justify-start font-bold"
-          style={{
-            left: "69.5%",
-            top: "26.6%",
-            width: "48.2%",
-            height: "5.5%",
-            color: "#0c7773",
-            fontFamily: "Droid",
-            textAlign: "center",
-          }}
-        >
-          <span style={{ fontSize: "2.4vw" }}>{certificateData.name}</span>
-        </div>
+       {/* العربي */}
+{ /[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
+  <div
+    className="absolute flex items-center justify-start font-bold"
+    style={{
+      left: "69.5%",
+      top: "26.6%",
+      width: "48.2%",
+      height: "5.5%",
+      color: "#0c7773",
+      fontFamily: "Droid",
+      textAlign: "center",
+    }}
+  >
+    <span style={{ fontSize: "2.4vw" }}>{certificateData.name}</span>
+  </div>
+)}
+
+{/* الإنجليزي */}
+{ !/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
+  <div
+    className="absolute flex items-center font-bold"
+    style={{
+      right: "3%", // بداية منفصلة عن العربي
+      top: "26.6%",
+      width: "48.2%",
+      height: "5.5%",
+      color: "#0c7773",
+      fontFamily: "Droid, sans-serif",
+      textAlign: "center",
+      direction: "ltr",
+    }}
+  >
+    <span style={{ fontSize: "2.4vw", whiteSpace: "nowrap" }}>
+      {certificateData.name}
+    </span>
+  </div>
+)}
+
 
         <div
           className="absolute text-black"
@@ -245,21 +270,24 @@ function convertToHijri(gregorianDateStr: string): string {
            
         </div>
 
-        <div
-          className="absolute text-black"
-          style={{
-             left: "39%",
-            direction: "rtl",
-            top: "55%",
-            width: "19.53%",
-            height: "3.9%",
-            fontSize: "2.1vw",
-            fontFamily: "Droid",
-          
-          }}
-        >
-          <span>{certificateData.jobTitle}</span>
-        </div>
+       <div
+  className="absolute text-black"
+  style={{
+    left: "39%",
+    direction: "rtl",
+    top: "55%",
+    width: "19.53%",
+    height: "3.9%",
+    fontSize: "2.1vw",
+    fontFamily: "Droid",
+    overflow: "visible",       // يسمح للنص الطويل بالظهور خارج الحاوية
+    whiteSpace: "nowrap",      // يمنع السطر الجديد
+    textAlign: "right",        // لمحاذاة النص العربي بشكل صحيح
+  }}
+>
+  <span>{certificateData.jobTitle}</span>
+</div>
+
 
         <div
           className="absolute text-black"
