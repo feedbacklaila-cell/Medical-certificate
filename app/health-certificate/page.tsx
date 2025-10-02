@@ -216,18 +216,18 @@ function convertToHijri(gregorianDateStr: string): string {
 
 
 {/* الإنجليزي */}
-{ !/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
+{!/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
   <div
-    className="absolute flex items-center font-bold"
+    className="absolute flex items-center justify-end font-bold"
     style={{
-      right: "3%", // بداية منفصلة عن العربي
+      left: "49.5%",      // النهاية دايمًا ثابتة هنا
       top: "26.6%",
       width: "48.2%",
       height: "5.5%",
       color: "#0c7773",
       fontFamily: "Droid, sans-serif",
-      textAlign: "center",
       direction: "ltr",
+      textAlign: "right",  // النص يزاح لليمين إذا طول
     }}
   >
     <span style={{ fontSize: "2.4vw", whiteSpace: "nowrap" }}>
@@ -235,6 +235,7 @@ function convertToHijri(gregorianDateStr: string): string {
     </span>
   </div>
 )}
+
 
 
         <div
