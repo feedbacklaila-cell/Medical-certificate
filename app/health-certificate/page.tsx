@@ -11,6 +11,7 @@ type HealthCertificateData = {
   qrCodeImageUrl: string;
   amanaImageUrl: string;
   certificateType: string;
+  certificateDesignType: string; // إضافة الحقل الجديد
   name: string;
   idNumber: string;
   nationality: string;
@@ -64,31 +65,49 @@ export default function HealthCertificatePage() {
 
     setLoading(false);
   };
-// دالة لتحويل التاريخ الميلادي إلى هجري
-function convertToHijri(gregorianDateStr: string): string {
-  if (!gregorianDateStr) return '';
   
-  try {
-    const date = new Date(gregorianDateStr);
-    if (isNaN(date.getTime())) return '';
+  // دالة لتحويل التاريخ الميلادي إلى هجري
+  function convertToHijri(gregorianDateStr: string): string {
+    if (!gregorianDateStr) return '';
+    
+    try {
+      const date = new Date(gregorianDateStr);
+      if (isNaN(date.getTime())) return '';
 
-    // تحويل التاريخ الميلادي إلى هجري
-    const hijriDate = toHijri(
-      date.getFullYear(),
-      date.getMonth() + 1,
-      date.getDate()
-    );
+      // تحويل التاريخ الميلادي إلى هجري
+      const hijriDate = toHijri(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate()
+      );
 
-    const day = hijriDate.hd.toString().padStart(2, '0');
-    const month = hijriDate.hm.toString().padStart(2, '0');
-    const year = hijriDate.hy.toString();
+      const day = hijriDate.hd.toString().padStart(2, '0');
+      const month = hijriDate.hm.toString().padStart(2, '0');
+      const year = hijriDate.hy.toString();
 
-    return `${year}/${month}/${day}`;
-  } catch (error) {
-    console.error('Error converting to Hijri date:', error);
-    return '';
+      return `${year}/${month}/${day}`;
+    } catch (error) {
+      console.error('Error converting to Hijri date:', error);
+      return '';
+    }
   }
-}
+
+  // تحديد الصور بناءً على نوع تصميم الشهادة
+  const getMainImageSrc = () => {
+    if (certificateData?.certificateDesignType === "شهادة صحية") {
+      return "/tr331.png";
+    }
+    // القيمة الافتراضية "الشهادة الصحية" أو أي قيمة أخرى
+    return "/tr3.png";
+  };
+
+  const getSecondImageSrc = () => {
+    if (certificateData?.certificateDesignType === "شهادة صحية") {
+      return "/tr11.png";
+    }
+    // القيمة الافتراضية "الشهادة الصحية" أو أي قيمة أخرى
+    return "/tr1.png";
+  };
 
   if (loading) {
     return <div className="text-center mt-10">جاري التحميل...</div>;
@@ -105,7 +124,7 @@ function convertToHijri(gregorianDateStr: string): string {
       {/* الصورة الأساسية للشهادة */}
       <div className="relative w-full" style={{ paddingTop: "62.65%" }}>
         <Image
-          src="/tr3.png"
+          src={getMainImageSrc()}
           alt="الشهادة الصحية"
           fill
           className="object-cover"
@@ -113,58 +132,55 @@ function convertToHijri(gregorianDateStr: string): string {
         />
 
         {/* صورة الشخص */}
-       <div
-  className="absolute overflow-hidden"
-  style={{
-    left: "2.9%",
-    top: "21.3%",
-    width: "18.5%",
-    height: "30%"
-  }}
->
-
-     
-   
-  <img
-     src={certificateData?.personImageUrl}
-    alt="صورة الشخص"
-    style={{ width: "100%", height: "100%", objectFit: "fill" }}
-  />
-</div>
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            left: "2.9%",
+            top: "21.3%",
+            width: "18.5%",
+            height: "30%"
+          }}
+        >
+          <img
+            src={certificateData?.personImageUrl}
+            alt="صورة الشخص"
+            style={{ width: "100%", height: "100%", objectFit: "fill" }}
+          />
+        </div>
 
         {/* QR */}
-      <div
-  className="absolute overflow-hidden"
-  style={{
-    left: "2.9%",
-    top: "57.8%",
-    width: "18.5%",
-    height: "29%"
-  }}
->
-  <img
-    src={certificateData?.qrCodeImageUrl}
-    alt="QR Code"
-    style={{ width: "100%", height: "100%", objectFit: "fill" }}
-  />
-</div>
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            left: "2.9%",
+            top: "57.8%",
+            width: "18.5%",
+            height: "29%"
+          }}
+        >
+          <img
+            src={certificateData?.qrCodeImageUrl}
+            alt="QR Code"
+            style={{ width: "100%", height: "100%", objectFit: "fill" }}
+          />
+        </div>
 
         {/* شعار */}
-       <div
-  className="absolute overflow-hidden"
-  style={{
-    left: "66.5%",
-    top: "2.5%",
-    width: "11.2%",
-    height: "17%"
-  }}
->
-  <img
-        src={certificateData?.amanaImageUrl}
-    alt="الشعار"
-    style={{ width: "100%", height: "100%", objectFit: "fill" }}
-  />
-</div>
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            left: "66.5%",
+            top: "2.5%",
+            width: "11.2%",
+            height: "17%"
+          }}
+        >
+          <img
+            src={certificateData?.amanaImageUrl}
+            alt="الشعار"
+            style={{ width: "100%", height: "100%", objectFit: "fill" }}
+          />
+        </div>
 
         {/* عنوان */}
         <div
@@ -185,58 +201,55 @@ function convertToHijri(gregorianDateStr: string): string {
         </div>
 
         {/* البيانات */}
-       {/* العربي */}
-{ /[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
-  <div
-    className="absolute flex items-center font-bold"
-    style={{
-      left: "49.5%",
-      top: "26.6%",
-      width: "48.2%",
-      height: "5.5%",
-      color: "#0c7773",
-      fontFamily: "Droid",
-      direction: "rtl",     // اتجاه عربي
-      textAlign: "right",   // يبدأ من اليمين
-      overflow: "hidden",   // يخفي الزيادة
-      whiteSpace: "nowrap", // يمنع النزول لسطر جديد
-    }}
-  >
-    <span
-      style={{
-        fontSize: "2.4vw",
-        display: "block",
-        textOverflow: "ellipsis", // نقاط عند الطول الزائد
-      }}
-    >
-      {certificateData.name}
-    </span>
-  </div>
-)}
+        {/* العربي */}
+        {/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
+          <div
+            className="absolute flex items-center font-bold"
+            style={{
+              left: "49.5%",
+              top: "26.6%",
+              width: "48.2%",
+              height: "5.5%",
+              color: "#0c7773",
+              fontFamily: "Droid",
+              direction: "rtl",
+              textAlign: "right",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "2.4vw",
+                display: "block",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {certificateData.name}
+            </span>
+          </div>
+        )}
 
-
-{/* الإنجليزي */}
-{!/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
-  <div
-    className="absolute flex items-center justify-end font-bold"
-    style={{
-      left: "49.5%",      // النهاية دايمًا ثابتة هنا
-      top: "26.6%",
-      width: "48.2%",
-      height: "5.5%",
-      color: "#0c7773",
-      fontFamily: "Droid, sans-serif",
-      direction: "ltr",
-      textAlign: "right",  // النص يزاح لليمين إذا طول
-    }}
-  >
-    <span style={{ fontSize: "2.4vw", whiteSpace: "nowrap" }}>
-      {certificateData.name}
-    </span>
-  </div>
-)}
-
-
+        {/* الإنجليزي */}
+        {!/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
+          <div
+            className="absolute flex items-center justify-end font-bold"
+            style={{
+              left: "49.5%",
+              top: "26.6%",
+              width: "48.2%",
+              height: "5.5%",
+              color: "#0c7773",
+              fontFamily: "Droid, sans-serif",
+              direction: "ltr",
+              textAlign: "right",
+            }}
+          >
+            <span style={{ fontSize: "2.4vw", whiteSpace: "nowrap" }}>
+              {certificateData.name}
+            </span>
+          </div>
+        )}
 
         <div
           className="absolute text-black"
@@ -263,7 +276,6 @@ function convertToHijri(gregorianDateStr: string): string {
             height: "3.9%",
             fontSize: "2.1vw",
             fontFamily: "Droid",
-           
           }}
         >
           <span>{certificateData.nationality}</span>
@@ -280,27 +292,25 @@ function convertToHijri(gregorianDateStr: string): string {
           }}
         >
           <span>{certificateData.healthCertificateNumber}</span>
-           
         </div>
 
-       <div
-  className="absolute text-black"
-  style={{
-    left: "39%",
-    direction: "rtl",
-    top: "55%",
-    width: "19.53%",
-    height: "3.9%",
-    fontSize: "2.1vw",
-    fontFamily: "Droid",
-    overflow: "visible",       // يسمح للنص الطويل بالظهور خارج الحاوية
-    whiteSpace: "nowrap",      // يمنع السطر الجديد
-    textAlign: "right",        // لمحاذاة النص العربي بشكل صحيح
-  }}
->
-  <span>{certificateData.jobTitle}</span>
-</div>
-
+        <div
+          className="absolute text-black"
+          style={{
+            left: "39%",
+            direction: "rtl",
+            top: "55%",
+            width: "19.53%",
+            height: "3.9%",
+            fontSize: "2.1vw",
+            fontFamily: "Droid",
+            overflow: "visible",
+            whiteSpace: "nowrap",
+            textAlign: "right",
+          }}
+        >
+          <span>{certificateData.jobTitle}</span>
+        </div>
 
         <div
           className="absolute text-black"
@@ -313,7 +323,6 @@ function convertToHijri(gregorianDateStr: string): string {
           }}
         >
           <span> {convertToHijri(certificateData.certificateIssueDate) || "-"}</span>
-           
         </div>
 
         <div
@@ -326,35 +335,32 @@ function convertToHijri(gregorianDateStr: string): string {
             fontSize: "2.1vw",
           }}
         >
-        
-               <span> {convertToHijri(certificateData.healthCertificateIssueDate) || "-"}</span>
-
+          <span> {convertToHijri(certificateData.healthCertificateIssueDate) || "-"}</span>
         </div>
 
-       <div
-  className="absolute text-black"
-  style={{
-    left: "72.5%",
-    top: "82%",
-    fontSize: "2.1vw",
-    width: "24.41%",
-    height: "3.9%",
-    fontFamily: "Droid",
-    textAlign: "right",    // النص يلتزم باليمين
-    direction: "rtl",      // يضمن أن البداية من اليمين
-    whiteSpace: "nowrap",  // كله في سطر واحد
-  }}
->
-  <span
-    style={{
-      display: "inline-block",
-      paddingLeft: "9999px", // يخلي أي زيادة تخرج لليسار
-    }}
-  >
-    {certificateData?.programType}
-  </span>
-</div>
-
+        <div
+          className="absolute text-black"
+          style={{
+            left: "72.5%",
+            top: "82%",
+            fontSize: "2.1vw",
+            width: "24.41%",
+            height: "3.9%",
+            fontFamily: "Droid",
+            textAlign: "right",
+            direction: "rtl",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span
+            style={{
+              display: "inline-block",
+              paddingLeft: "9999px",
+            }}
+          >
+            {certificateData?.programType}
+          </span>
+        </div>
 
         <div
           className="absolute text-black"
@@ -366,22 +372,17 @@ function convertToHijri(gregorianDateStr: string): string {
             height: "3.9%",
           }}
         >
-       
           <span> {convertToHijri(certificateData.programEndDate) || "-"}</span>
         </div>
       </div>
       <div className="relative w-full mt-10" style={{ paddingTop: "62.65%" }}>
         <Image
-          src="/tr1.png"
+          src={getSecondImageSrc()}
           alt="نسخة ثانية للشهادة"
           fill
           className="object-cover"
         />
       </div>
     </div>
-    
-
-      
-   
   );
 }
