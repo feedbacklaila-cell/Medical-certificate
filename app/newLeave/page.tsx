@@ -6,8 +6,18 @@ import { db } from "../firebaseConfig";
 import { query, where, getDocs, doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import Link from "next/link";
 import QRCode from 'qrcode';
-import { v4 as uuidv4 } from 'uuid';
+// استبدال import uuid بحل محلي
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
+// دالة مساعدة لتوليد UUID بسيط
+const generateUUID = (): string => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
 type FormData = {
   amana: string;
   baladia: string;
@@ -554,7 +564,8 @@ function HealthCertificateForm() {
         return;
       }
 
-      const certificateId = isEditing ? (formData.certificateId || formData.healthCertificateNumber) : uuidv4();
+      // استخدام دالة generateUUID بدلاً من uuidv4
+      const certificateId = isEditing ? (formData.certificateId || formData.healthCertificateNumber) : generateUUID();
       const certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
       
       // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
