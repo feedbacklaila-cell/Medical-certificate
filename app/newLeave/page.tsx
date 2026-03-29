@@ -6,18 +6,8 @@ import { db } from "../firebaseConfig";
 import { query, where, getDocs, doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import Link from "next/link";
 import QRCode from 'qrcode';
-// استبدال import uuid بحل محلي
+import { v4 as uuidv4 } from 'uuid';
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
-// دالة مساعدة لتوليد UUID بسيط
-const generateUUID = (): string => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-};
-
 type FormData = {
   amana: string;
   baladia: string;
@@ -37,7 +27,6 @@ type FormData = {
   amanaImageUrl: string;
   personImageUrl: string;
   certificateType: string;
-  certificateDesignType: string; // الحقل الجديد لنوع تصميم الشهادة
   certificateId?: string;
   qrCodeImageUrl?: string;
   createdAt?: string;
@@ -121,8 +110,7 @@ function HealthCertificateForm() {
     programEndDate: "",
     amanaImageUrl: "",
     personImageUrl: "",
-    certificateType: "",
-    certificateDesignType: "" // تهيئة الحقل الجديد
+    certificateType: ""
   });
 
   const [amanatList, setAmanatList] = useState<AmanaData[]>([]);
@@ -564,8 +552,7 @@ function HealthCertificateForm() {
         return;
       }
 
-      // استخدام دالة generateUUID بدلاً من uuidv4
-      const certificateId = isEditing ? (formData.certificateId || formData.healthCertificateNumber) : generateUUID();
+      const certificateId = isEditing ? (formData.certificateId || formData.healthCertificateNumber) : uuidv4();
       const certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
       
       // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
@@ -625,8 +612,7 @@ function HealthCertificateForm() {
       programEndDate: "",
       amanaImageUrl: "",
       personImageUrl: "",
-      certificateType: "",
-      certificateDesignType: "" // إعادة تعيين الحقل الجديد
+      certificateType: ""
     });
     setSelectedAmana(null);
     setSelectedPerson(null);
@@ -690,35 +676,18 @@ function HealthCertificateForm() {
               </div>
             </div>
             
-            {/* حقل نوع الشهادة مع القائمة المنسدلة */}
+            {/* حقل نوع الشهادة */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">نوع الشهادة *</label>
-              <div className="flex gap-2 items-start">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    name="certificateType"
-                    value={formData.certificateType}
-                    onChange={handleChange}
-                    required
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="أدخل نوع الشهادة"
-                  />
-                </div>
-                <div className="w-48">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">نوع تصميم الشهادة</label>
-                  <select
-                    name="certificateDesignType"
-                    value={formData.certificateDesignType}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
-                  >
-                    <option value="">اختر نوع التصميم</option>
-                    <option value="الشهادة الصحية">الشهادة الصحية</option>
-                    <option value="شهادة صحية">شهادة صحية</option>
-                  </select>
-                </div>
-              </div>
+              <input
+                type="text"
+                name="certificateType"
+                value={formData.certificateType}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="أدخل نوع الشهادة"
+              />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
