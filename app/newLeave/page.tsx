@@ -27,6 +27,7 @@ type FormData = {
   amanaImageUrl: string;
   personImageUrl: string;
   certificateType: string;
+  certificateDesignType: string; // الحقل الجديد لنوع تصميم الشهادة
   certificateId?: string;
   qrCodeImageUrl?: string;
   createdAt?: string;
@@ -110,7 +111,8 @@ function HealthCertificateForm() {
     programEndDate: "",
     amanaImageUrl: "",
     personImageUrl: "",
-    certificateType: ""
+    certificateType: "",
+    certificateDesignType: "" // تهيئة الحقل الجديد
   });
 
   const [amanatList, setAmanatList] = useState<AmanaData[]>([]);
@@ -612,7 +614,8 @@ function HealthCertificateForm() {
       programEndDate: "",
       amanaImageUrl: "",
       personImageUrl: "",
-      certificateType: ""
+      certificateType: "",
+      certificateDesignType: "" // إعادة تعيين الحقل الجديد
     });
     setSelectedAmana(null);
     setSelectedPerson(null);
@@ -676,18 +679,35 @@ function HealthCertificateForm() {
               </div>
             </div>
             
-            {/* حقل نوع الشهادة */}
+            {/* حقل نوع الشهادة مع القائمة المنسدلة */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">نوع الشهادة *</label>
-              <input
-                type="text"
-                name="certificateType"
-                value={formData.certificateType}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                placeholder="أدخل نوع الشهادة"
-              />
+              <div className="flex gap-2 items-start">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    name="certificateType"
+                    value={formData.certificateType}
+                    onChange={handleChange}
+                    required
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="أدخل نوع الشهادة"
+                  />
+                </div>
+                <div className="w-48">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">نوع تصميم الشهادة</label>
+                  <select
+                    name="certificateDesignType"
+                    value={formData.certificateDesignType}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  >
+                    <option value="">اختر نوع التصميم</option>
+                    <option value="الشهادة الصحية">الشهادة الصحية</option>
+                    <option value="شهادة صحية">شهادة صحية</option>
+                  </select>
+                </div>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">

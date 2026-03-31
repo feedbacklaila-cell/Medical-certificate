@@ -95,7 +95,7 @@ export default function HealthCertificatePage() {
   // تحديد الصور بناءً على نوع تصميم الشهادة
   const getMainImageSrc = () => {
     if (certificateData?.certificateDesignType === "شهادة صحية") {
-      return "/tr33.png";
+      return "/tr331.png";
     }
     // القيمة الافتراضية "الشهادة الصحية" أو أي قيمة أخرى
     return "/tr3.png";
