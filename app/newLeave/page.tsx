@@ -131,10 +131,12 @@ function HealthCertificateForm() {
   const [establishmentsList, setEstablishmentsList] = useState<Establishment[]>([]);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isEditingCertificateNumber, setIsEditingCertificateNumber] = useState(false);
   
   const searchParams = useSearchParams();
   const amanaInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const certificateNumberInputRef = useRef<HTMLInputElement>(null);
 
   // دالة لحفظ البيانات قبل الانتقال
   const saveFormDataBeforeNavigation = () => {
@@ -326,6 +328,23 @@ function HealthCertificateForm() {
     }
   }, [searchParams, amanatList, personsList]);
 
+  // دالة لتفعيل/إلغاء وضع تعديل رقم الشهادة
+  const toggleEditCertificateNumber = () => {
+    setIsEditingCertificateNumber(!isEditingCertificateNumber);
+    // عند تفعيل التعديل، نضع التركيز على حقل الإدخال
+    if (!isEditingCertificateNumber && certificateNumberInputRef.current) {
+      setTimeout(() => {
+        certificateNumberInputRef.current?.focus();
+      }, 100);
+    }
+  };
+
+  // دالة لتحديث رقم الشهادة يدوياً
+  const handleCertificateNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData(prev => ({ ...prev, healthCertificateNumber: value }));
+  };
+
   const handleAmanaInputFocus = () => {
     setFilteredAmanat(amanatList);
     setShowAmanaSuggestions(true);
@@ -516,17 +535,17 @@ function HealthCertificateForm() {
     try {
       // التحقق من وجود الشهادة فقط في وضع التحرير
       let shouldProceed = true;
-   const existingDocId = editingDocId; // تغيير let إلى const
+      const existingDocId = editingDocId;
 
-if (isEditing) {
-  const { exists, docId } = await checkCertificateExists(formData.healthCertificateNumber);
-  if (exists && docId !== editingDocId) {
-    shouldProceed = confirm("رقم الشهادة مسجل مسبقاً. هل تريد تعديل البيانات بدلاً من حفظ جديد؟");
-    if (shouldProceed) {
-      setEditingDocId(docId || null);
-    }
-  }
-}
+      if (isEditing) {
+        const { exists, docId } = await checkCertificateExists(formData.healthCertificateNumber);
+        if (exists && docId !== editingDocId) {
+          shouldProceed = confirm("رقم الشهادة مسجل مسبقاً. هل تريد تعديل البيانات بدلاً من حفظ جديد؟");
+          if (shouldProceed) {
+            setEditingDocId(docId || null);
+          }
+        }
+      }
 
       if (!shouldProceed) {
         setLoading(false);
@@ -600,11 +619,13 @@ if (isEditing) {
     setIsEditing(false);
     setEditingDocId(null);
     setQrCodeUrl(null);
+    setIsEditingCertificateNumber(false);
     
     // تنظيف البيانات المحفوظة أيضاً
     sessionStorage.removeItem('pendingFormData');
     sessionStorage.removeItem('formStatus');
   };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
@@ -618,7 +639,41 @@ if (isEditing) {
           <div className="bg-blue-50 p-4 rounded-lg">
             <div className="flex justify-between items-center mb-2">
               <span className="font-bold text-blue-800">رقم الشهادة:</span>
-              <span className="font-mono text-lg">{formData.healthCertificateNumber}</span>
+              <div className="flex items-center gap-2">
+                {isEditingCertificateNumber ? (
+                  <input
+                    ref={certificateNumberInputRef}
+                    type="text"
+                    name="healthCertificateNumber"
+                    value={formData.healthCertificateNumber}
+                    onChange={handleCertificateNumberChange}
+                    className="font-mono text-lg p-1 border border-gray-300 rounded w-48 text-center"
+                    onBlur={() => setIsEditingCertificateNumber(false)}
+                  />
+                ) : (
+                  <span className="font-mono text-lg">{formData.healthCertificateNumber}</span>
+                )}
+                <button
+                  type="button"
+                  onClick={toggleEditCertificateNumber}
+                  className={`p-1 rounded ${
+                    isEditingCertificateNumber 
+                      ? 'bg-red-500 hover:bg-red-600' 
+                      : 'bg-gray-500 hover:bg-gray-600'
+                  } text-white`}
+                  title={isEditingCertificateNumber ? "إلغاء التعديل" : "تعديل رقم الشهادة"}
+                >
+                  {isEditingCertificateNumber ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
             
             {/* حقل نوع الشهادة */}
@@ -673,6 +728,7 @@ if (isEditing) {
             </div>
           </div>
 
+          {/* باقي الكود بدون تغيير */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="relative">
               <div className="flex gap-2">
@@ -763,20 +819,21 @@ if (isEditing) {
                   )}
                 </div>
                 <Link href="/Name" passHref>
-  <button
-    type="button"
-    onClick={navigateToNamePageWithData} // إضافة هذا السطر
-    className="mt-6 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-md h-[42px]"
-    title="الانتقال إلى صفحة الأسماء"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
-    </svg>
-  </button>
-</Link>
+                  <button
+                    type="button"
+                    onClick={navigateToNamePageWithData}
+                    className="mt-6 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-md h-[42px]"
+                    title="الانتقال إلى صفحة الأسماء"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </Link>
               </div>
             </div>
 
+            {/* باقي الحقول بدون تغيير */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">رقم الهوية/الإقامة *</label>
               <input
@@ -825,17 +882,6 @@ if (isEditing) {
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-
-            {/* {formData.personImageUrl && (
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">صورة الشخص</label>
-                <img 
-                  src={formData.personImageUrl} 
-                  alt="صورة الشخص" 
-                  className="h-24 object-cover rounded-md border border-gray-200"
-                />
-              </div>
-            )} */}
 
             <div className="relative">
               <div className="flex gap-2">
@@ -950,21 +996,6 @@ if (isEditing) {
               />
             </div>
           </div>
-
-          {/* قسم عرض الباركود */}
-          {/* {(qrCodeUrl || formData.qrCodeImageUrl) && (
-            <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-              <h3 className="text-lg font-semibold text-center mb-3">باركود الشهادة</h3>
-              <img 
-                src={qrCodeUrl || formData.qrCodeImageUrl} 
-                alt="QR Code" 
-                className="w-40 h-40 mx-auto"
-              />
-              <p className="text-sm text-gray-500 mt-2 text-center">
-                يمكن مسح هذا الباركود للتحقق من صحة الشهادة
-              </p>
-            </div>
-          )} */}
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <button
