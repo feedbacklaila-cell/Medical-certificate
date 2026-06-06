@@ -445,12 +445,12 @@ const toggleMobileMenu = () => {
 
 // 3️⃣ عند الضغط على عنصر القائمة
 const handleMenuClick = (menuName: string) => {
-  if (isMenuOpen) {
+  if (isMobile) {
     // إذا كانت القائمة مفتوحة على الهاتف → تحكم بالقائمة الفرعية
     toggleSubMenu(menuName);
   } else {
-    // نسخة الكمبيوتر → التحكم بالقائمة الرئيسية
-    setActiveMenu(activeMenu === menuName ? null : menuName);
+    // نسخة الكمبيوتر → التحكم بالقائمة الرئيسية (فتح/إغلاق)
+    setActiveMenu(prev => prev === menuName ? null : menuName);
   }
 };
 
@@ -476,17 +476,16 @@ return (
   
   
   <div className="min-h-screen bg-[#eceff3] flex flex-col">
-    
-    {/* الشريط العلوي - موقع حكومي */}
+ 
     {/* الشريط العلوي - موقع حكومي */}
 <div className="w-full bg-gray-100" style={{ direction: 'rtl' }}>
-  <div className="max-w-7xl mx-auto px-3 py-1">
+  {/* حاوية رئيسية: padding للهاتف فقط، بدون padding زائد للكمبيوتر */}
+  <div className="max-w-7xl mx-auto px-3 md:px-0 py-1">
     
-    {/* ========== تصميم الهاتف (عمودي) ========== */}
+    {/* ========== تصميم الهاتف (عمودي) - يبقى كما هو تماماً ========== */}
     <div className="flex md:hidden flex-col space-y-3 mb-2">
-      
       {/* السطر الأول - موقع حكومي مع الأيقونة */}
-     <div className="flex items-center justify-start gap-2 w-full" dir="rtl">
+      <div className="flex items-center justify-start gap-2 w-full" dir="rtl">
         <Image
           src="/gov-icon.png"
           alt="gov"
@@ -500,7 +499,7 @@ return (
       </div>
       
       {/* السطر الثاني - كيف تتحقق */}
-     <div className="flex justify-end w-full">
+      <div className="flex justify-end w-full">
         <button
           onClick={toggleVerifyInfo}
           className="flex items-center gap-1"
@@ -519,7 +518,6 @@ return (
       
       {/* السطر الثالث - الإعدادات (يمين) + أدوات سهولة الوصول (يسار) */}
       <div className="flex items-center justify-between">
-        {/* الإعدادات - جهة اليمين */}
         <button className="flex items-center gap-1" style={{ fontFamily: "Tajawal", fontWeight: 1000, fontSize: "14px", color: "#333" }}>
           <Image
             src="/settings-icon.png"
@@ -531,51 +529,42 @@ return (
           <span>الإعدادات</span>
         </button>
         
-        {/* أدوات سهولة الوصول - جهة اليسار */}
-         <button
-    className="flex items-center gap-1"
-    style={{
-      fontFamily: "Tajawal",
-      fontWeight:1000,
-      fontSize: "14px",
-      color: "#333",
-    }}
-   >
-    <Image
-      src="/accessibility-icon.png"
-      alt="accessibility"
-      width={12}
-      height={12}
-      className="cursor-pointer"
-    />
-    <span>أدوات سهولة الوصول</span>
-   </button>
+        <button
+          className="flex items-center gap-1"
+          style={{ fontFamily: "Tajawal", fontWeight:1000, fontSize: "14px", color: "#333" }}
+        >
+          <Image
+            src="/accessibility-icon.png"
+            alt="accessibility"
+            width={12}
+            height={12}
+            className="cursor-pointer"
+          />
+          <span>أدوات سهولة الوصول</span>
+        </button>
       </div>
     </div>
 
-    {/* ========== تصميم الكمبيوتر (أفقي - يبقى كما هو) ========== */}
-    <div className="hidden md:flex items-center justify-between">
-      {/* جهة اليمين - موقع حكومي */}
-      <div className="flex items-center gap-2">
+    {/* ========== تصميم الكمبيوتر (أفقي) – منفصل تماماً ========== */}
+    <div className="hidden md:flex items-center justify-between mb-2">
+      {/* جهة اليمين: أيقونة + نص مع مسافات مضبوطة */}
+      <div className="flex items-center gap-2 -mr-28  mt-2">
         <Image
           src="/gov-icon.png"
           alt="gov"
-          width={14}
+          width={20}
           height={14}
           className="cursor-pointer"
         />
-        <span style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "11px", color: "#000000" }}>
+        <span style={{ fontFamily: "Tajawal", fontWeight: 700, fontSize: "14px", color: "#000000" }}>
           موقع حكومي مسجل لدى هيئة الحكومة الرقمية
         </span>
-      </div>
-      
-      {/* جهة اليسار - كيف تتحقق + الإعدادات + أدوات سهولة الوصول */}
-      <div className="flex items-center gap-6">
-        {/* كيف تتحقق */}
-        <button
+
+       
+         <button
           onClick={toggleVerifyInfo}
           className="flex items-center gap-1"
-          style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "11px" }}
+          style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "14px" }}
         >
           <span style={{ color: "#1b8354" }}>كيف تتحقق</span>
           <span style={{ marginRight: "4px" }}>
@@ -586,13 +575,17 @@ return (
             )}
           </span>
         </button>
-
+      </div>
+      
+      {/* جهة اليسار: الأزرار  */}
+      <div className="flex items-center gap-6 -ml-23">
+        
         {/* الإعدادات */}
-        <button className="flex items-center gap-1" style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "11px", color: "#333" }}>
+        <button className="flex items-center gap-1" style={{ fontFamily: "Tajawal", fontWeight: 700, fontSize: "15px", color: "#333" }}>
           <Image
             src="/settings-icon.png"
             alt="settings"
-            width={12}
+            width={18}
             height={12}
             className="cursor-pointer"
           />
@@ -600,96 +593,166 @@ return (
         </button>
 
         {/* أدوات سهولة الوصول */}
-          <button
-    className="flex items-center gap-1"
-    style={{
-      fontFamily: "Tajawal",
-      fontWeight: 500,
-      fontSize: "11px",
-      color: "#333",
-    }}
-   >
-    <Image
-      src="/accessibility-icon.png"
-      alt="accessibility"
-      width={12}
-      height={12}
-      className="cursor-pointer"
-    />
-    <span>أدوات سهولة الوصول</span>
-    </button>
+        <button
+          className="flex items-center gap-1"
+          style={{ fontFamily: "Tajawal", fontWeight: 700, fontSize: "14px", color: "#333" }}
+        >
+          <Image
+            src="/accessibility-icon.png"
+            alt="accessibility"
+            width={12}
+            height={12}
+            className="cursor-pointer"
+          />
+          <span>أدوات سهولة الوصول</span>
+        </button>
       </div>
     </div>
 
     {/* معلومات كيف تتحقق - تظهر عند الضغط */}
-    {showVerifyInfo && (
-      <div className="mt-2 animate-expandDown" style={{ overflow: 'hidden' }}>
-        <div className="  pt-6 pb-6 pr-3 pl-9">
-          {/* روابط المواقع الإلكترونية */}
-          <div className="mb-3">
+{showVerifyInfo && (
+  <>
+    {/* ========== تصميم الهاتف (عمودي) - يبقى كما هو ========== */}
+    <div className="md:hidden mt-2 animate-expandDown" style={{ overflow: "hidden" }}>
+      <div className="pt-6 pb-6 pr-3 pl-9">
+        <div className="mb-3">
+          <div className="flex items-start gap-4">
+            <Image
+              src="/verify-icon1.png"
+              alt="icon"
+              width={35}
+              height={15}
+              className="mt-0.5"
+            />
+            <div>
+              <div style={{ fontFamily: "Tajawal", fontWeight: 700, fontSize: "16px", color: "#222" }}>
+                روابط المواقع الإلكترونية الرسمية السعودية تنتهي{" "}
+                <span style={{ color: "#1b8354" }}>.gov.sa</span>
+              </div>
+              <div style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "14px", color: "#666", marginTop: "8px" }}>
+                جميع روابط المواقع الرسمية التابعة للجهات الحكومية في المملكة العربية السعودية تنتهي بـ.gov.sa
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-12">
+          <div className="flex items-start gap-4">
+            <Image
+              src="/verify-icon2.png"
+              alt="icon"
+              width={35}
+              height={15}
+              className="mt-0.5"
+            />
+            <div>
+              <div style={{ fontFamily: "Tajawal", fontWeight: 700, fontSize: "16px", color: "#222" }}>
+                المواقع الإلكترونية الحكومية تستخدم بروتوكول{" "}
+                <span style={{ color: "#1b8354" }}>HTTPS</span> للتشفير والأمان
+              </div>
+              <div style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "15px", color: "#666", marginTop: "8px" }}>
+                المواقع الإلكترونية الآمنة في المملكة العربية السعودية تستخدم بروتوكول HTTPS للتشفير
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-3 bg-white rounded-md px-6 py-3 flex items-center" style={{ direction: "rtl" }}>
+          <Image
+            src="/register-icon.png"
+            alt="register"
+            width={25}
+            height={25}
+            className="ml-4"
+          />
+          <div style={{ fontFamily: "Tajawal", fontWeight: 400, fontSize: "15px", color: "#444" }}>
+            مسجل لدى هيئة الحكومة الرقمية برقم:
+            <span style={{ color: "#1b8354", fontWeight: 500, marginRight: "4px" }}>
+              442436633530
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* ========== تصميم الكمبيوتر (أفقي) ========== */}
+    <div className="hidden md:block mt-5 animate-expandDown">
+      <div className="pt-6 pb-6 pr-2 px-4">
+        <div className="grid grid-cols-2 gap-6 mb-8" dir="rtl">
+          <div className="min-w-0 relative left-[116px]">
             <div className="flex items-start gap-4">
               <Image
                 src="/verify-icon1.png"
                 alt="icon"
-                width={35}
+                width={37}
                 height={15}
                 className="mt-0.5"
               />
               <div>
-                <div style={{ fontFamily: "Tajawal", fontWeight: 700, fontSize: "16px", color: "#222" }}>
-                  روابط المواقع الإلكترونية الرسمية السعودية تنتهي <span style={{ color: "#1b8354" }}>.gov.sa</span>
+                <div style={{ fontFamily: "Tajawal", fontWeight: 700, fontSize: "18px", color: "#222" }}>
+                  روابط المواقع الإلكترونية الرسمية السعودية تنتهي{" "}
+                  <span className="whitespace-nowrap inline-block" style={{ color: "#1b8354" }}>
+                    .gov.sa
+                  </span>
                 </div>
-                <div style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "14px", color: "#666", marginTop: "8px" }}>
-                  جميع روابط المواقع الرسمية التابعة للجهات الحكومية في المملكة العربية السعودية تنتهي بـ.gov.sa 
+                <div style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "15px", color: "#666", marginTop: "8px" }}>
+                  جميع روابط المواقع الرسمية التابعة للجهات الحكومية في المملكة العربية السعودية تنتهي{" "}
+                  <span className="whitespace-nowrap inline-block">بـ.gov.sa</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* المواقع الإلكترونية الحكومية */}
-          <div className="mb-12">
+          <div className="min-w-0">
             <div className="flex items-start gap-4">
               <Image
                 src="/verify-icon2.png"
                 alt="icon"
-                width={35}
+                width={37}
                 height={15}
                 className="mt-0.5"
               />
               <div>
-                <div style={{ fontFamily: "Tajawal", fontWeight: 700, fontSize: "16px", color: "#222" }}>
-                  المواقع الإلكترونية الحكومية تستخدم بروتوكول <span style={{ color: "#1b8354" }}>HTTPS</span> للتشفير والأمان
+                <div style={{ fontFamily: "Tajawal", fontWeight: 700, fontSize: "18px", color: "#222" }}>
+                  المواقع الإلكترونية الحكومية تستخدم بروتوكول{" "}
+                  <span className="whitespace-nowrap inline-block" style={{ color: "#1b8354" }}>
+                    HTTPS
+                  </span>{" "}
+                  للتشفير والأمان
                 </div>
-                <div style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "15px", color: "#666", marginTop: "8px" }}>
-                  المواقع الإلكترونية الآمنة في المملكة العربية السعودية تستخدم بروتوكول HTTPS للتشفير
+                <div style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "16px", color: "#666", marginTop: "8px" }}>
+                  المواقع الإلكترونية الآمنة في المملكة العربية السعودية تستخدم بروتوكول{" "}
+                  <span className="whitespace-nowrap inline-block">HTTPS للتشفير</span>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* مستطيل التسجيل */}
-          <div className="mt-3 bg-white rounded-md px-6 py-3 flex items-center" style={{ direction: 'rtl' }}>
-            <Image
-              src="/register-icon.png"
-              alt="register"
-              width={25}
-              height={25}
-              className="ml-4"
-            />
-            <div style={{ fontFamily: "Tajawal", fontWeight: 400, fontSize: "15px", color: "#444" }}>
-              مسجل لدى هيئة الحكومة الرقمية برقم:
-              <span style={{ color: "#1b8354", fontWeight: 500, marginRight: "4px" }}>442436633530</span>
-            </div>
+        <div className="bg-white rounded-md px-5 py-2 flex items-center -mx-28" style={{ direction: "rtl" }}>
+          <Image
+            src="/register-icon.png"
+            alt="register"
+            width={23}
+            height={25}
+            className="ml-5"
+          />
+          <div style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "15px", color: "#444" }}>
+            مسجل لدى هيئة الحكومة الرقمية برقم:
+            <span style={{ color: "#1b8354", fontWeight: 500, marginRight: "4px" }}>
+              442436633530
+            </span>
           </div>
         </div>
       </div>
-     )}
-     </div>
+    </div>
+  </>
+)}
   </div>
-
+</div>
     {/* شريط التنقل المعدل */}
     <div className="sticky top-0 left-0 right-0 z-50">
-      <div className="bg-[#ffff] flex justify-between items-center p-4 md:p-2 relative">
+      <div className="bg-[#ffff] flex justify-between items-center p-1 md:p-2 md:pb-2.5 relative">
         {/* الشعار */}
         <div className="flex items-center">
           <img src="/logoll.png" alt="logo" style={{ width: "110px", height: "50px" }} />
@@ -706,27 +769,113 @@ return (
         )}
 
         {/* عناصر القائمة لأجهزة الكمبيوتر */}
+              {/* عناصر القائمة لأجهزة الكمبيوتر */}
         {!isMobile && (
-          <div className="flex-1 flex justify-end space-x-9 rtl:space-x-reverse mr-6">
-            {Object.keys(menuItemsData).reverse().map((menuName) => (
-              <div key={menuName} className="relative flex flex-col items-center">
-                <button
-                  onClick={() => handleMenuClick(menuName)}
-                  className="text-white hover:text-blue-200 flex flex-col items-center transition-colors"
-                  style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
-                >
-                  <span>{menuName}</span>
-                  {activeMenu === menuName ? (
-                    <ChevronUp className="w-4 h-4 mt-1" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 mt-1" />
-                  )}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+          <div className="flex-1 flex justify-between items-center mr-20">
+            {/* الزرين في أقصى اليسار: بحث + بلدي أعمال */}
+            <div className="flex items-center gap-2 -ml-22">
+              {/* زر البحث */}
+                                          <button
+                onClick={() => handleMenuClick("البحث")}
+                className="flex items-center text-black hover:text-[#1b8354] transition-colors"
+                style={{ fontFamily: "Tajawal", fontWeight: 500, fontSize: "16px" }}
+              >
+                <span>بحث</span>
+                <Image
+                  src="/search-icon.png"
+                  alt="search"
+                  width={24}
+                  height={18}
+                  className="cursor-pointer ml-1  mr-3"
+                />
+              </button>
 
+              {/* بلدي أعمال - زر أخضر */}
+              <button
+                className="flex items-center justify-center py-2 px-3 rounded text-white"
+                style={{ backgroundColor: "#1b8354", fontFamily: "Tajawal", fontWeight: 700 }}
+              >
+                <Image
+                  src="/baladi-icon.png"
+                  alt="icon"
+                  width={14}
+                  height={15}
+                  className="cursor-pointer ml-1 mr-1"
+                />
+                <span>بلدي أعمال</span>
+              </button>
+            </div>
+
+            {/* عناصر القائمة في اليمين: عن بلدي، الخدمات، الاستعلامات، تواصل معنا */}
+                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              {["عن بلدي", "الخدمات", "الاستعلامات", "تواصل معنا"].reverse().map((menuName) => {
+                const isServices = menuName === "الخدمات";
+                return (
+                  <div key={menuName} className="relative flex flex-col items-center">
+                    {isServices ? (
+                      /* تصميم الخدمات بخلفية خضراء وخط مضيء */
+                      <div className="relative">
+                        <div className="relative">
+                          <div
+                            className="absolute -top-3 -bottom-3 -left-0 -right-0 rounded-t-md"
+                            style={{ backgroundColor: "#1b8354" }}
+                          />
+                          <button
+                            onClick={() => handleMenuClick(menuName)}
+                            className="relative flex items-center justify-between py-3 px-3 text-white"
+                            style={{
+                              fontFamily: "Tajawal",
+                              fontWeight: 700,
+                            }}
+                          >
+                            <span className="flex items-center">
+                              {activeMenu === menuName ? (
+                                <ChevronUp className="w-4 h-4 ml-1" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4 ml-1" />
+                              )}
+                            </span>
+                            <span className="text-right">{menuName}</span>
+                          </button>
+                        </div>
+                        {/* الخط المضيء تحت الخدمات */}
+                        <div 
+                          className="absolute left-0 right-0 mx-auto glow-line"
+                          style={{
+                            height: "6px",
+                            backgroundColor: "#54c08a",
+                            bottom: "-12px",
+                            width: "95%",
+                            borderRadius: "2px",
+                            zIndex: 5,
+                            boxShadow: "0 0 6px rgba(84, 192, 138, 0.5), 0 0 12px rgba(84, 192, 138, 0.3), 0 0 20px rgba(84, 192, 138, 0.2)"
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      /* العناصر الأخرى باللون الأسود - السهم يمين النص */
+                      <button
+                        onClick={() => handleMenuClick(menuName)}
+                        className="text-black hover:text-[#1b8354] flex items-center transition-colors"
+                        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+                      >
+                        <span className="flex items-center ml-1">
+                          {activeMenu === menuName ? (
+                            <ChevronUp className="w-4 h-4" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4" />
+                          )}
+                        </span>
+                        <span>{menuName}</span>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            
+             </div>
+           </div>
+        )}
         
     <style>{menuStyles}</style>
 
@@ -748,23 +897,33 @@ return (
             {isServices ? (
               /* تصميم مميز للخدمات */
               <div className="relative">
-                <button
-                  className={`flex items-center justify-between py-3 px-2 rounded-md w-full text-white`}
-                  style={{ backgroundColor: "#1b8354", fontFamily: "Tajawal", fontWeight: 700 }}
-                >
-                  <span className="flex items-center">
-                    <ChevronDown className="w-4 h-4 ml-1" />
-                  </span>
-                  <span className="text-right">الخدمات</span>
-                </button>
+                <div className="relative">
+  <div
+    className="absolute top-0 bottom-0 -left-4 -right-4"
+    style={{ backgroundColor: "#1b8354" }}
+  />
+
+  <button
+    className="relative flex items-center justify-between py-3 px-2 w-full text-white"
+    style={{
+      fontFamily: "Tajawal",
+      fontWeight: 700,
+    }}
+  >
+    <span className="flex items-center">
+      <ChevronDown className="w-4 h-4 ml-1" />
+    </span>
+    <span className="text-right">الخدمات</span>
+  </button>
+</div>
                 {/* الخط المضيء تحت الخدمات */}
                 <div 
                   className="absolute left-0 right-0 mx-auto glow-line"
                   style={{
-                    height: "2px",
+                    height: "6px",
                     backgroundColor: "#54c08a",
-                    bottom: "-4px",
-                    width: "90%",
+                    bottom: "-1px",
+                    width: "100%",
                     borderRadius: "2px",
                     zIndex: 5,
                     boxShadow: "0 0 6px rgba(84, 192, 138, 0.5), 0 0 12px rgba(84, 192, 138, 0.3), 0 0 20px rgba(84, 192, 138, 0.2)"
@@ -788,43 +947,40 @@ return (
       })}
 
       {/* عنصر بلدي أعمال - بنفس تصميم الخدمات بدون سهم وبدون خط */}
-      <div className="relative mt-2">
+      <div className="relative mt-4  mr-2 ml-3">
         <button
-          className="flex items-center justify-center py-3 px-2 rounded-md w-full text-white"
+          className="flex items-center justify-center py-1 px-2 rounded w-full text-white "
           style={{ backgroundColor: "#1b8354", fontFamily: "Tajawal", fontWeight: 700 }}
         >
           <span className="flex items-center justify-center w-full text-center">
-            <span className="ml-2">بلدي أعمال</span>
-            <Image
-              src="/baladi-icon.png"
-              alt="icon"
-              width={20}
-              height={20}
-              className="cursor-pointer"
-            />
-          </span>
+  <Image
+    src="/baladi-icon.png"
+    alt="icon"
+    width={14}
+    height={15}
+    className="cursor-pointer mr-1"
+  />
+  <span>بلدي أعمال</span>
+</span>
         </button>
       </div>
 
       {/* عنصر بحث - بنفس تصميم باقي العناصر بدون سهم مع أيقونة يمين الكلمة */}
-      <div className="relative mt-2">
-        <button
-          onClick={openSearchPopup}
-          className="hover:bg-[#055e5b] flex items-center justify-between py-3 px-2 rounded-md w-full text-black"
-          style={{ fontFamily: "Tajawal", fontWeight: 700 }}
-        >
-          <span className="flex items-center">
-            <span className="text-right">بحث</span>
-          </span>
-          <Image
-            src="/search-icon.png"
-            alt="search"
-            width={18}
-            height={18}
-            className="mr-1 cursor-pointer"
-          />
-        </button>
-      </div>
+     <button
+  onClick={openSearchPopup}
+  className="hover:bg-[#055e5b] flex items-center justify-end py-3 px-2 rounded-md w-full text-black"
+  style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+>
+  <span className="mr-1">بحث</span>
+  <div className="flex items-center">
+    <Image      src="/search-icon.png"
+      alt="search"
+      width={18}
+      height={18}
+      className="cursor-pointer"
+    />
+  </div>
+</button>
     </div>
 
     {/* إضافة CSS للأنيميشن */}
@@ -846,140 +1002,267 @@ return (
 
         </div>
 
-        {/* صفحة البحث المنبثقة */}
-        {showSearchPopup && (
-          <div className="fixed inset-0 z-50 flex items-start justify-center pt-16" style={{ backgroundColor: "transparent" }}>
-            <div className="bg-white w-full max-w-lg mx-4 rounded-lg shadow-2xl animate-slideDown" style={{ direction: 'rtl' }}>
-              {/* صف البحث */}
-              <div className="p-4">
-                <div className="flex items-center gap-2">
-                  {/* مربع البحث */}
-                  <div className="flex-1 relative">
-                    <div className="flex items-center border border-gray-300 rounded-md overflow-hidden" style={{ boxShadow: "0 0 4px rgba(0,0,0,0.1), 0 0 8px rgba(0,0,0,0.05)" }}>
-                      <div className="px-3">
-                        <Image
-                          src="/search-icon.png"
-                          alt="search"
-                          width={18}
-                          height={18}
-                          className="cursor-pointer"
-                        />
-                      </div>
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="ابحث عن ما تريد"
-                        className="flex-1 py-3 px-2 text-right outline-none text-gray-700"
-                        style={{ fontFamily: "Tajawal", fontWeight: 500 }}
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* زر البحث الأخضر */}
-                  <button
-                    className="px-4 py-3 rounded-md text-white transition-colors"
-                    style={{ 
-                      backgroundColor: "#1b8354",
-                      fontFamily: "Tajawal",
-                      fontWeight: 700,
-                      boxShadow: "0 0 4px rgba(27, 131, 84, 0.3), 0 0 8px rgba(27, 131, 84, 0.2)"
-                    }}
-                  >
-                    بحث
-                  </button>
-                  
-                  {/* زر الإغلاق X */}
-                  <button
-                    onClick={closeSearchPopup}
-                    className="px-3 py-3 rounded-md bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors flex items-center justify-center"
-                    style={{ fontFamily: "Tajawal", fontWeight: 700 }}
-                  >
-                    X
-                  </button>
-                </div>
+        {/* صفحة البحث المنبثقة للهاتف */}
+  {showSearchPopup && (
+  <div className="fixed inset-0 z-50 flex items-start justify-center pt-3" style={{ backgroundColor: "transparent" }}>
+    <div className="bg-white w-full max-w-lg rounded-lg shadow-2xl animate-slideDown" style={{ direction: 'rtl' }}>
+      {/* صف البحث */}
+      <div className="p-7 pb-5">
+        <div className="flex items-center gap-4">
+          {/* مربع البحث */}
+          <div className="relative">
+            <div className="flex items-center border border-gray-300 rounded" style={{ boxShadow: "0 0 4px rgba(255, 255, 255, 0.1), 0 0 8px rgba(0, 0, 0, 0.05)", paddingRight: "8px", paddingLeft: "8px" }}>
+              <div style={{ marginRight: "8px" }}>
+                <Image
+                  src="/search-icon.png"
+                  alt="search"
+                  width={22}
+                  height={18}
+                  className="cursor-pointer"
+                />
               </div>
-
-              {/* البحث المتقدم */}
-              <div className="px-4 pb-3">
-                <div 
-                  className="inline-block border border-gray-300 rounded-md px-4 py-2"
-                  style={{ 
-                    fontFamily: "Tajawal", 
-                    fontWeight: 500,
-                    color: "#666",
-                    boxShadow: "0 0 3px rgba(0,0,0,0.08), 0 0 6px rgba(0,0,0,0.04)"
-                  }}
-                >
-                  البحث المتقدم
-                </div>
-              </div>
-
-              {/* اقتراحات شائعة */}
-              <div className="px-4 pt-2 pb-4">
-                <div 
-                  className="mb-3"
-                  style={{ 
-                    fontFamily: "Tajawal", 
-                    fontWeight: 700,
-                    color: "#1b8354",
-                    fontSize: "15px"
-                  }}
-                >
-                  اقتراحات شائعة
-                </div>
-                
-                {/* الرخص التجارية */}
-                <div className="mb-2">
-                  <div 
-                    className="bg-gray-100 rounded-md px-4 py-3"
-                    style={{ 
-                      fontFamily: "Tajawal", 
-                      fontWeight: 500,
-                      color: "#555",
-                      boxShadow: "0 0 3px rgba(0,0,0,0.06), 0 0 6px rgba(0,0,0,0.03)"
-                    }}
-                  >
-                    الرخص التجارية
-                  </div>
-                </div>
-
-                {/* الرخص الإنشائية */}
-                <div className="mb-2">
-                  <div 
-                    className="bg-gray-100 rounded-md px-4 py-3"
-                    style={{ 
-                      fontFamily: "Tajawal", 
-                      fontWeight: 500,
-                      color: "#555",
-                      boxShadow: "0 0 3px rgba(0,0,0,0.06), 0 0 6px rgba(0,0,0,0.03)"
-                    }}
-                  >
-                    الرخص الإنشائية
-                  </div>
-                </div>
-
-                {/* حجز المواعيد الإلكترونية */}
-                <div>
-                  <div 
-                    className="bg-gray-100 rounded-md px-4 py-3"
-                    style={{ 
-                      fontFamily: "Tajawal", 
-                      fontWeight: 500,
-                      color: "#555",
-                      boxShadow: "0 0 3px rgba(0,0,0,0.06), 0 0 6px rgba(0,0,0,0.03)"
-                    }}
-                  >
-                    حجز المواعيد الإلكترونية
-                  </div>
-                </div>
-              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ابحث عن ما تريد"
+                className="py-2 text-right outline-none text-gray-700"
+                style={{ fontFamily: "Tajawal", fontWeight: 500, width: "100px", marginRight: "8px" }}
+              />
             </div>
           </div>
-        )}
+          
+          {/* زر البحث الأخضر */}
+          <button
+            className="px-3 py-2 rounded text-white transition-colors"
+            style={{ 
+              backgroundColor: "#1b8354",
+              fontFamily: "Tajawal",
+              fontWeight: 700,
+              boxShadow: "0 0 rgba(27, 131, 84, 0.3), 0 0 8px rgba(27, 131, 84, 0.2)"
+            }}
+          >
+            بحث
+          </button>
+          
+          {/* زر الإغلاق X */}
+          <button
+            onClick={closeSearchPopup}
+            className=" mr-5 px-2 py-[3px] rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors flex items-center justify-center "
+            style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+          >
+            <span className="text-2xl leading-none ">X</span>
+          </button>
+        </div>
+      </div>
 
-        {/* القائمة المنسدلة لأجهزة الكمبيوتر */}
+      {/* البحث المتقدم */}
+      <div className="px-7 pb-9">
+        <div 
+          className="inline-block border border-gray-300 rounded-md px-3 py-2"
+          style={{ 
+            fontFamily: "Tajawal", 
+            fontWeight: 700,
+            color: "#000000",
+            boxShadow: "0 0 3px rgba(0,0,0,0.08), 0 0 6px rgba(0,0,0,0.04) "
+          }}
+        >
+          البحث المتقدم
+        </div>
+      </div>
 
+      {/* اقتراحات شائعة */}
+      <div className="px-7 pt-2 pb-4">
+        <div 
+          className="mb-10"
+          style={{ 
+            fontFamily: "Tajawal", 
+            fontWeight: 700,
+            color: "#1b8354",
+            fontSize: "18px"
+          }}
+        >
+          اقتراحات شائعة
+        </div>
+        
+        {/* الرخص التجارية */}
+        <div className="mb-10 px-6">
+  <div
+    className="inline-block bg-gray-100 rounded px-2 py-2"
+    style={{
+      fontFamily: "Tajawal",
+      fontWeight: 700,
+      color: "#000000",
+      boxShadow: "0 0 3px rgba(0,0,0,0.06), 0 0 6px rgba(0,0,0,0.03)"
+    }}
+  >
+    الرخص التجارية
+  </div>
+</div>
+
+        {/* الرخص الإنشائية */}
+        <div className="mb-10 px-6">
+          <div 
+           className="inline-block bg-gray-100 rounded px-2 py-2"
+            style={{ 
+              fontFamily: "Tajawal", 
+              fontWeight: 700,
+              color: "#000000",
+              boxShadow: "0 0 3px rgba(0,0,0,0.06), 0 0 6px rgba(0,0,0,0.03)"
+            }}
+          >
+            الرخص الإنشائية
+          </div>
+        </div>
+
+        {/* حجز المواعيد الإلكترونية */}
+        <div className="mb-2 px-6">
+          <div 
+          className="inline-block bg-gray-100 rounded px-2 py-2"
+            style={{ 
+              fontFamily: "Tajawal", 
+              fontWeight: 700,
+              color: "#000000",
+              boxShadow: "0 0 3px rgba(0,0,0,0.06), 0 0 6px rgba(0,0,0,0.03)"
+            }}
+          >
+            حجز المواعيد الإلكترونية
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* القائمة المنسدلة للبحث في الكمبيوتر */}
+{!isMobile && activeMenu === "البحث" && (
+  <div 
+    ref={menuRef}
+    className="absolute top-full left-0 right-0 bg-white shadow-lg rounded-b-md animate-slideDown"
+    style={{ paddingTop: 0, paddingBottom: 0, paddingLeft: 0, marginTop: 0 }}
+  >
+    <div className="max-w-8xl mx-auto" style={{ direction: 'rtl' }}>
+      {/* صف البحث */}
+      <div className="p-7 pb-5">
+        <div className="flex items-center gap-4">
+          {/* مربع البحث */}
+          <div className="relative">
+            <div className="flex items-center border border-gray-300 rounded" style={{ boxShadow: "0 0 4px rgba(255, 255, 255, 0.1), 0 0 8px rgba(0, 0, 0, 0.05)", paddingRight: "8px", paddingLeft: "8px" }}>
+              <div style={{ marginRight: "8px" }}>
+                <Image
+                  src="/search-icon.png"
+                  alt="search"
+                  width={22}
+                  height={18}
+                  className="cursor-pointer"
+                />
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ابحث عن ما تريد"
+                className="py-2 text-right outline-none text-gray-700"
+                style={{ fontFamily: "Tajawal", fontWeight: 500, width: "100px", marginRight: "8px" }}
+              />
+            </div>
+          </div>
+          
+          {/* زر البحث الأخضر */}
+          <button
+            className="px-3 py-2 rounded text-white transition-colors"
+            style={{ 
+              backgroundColor: "#1b8354",
+              fontFamily: "Tajawal",
+              fontWeight: 700,
+              boxShadow: "0 0 rgba(27, 131, 84, 0.3), 0 0 8px rgba(27, 131, 84, 0.2)"
+            }}
+          >
+            بحث
+          </button>
+          
+          {/* البحث المتقدم */}
+          <div 
+            className="inline-block border border-gray-300 rounded-md px-3 py-2"
+            style={{ 
+              fontFamily: "Tajawal", 
+              fontWeight: 700,
+              color: "#000000",
+              boxShadow: "0 0 3px rgba(0,0,0,0.08), 0 0 6px rgba(0,0,0,0.04)"
+            }}
+          >
+            البحث المتقدم
+          </div>
+          
+          {/* زر الإغلاق X */}
+          <button
+            onClick={() => setActiveMenu(null)}
+            className="px-2 py-[3px] rounded bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors flex items-center justify-center"
+            style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+          >
+            <span className="text-2xl leading-none">X</span>
+          </button>
+        </div>
+      </div>
+
+      {/* اقتراحات شائعة */}
+      <div className="px-7 pt-2 pb-4">
+        <div 
+          className="mb-10"
+          style={{ 
+            fontFamily: "Tajawal", 
+            fontWeight: 700,
+            color: "#1b8354",
+            fontSize: "18px"
+          }}
+        >
+          اقتراحات شائعة
+        </div>
+        
+        {/* العناصر أفقية */}
+        <div className="flex gap-10 px-6 mb-2">
+          <div
+            className="inline-block bg-gray-100 rounded px-2 py-2"
+            style={{
+              fontFamily: "Tajawal",
+              fontWeight: 700,
+              color: "#000000",
+              boxShadow: "0 0 3px rgba(0,0,0,0.06), 0 0 6px rgba(0,0,0,0.03)"
+            }}
+          >
+            الرخص التجارية
+          </div>
+          
+          <div 
+            className="inline-block bg-gray-100 rounded px-2 py-2"
+            style={{ 
+              fontFamily: "Tajawal", 
+              fontWeight: 700,
+              color: "#000000",
+              boxShadow: "0 0 3px rgba(0,0,0,0.06), 0 0 6px rgba(0,0,0,0.03)"
+            }}
+          >
+            الرخص الإنشائية
+          </div>
+          
+          <div 
+            className="inline-block bg-gray-100 rounded px-2 py-2"
+            style={{ 
+              fontFamily: "Tajawal", 
+              fontWeight: 700,
+              color: "#000000",
+              boxShadow: "0 0 3px rgba(0,0,0,0.06), 0 0 6px rgba(0,0,0,0.03)"
+            }}
+          >
+            حجز المواعيد الإلكترونية
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* القائمة المنسدلة لباقي عناصر الكمبيوتر */}
 
               
        
@@ -1017,10 +1300,733 @@ return (
 
       {/* عرض النتيجة */}
     {/* عرض النتيجة */}
+{certificateData && !loading && (
+  <div className="flex justify-center px-0 md:px-4 -pb-0 mt-0.5">
+    {isMobile ? (
+      // تصميم الهاتف (كما هو تمامًا)
+      <div className="w-full md:max-w-4xl rounded-none overflow-hidden bg-white shadow-lg pb-18">
+        {/* محتوى البطاقة */}
+       
+        {/* صورة الشخص مع العنوان فوقها مباشرة */}
+        <div className="flex flex-col items-center mb-3 pt-6">
+          <h2 className="text-xl font-semibold text-[#306db5] mb-2">
+            <span 
+              className="relative font-bold -top-2 text-[32px] text-[#484e56]" 
+              style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+            >
+              {certificateData.certificateType}
+            </span>
+          </h2>
+         
+            <img 
+src={certificateData?.personImageUrl}
+              alt="صورة الشخص" 
+className="w-[200px] h-[200px] object-contain"            />
+          
+        </div>
 
+        
+      
+{/* صف الأمانة والبلدية */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-9 mb-12 px-7 md:px-7 mt-2">
+  {/* الأمانة */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-11 h-3 bg-white flex items-center justify-center">
+      <span 
+        className="relative text-black text-[16px] top-1 font-bold" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        الامانة
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light" 
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.amana}
+    </div>
+  </div>
+  
+  {/* البلدية */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-11 h-3 bg-white flex items-center justify-center">
+      <span 
+        className="relative text-black text-[16px] top-1 font-bold" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        البلدية
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light" 
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.baladia}
+    </div>
+  </div>
+</div>
+
+{/* البيانات الأساسية - مع mt-2 بين كل عنصر */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-9 mb-6 px-7 md:px-6 -mt-3">
+  {/* الاسم */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-11 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        الاسم 
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.name || "-"}
+    </div>
+  </div>
+
+  {/* رقم الهوية */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-17 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        رقم الهوية
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.idNumber || "-"}
+    </div>
+  </div>
+
+  {/* الجنس */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-11 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        الجنس
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.gender || "-"}
+    </div>
+  </div>
+
+  {/* الجنسية */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-13 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        الجنسية
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.nationality || "-"}
+    </div>
+  </div>
+
+  {/* رقم الشهادة الصحية */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-32 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        رقم الشهادة الصحية
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.healthCertificateNumber || "-"}
+    </div>
+  </div>
+
+  {/* المهنة */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-11 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        المهنة
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.jobTitle || "-"}
+    </div>
+  </div>
+
+  {/* تاريخ إصدار الشهادة هجري */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-52 h-3 bg-white flex items-center justify-center">
+      <span 
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        تاريخ إصدار الشهادة الصحية هجري
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light" 
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {convertToHijri(certificateData.certificateIssueDate) || "-"}
+    </div>
+  </div>
+
+  {/* تاريخ إصدار الشهادة ميلادي */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-53 h-3 bg-white flex items-center justify-center">
+      <span 
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        تاريخ إصدار الشهادة الصحية ميلادي
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light" 
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.certificateIssueDate 
+        ? certificateData.certificateIssueDate.replace(/-/g, "/") 
+        : "-"}
+    </div>
+  </div>
+
+  {/* تاريخ نهاية الشهادة هجري */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-51 h-3 bg-white flex items-center justify-center">
+      <span 
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        تاريخ نهاية الشهادة الصحية هجري
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light" 
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {convertToHijri(certificateData.healthCertificateIssueDate) || "-"}
+    </div>
+  </div>
+
+  {/* تاريخ نهاية الشهادة ميلادي */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-53 h-3 bg-white flex items-center justify-center">
+      <span 
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        تاريخ نهاية الشهادة الصحية ميلادي
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light" 
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.healthCertificateIssueDate 
+        ? certificateData.healthCertificateIssueDate.replace(/-/g, "/") 
+        : "-"}
+    </div>
+  </div>
+
+  {/* نوع البرنامج التثقيفي */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-33 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        نوع البرنامج التثقيفي
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.programType || "-"}
+    </div>
+  </div>
+
+  {/* تاريخ انتهاء البرنامج هجري */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-44 h-3 bg-white flex items-center justify-center">
+      <span 
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        تاريخ انتهاء البرنامج التثقيفى
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light" 
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {convertToHijri(certificateData.programEndDate) || "-"}
+    </div>
+  </div>
+  
+  {/* رقم الرخصة */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-18 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        رقم الرخصة
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.licenseNumber || "-"}
+    </div>
+  </div>
+
+  {/* اسم المنشأة */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-22 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        اسم المنشأة
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.establishmentName || "-"}
+    </div>
+  </div>
+
+  {/* رقم المنشأة */}
+  <div className="relative mt-2">
+    <div className="absolute right-0 -top-7 w-20 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-[16px] top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: 'Tajawal', fontWeight: 500 }}
+      >
+        رقم المنشأة
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#9da4ae] p-3 pt-2 rounded-sm h-10 flex items-center justify-end text-[14px] font-light"
+      style={{ color: "#4c515a", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.establishmentNumber || "-"}
+    </div>
+  </div>
+</div>
+      </div>
+    ) : (
+      // تصميم الكمبيوتر (نفس المحتوى لكن مع حواف مستديرة ومساحة أكبر)
+      <div className="w-full max-w-6xl rounded-xl overflow-hidden bg-white shadow-lg pb-15" style={{ margin: '0 7rem' }}>
+        {/* محتوى البطاقة */}
+       
+        {/* صورة الشخص مع العنوان فوقها مباشرة */}
+        <div className="flex flex-col items-center mb-3 pt-10">
+  <h2 className="text-xl font-semibold text-[#306db5] mb-6">
+    <span 
+      className="relative font-bold  text-[32px] text-[#484e56]" 
+      style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+    >
+      {certificateData.certificateType}
+    </span>
+  </h2>
+  {certificateData.personImageUrl && (
+    <img 
+     src={certificateData?.personImageUrl}
+      alt="صورة الشخص" 
+      className="max-w-[200px] max-h-[200px] "
+    />
+  )}
+</div>
+
+
+                {/* صف يحتوي على الأمانة والبلدية */}
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 px-8" dir="rtl">
+  {/* الأمانة */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 w-11 h-3 bg-white flex items-center justify-center">
+      <span 
+        className="relative text-black text-base top-1 font-bold" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        الامانة
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.amana}
+    </div>
+  </div>
+  
+  {/* البلدية */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 w-11 h-3 bg-white flex items-center justify-center">
+      <span 
+        className="relative text-black text-base top-1 font-bold" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        البلدية
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.baladia}
+    </div>
+  </div>
+</div>
+
+{/* البيانات الأساسية */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 px-8" dir="rtl">
+  {/* الاسم */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 w-11 h-3 bg-white flex items-center justify-center">
+      <span
+        className="relative text-black text-base top-1 font-bold"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        الاسم 
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.name || "-"}
+    </div>
+  </div>
+
+  {/* رقم الهوية */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        رقم الهوية
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.idNumber || "-"}
+    </div>
+  </div>
+
+  {/* الجنس */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        الجنس
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2"
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.gender || "-"}
+    </div>
+  </div>
+
+  {/* الجنسية */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        الجنسية
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.nationality || "-"}
+    </div>
+  </div>
+
+  {/* رقم الشهادة الصحية */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        رقم الشهادة الصحية
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2"
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.healthCertificateNumber || "-"}
+    </div>
+  </div>
+
+  {/* المهنة */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        المهنة
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2"
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.jobTitle || "-"}
+    </div>
+  </div>
+
+  {/* تاريخ إصدار الشهادة هجري */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ إصدار الشهادة الصحية هجري
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {convertToHijri(certificateData.certificateIssueDate) || "-"}
+    </div>
+  </div>
+
+  {/* تاريخ إصدار الشهادة ميلادي */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ إصدار الشهادة الصحية ميلادي
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.certificateIssueDate 
+        ? certificateData.certificateIssueDate.replace(/-/g, "/") 
+        : "-"}
+    </div>
+  </div>
+
+  {/* تاريخ نهاية الشهادة هجري */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ نهاية الشهادة الصحية هجري
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {convertToHijri(certificateData.healthCertificateIssueDate) || "-"}
+    </div>
+  </div>
+
+  {/* تاريخ نهاية الشهادة ميلادي */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ نهاية الشهادة الصحية ميلادي
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {certificateData.healthCertificateIssueDate 
+        ? certificateData.healthCertificateIssueDate.replace(/-/g, "/") 
+        : "-"}
+    </div>
+  </div>
+
+  {/* نوع البرنامج التثقيفي */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        نوع البرنامج التثقيفي
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2"
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.programType || "-"}
+    </div>
+  </div>
+
+  {/* تاريخ انتهاء البرنامج هجري */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span 
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap" 
+        style={{ fontFamily: 'Tajawal', fontWeight: 700 }}
+      >
+        تاريخ انتهاء البرنامج التثقيفى
+      </span>
+    </div>
+    <div 
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2" 
+      style={{ color: "#939c94", fontFamily: 'Tajawal', fontWeight: 500 }}
+    >
+      {convertToHijri(certificateData.programEndDate) || "-"}
+    </div>
+  </div>
+  
+  {/* رقم الرخصة */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        رقم الرخصة
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2"
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.licenseNumber || "-"}
+    </div>
+  </div>
+
+  {/* اسم المنشأة */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        اسم المنشأة
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2"
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.establishmentName || "-"}
+    </div>
+  </div>
+
+  {/* رقم المنشأة */}
+  <div className="relative">
+    <div className="absolute right-3 -top-2 h-3 bg-white flex items-center justify-center w-auto px-1">
+      <span
+        className="relative text-black text-base top-1 font-bold whitespace-nowrap"
+        style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+      >
+        رقم المنشأة
+      </span>
+    </div>
+    <div
+      className="bg-[#f2f2f2] border border-[#d7d7d7] p-4 pt-2 rounded-sm h-14 flex items-center justify-start text-sm font-light text-right pr-2"
+      style={{ color: "#939c94", fontFamily: "Tajawal", fontWeight: 500 }}
+    >
+      {certificateData.establishmentNumber || "-"}
+    </div>
+  </div>
+  
+</div>
+
+
+        
+      </div>
+    )}
+  </div>
+)}
 
       {/* الفوتر */}
-  
+<footer className="bg-[#074d31] text-black -mt-3 py-5">
+ <div className="flex flex-col items-center md:items-start order-1 md:order-2">
+
+  <div
+    className="flex flex-wrap justify-center md:justify-start gap-4 text-[12px] text-[#ffffff] -mr-20 "
+    style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+  >
+    <a href="#" className="hover:underline">شروط الاستخدام</a>
+    <a href="#" className="hover:underline">RSS</a>
+    <a href="#" className="hover:underline">خريطة الموقع</a>
+  </div>
+
+  <div
+    className="text-[12px] text-[#ffffff] mt-6 -mr-4"
+    style={{ fontFamily: "Tajawal", fontWeight: 700 }}
+  >
+    جميع الحقوق محفوظة لوزارة البلديات والإسكان © 2026
+  </div>
+
+  <div
+    className="text-[12px] text-[#ffffff] mt-9 -mr-11"
+    style={{ fontFamily: "Tajawal", fontWeight: 500 }}
+  >
+    تم تطويره وصيانته بواسطة وزارة البلديات والإسكان
+  </div>
+
+  <img
+    src="/logaup.svg"
+    alt="moh-approved"
+    className="w-25 h-15 mt-3"
+  />
+
+</div>
+</footer>
 
     </div>
   );
