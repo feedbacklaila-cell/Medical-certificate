@@ -555,7 +555,14 @@ function HealthCertificateForm() {
       }
 
       const certificateId = isEditing ? (formData.certificateId || formData.healthCertificateNumber) : uuidv4();
-      const certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
+      
+      // تعديل الرابط حسب نوع تصميم الشهادة
+      let certificateUrl;
+      if (formData.certificateDesignType === "التقرير الثاني") {
+        certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicensas?certificateNumber=${encodeURIComponent(certificateId)}`;
+      } else {
+        certificateUrl = `https://www.blady.dev/saa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
+      }
       
       // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
       let qrCodeImageUrl = formData.qrCodeImageUrl;
@@ -703,8 +710,8 @@ function HealthCertificateForm() {
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
                   >
                     <option value="">اختر نوع التصميم</option>
-                    <option value="الشهادة الصحية">الشهادة الصحية</option>
-                    <option value="شهادة صحية">شهادة صحية</option>
+                    <option value="التقرير الأول">التقرير الأول</option>
+                    <option value="التقرير الثاني">التقرير الثاني</option>
                   </select>
                 </div>
               </div>

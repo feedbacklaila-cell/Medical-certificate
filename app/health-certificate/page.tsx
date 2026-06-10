@@ -94,19 +94,19 @@ export default function HealthCertificatePage() {
 
   // تحديد الصور بناءً على نوع تصميم الشهادة
   const getMainImageSrc = () => {
-    if (certificateData?.certificateDesignType === "شهادة صحية") {
-      return "/tr33.png";
+    if (certificateData?.certificateDesignType === "التقرير الأول") {
+      return "/tr3.png";
     }
     // القيمة الافتراضية "الشهادة الصحية" أو أي قيمة أخرى
-    return "/tr3.png";
+    return "/tr331.png";
   };
 
   const getSecondImageSrc = () => {
-    if (certificateData?.certificateDesignType === "شهادة صحية") {
-      return "/tr13.png";
+    if (certificateData?.certificateDesignType === "التقرير الأول") {
+      return "/tr1.png";
     }
     // القيمة الافتراضية "الشهادة الصحية" أو أي قيمة أخرى
-    return "/tr1.png";
+    return "/tr11.png";
   };
 
   if (loading) {
@@ -153,7 +153,8 @@ export default function HealthCertificatePage() {
           className="absolute overflow-hidden"
           style={{
             left: "2.9%",
-            top: "57.8%",
+           top: certificateData?.certificateDesignType === "التقرير الثاني" ? "57%" : "57.8%",
+
             width: "18.5%",
             height: "29%"
           }}
@@ -169,7 +170,7 @@ export default function HealthCertificatePage() {
         <div
           className="absolute overflow-hidden"
           style={{
-            left: "66.5%",
+            left: certificateData?.certificateDesignType === "التقرير الثاني" ? "66.9%" : "66.5%",
             top: "2.5%",
             width: "11.2%",
             height: "17%"
@@ -251,11 +252,12 @@ export default function HealthCertificatePage() {
           </div>
         )}
 
+        {/* رقم الهوية - مع تغيير الموضع في التقرير الثاني */}
         <div
           className="absolute text-black"
           style={{
             left: "78.8%",
-            top: "40.7%",
+            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "45%" : "40.7%",
             fontSize: "2.1vw",
             width: "24.41%",
             height: "3.9%",
@@ -266,12 +268,13 @@ export default function HealthCertificatePage() {
           <span>{certificateData.idNumber}</span>
         </div>
 
+        {/* الجنسية - مع تغيير الموضع في التقرير الثاني */}
         <div
           className="absolute text-black"
           style={{
             left: "39%",
             direction: "rtl",
-            top: "40.7%",
+            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "45%" : "40.7%",
             width: "19.53%",
             height: "3.9%",
             fontSize: "2.1vw",
@@ -281,11 +284,12 @@ export default function HealthCertificatePage() {
           <span>{certificateData.nationality}</span>
         </div>
 
+        {/* رقم الشهادة - مع تغيير الموضع في التقرير الثاني */}
         <div
           className="absolute text-black"
           style={{
             left: "82.8%",
-            top: "55%",
+            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "63%" : "55%",
             fontSize: "2.1vw",
             width: "24.41%",
             height: "3.9%",
@@ -294,12 +298,13 @@ export default function HealthCertificatePage() {
           <span>{certificateData.healthCertificateNumber}</span>
         </div>
 
+        {/* المهنة - مع تغيير الموضع في التقرير الثاني */}
         <div
           className="absolute text-black"
           style={{
             left: "39%",
             direction: "rtl",
-            top: "55%",
+            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "63%" : "55%",
             width: "19.53%",
             height: "3.9%",
             fontSize: "2.1vw",
@@ -312,11 +317,12 @@ export default function HealthCertificatePage() {
           <span>{certificateData.jobTitle}</span>
         </div>
 
+        {/* تاريخ إصدار الشهادة - مع تغيير الموضع في التقرير الثاني */}
         <div
           className="absolute text-black"
           style={{
             left: "86%",
-            top: "68.5%",
+            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "82%" : "68.5%",
             fontSize: "2.1vw",
             width: "24.41%",
             height: "3.9%",
@@ -325,11 +331,12 @@ export default function HealthCertificatePage() {
           <span> {convertToHijri(certificateData.certificateIssueDate) || "-"}</span>
         </div>
 
+        {/* تاريخ انتهاء الشهادة - مع تغيير الموضع في التقرير الثاني */}
         <div
           className="absolute text-black"
           style={{
             left: "47.9%",
-            top: "68.5%",
+            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "82%" : "68.5%",
             width: "19.53%",
             height: "3.9%",
             fontSize: "2.1vw",
@@ -338,42 +345,48 @@ export default function HealthCertificatePage() {
           <span> {convertToHijri(certificateData.healthCertificateIssueDate) || "-"}</span>
         </div>
 
-        <div
-          className="absolute text-black"
-          style={{
-            left: "72.5%",
-            top: "82%",
-            fontSize: "2.1vw",
-            width: "24.41%",
-            height: "3.9%",
-            fontFamily: "Droid",
-            textAlign: "right",
-            direction: "rtl",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <span
+        {/* نوع البرنامج - يظهر فقط في التقرير الأول */}
+        {certificateData?.certificateDesignType !== "التقرير الثاني" && (
+          <div
+            className="absolute text-black"
             style={{
-              display: "inline-block",
-              paddingLeft: "9999px",
+              left: "72.5%",
+              top: "82%",
+              fontSize: "2.1vw",
+              width: "24.41%",
+              height: "3.9%",
+              fontFamily: "Droid",
+              textAlign: "right",
+              direction: "rtl",
+              whiteSpace: "nowrap",
             }}
           >
-            {certificateData?.programType}
-          </span>
-        </div>
+            <span
+              style={{
+                display: "inline-block",
+                paddingLeft: "9999px",
+              }}
+            >
+              {certificateData?.programType}
+            </span>
+          </div>
+        )}
 
-        <div
-          className="absolute text-black"
-          style={{
-            left: "47.9%",
-            top: "82%",
-            fontSize: "2.1vw",
-            width: "19.53%",
-            height: "3.9%",
-          }}
-        >
-          <span> {convertToHijri(certificateData.programEndDate) || "-"}</span>
-        </div>
+        {/* تاريخ انتهاء البرنامج - يظهر فقط في التقرير الأول */}
+        {certificateData?.certificateDesignType !== "التقرير الثاني" && (
+          <div
+            className="absolute text-black"
+            style={{
+              left: "47.9%",
+              top: "82%",
+              fontSize: "2.1vw",
+              width: "19.53%",
+              height: "3.9%",
+            }}
+          >
+            <span> {convertToHijri(certificateData.programEndDate) || "-"}</span>
+          </div>
+        )}
       </div>
       <div className="relative w-full mt-10" style={{ paddingTop: "62.65%" }}>
         <Image
