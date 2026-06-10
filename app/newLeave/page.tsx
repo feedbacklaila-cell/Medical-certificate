@@ -559,9 +559,9 @@ function HealthCertificateForm() {
       // تعديل الرابط حسب نوع تصميم الشهادة
       let certificateUrl;
       if (formData.certificateDesignType === "التقرير الثاني") {
-        certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicensas?certificateNumber=${encodeURIComponent(certificateId)}`;
+        certificateUrl = `https://www.blady.dev/sa1/Eservices/HealthIssue/PrintedLicensas?certificateNumber=${encodeURIComponent(certificateId)}`;
       } else {
-        certificateUrl = `https://www.blady.dev/saa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
+        certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
       }
       
       // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
