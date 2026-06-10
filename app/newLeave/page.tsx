@@ -134,6 +134,8 @@ function HealthCertificateForm() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isEditingCertificateNumber, setIsEditingCertificateNumber] = useState(false);
+  // متغير لتتبع نوع التصميم الأصلي عند التعديل
+  const [originalDesignType, setOriginalDesignType] = useState<string>("");
   
   const searchParams = useSearchParams();
   const amanaInputRef = useRef<HTMLInputElement>(null);
@@ -284,6 +286,8 @@ function HealthCertificateForm() {
           setEditingDocId(querySnapshot.docs[0].id);
           setFormData(docData);
           setQrCodeUrl(docData.qrCodeImageUrl || null);
+          // حفظ نوع التصميم الأصلي
+          setOriginalDesignType(docData.certificateDesignType || "");
           
           if (docData.amana) {
             const foundAmana = amanatList.find(
@@ -559,14 +563,16 @@ function HealthCertificateForm() {
       // تعديل الرابط حسب نوع تصميم الشهادة
       let certificateUrl;
       if (formData.certificateDesignType === "التقرير الثاني") {
-        certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
-      } else {
         certificateUrl = `https://www.blady.dev/sa1/Eservices/HealthIssue/PrintedLicensas?certificateNumber=${encodeURIComponent(certificateId)}`;
+      } else {
+        certificateUrl = `https://www.blady.dev/sa/Eservices/HealthIssue/PrintedLicenses?certificateNumber=${encodeURIComponent(certificateId)}`;
       }
       
-      // إنشاء باركود جديد فقط إذا كان تسجيلاً جديداً
+      // إنشاء باركود جديد في الحالات التالية:
+      // 1. تسجيل جديد (!isEditing)
+      // 2. تعديل مع تغيير نوع التصميم (isEditing && formData.certificateDesignType !== originalDesignType)
       let qrCodeImageUrl = formData.qrCodeImageUrl;
-      if (!isEditing) {
+      if (!isEditing || (isEditing && formData.certificateDesignType !== originalDesignType)) {
         const qrCodeDataUrl = await QRCode.toDataURL(certificateUrl);
         qrCodeImageUrl = await uploadToCloudinary(qrCodeDataUrl);
       }
@@ -583,6 +589,8 @@ function HealthCertificateForm() {
       if (isEditing && existingDocId) {
         await updateDoc(doc(db, "healthCertificates", existingDocId), certificateData);
         alert("تم تحديث البيانات بنجاح");
+        // تحديث originalDesignType بعد الحفظ
+        setOriginalDesignType(formData.certificateDesignType);
       } else {
         await addDoc(collection(db, "healthCertificates"), certificateData);
         alert("تم حفظ البيانات بنجاح");
@@ -630,6 +638,7 @@ function HealthCertificateForm() {
     setEditingDocId(null);
     setQrCodeUrl(null);
     setIsEditingCertificateNumber(false);
+    setOriginalDesignType("");
     
     // تنظيف البيانات المحفوظة أيضاً
     sessionStorage.removeItem('pendingFormData');
