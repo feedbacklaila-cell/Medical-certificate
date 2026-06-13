@@ -11,7 +11,7 @@ type HealthCertificateData = {
   qrCodeImageUrl: string;
   amanaImageUrl: string;
   certificateType: string;
-  certificateDesignType: string; // إضافة الحقل الجديد
+  certificateDesignType: string;
   name: string;
   idNumber: string;
   nationality: string;
@@ -74,7 +74,6 @@ export default function HealthCertificatePage() {
       const date = new Date(gregorianDateStr);
       if (isNaN(date.getTime())) return '';
 
-      // تحويل التاريخ الميلادي إلى هجري
       const hijriDate = toHijri(
         date.getFullYear(),
         date.getMonth() + 1,
@@ -92,12 +91,19 @@ export default function HealthCertificatePage() {
     }
   }
 
+  // دالة لتحديد الخط بناءً على نوع التصميم
+  const getFontFamily = (defaultFont: string = "Droid") => {
+    if (certificateData?.certificateDesignType === "التقرير الثاني") {
+      return "Noto";
+    }
+    return defaultFont;
+  };
+
   // تحديد الصور بناءً على نوع تصميم الشهادة
   const getMainImageSrc = () => {
     if (certificateData?.certificateDesignType === "التقرير الأول") {
       return "/tr3.png";
     }
-    // القيمة الافتراضية "الشهادة الصحية" أو أي قيمة أخرى
     return "/tr331.png";
   };
 
@@ -105,7 +111,6 @@ export default function HealthCertificatePage() {
     if (certificateData?.certificateDesignType === "التقرير الأول") {
       return "/tr1.png";
     }
-    // القيمة الافتراضية "الشهادة الصحية" أو أي قيمة أخرى
     return "/tr11.png";
   };
 
@@ -153,8 +158,7 @@ export default function HealthCertificatePage() {
           className="absolute overflow-hidden"
           style={{
             left: "2.9%",
-           top: certificateData?.certificateDesignType === "التقرير الثاني" ? "57%" : "57.8%",
-
+            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "57%" : "57.8%",
             width: "18.5%",
             height: "29%"
           }}
@@ -202,191 +206,197 @@ export default function HealthCertificatePage() {
         </div>
 
         {/* البيانات */}
-        {/* العربي */}
-        {/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
-          <div
-            className="absolute flex items-center font-bold"
-            style={{
-              left: "49.5%",
-              top: "26.6%",
-              width: "48.2%",
-              height: "5.5%",
-              color: "#0c7773",
-              fontFamily: "Droid",
-              direction: "rtl",
-              textAlign: "right",
-              overflow: "hidden",
-              whiteSpace: "nowrap",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "2.4vw",
-                display: "block",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {certificateData.name}
-            </span>
-          </div>
-        )}
+       {/* العربي */}
+{/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
+  <div
+    className="absolute flex items-center font-bold"
+    style={{
+      left: certificateData?.certificateDesignType === "التقرير الثاني" ? "47%" : "49.5%",
+      top: "26.6%",
+      width: "48.2%",
+      height: "5.5%",
+      color: certificateData?.certificateDesignType === "التقرير الثاني" ? "#0f8a85" : "#0c7773",
+      fontFamily: getFontFamily("Droid"),
+      direction: "rtl",
+      textAlign: "right",
+      overflow: "hidden",
+      whiteSpace: "nowrap",
+    }}
+  >
+    <span
+      style={{
+        fontSize: certificateData?.certificateDesignType === "التقرير الثاني" ? "2.9vw" : "2.4vw",
+        display: "block",
+        textOverflow: "ellipsis",
+      }}
+    >
+      {certificateData.name}
+    </span>
+  </div>
+)}
 
-        {/* الإنجليزي */}
-        {!/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
-          <div
-            className="absolute flex items-center justify-end font-bold"
-            style={{
-              left: "49.5%",
-              top: "26.6%",
-              width: "48.2%",
-              height: "5.5%",
-              color: "#0c7773",
-              fontFamily: "Droid, sans-serif",
-              direction: "ltr",
-              textAlign: "right",
-            }}
-          >
-            <span style={{ fontSize: "2.4vw", whiteSpace: "nowrap" }}>
-              {certificateData.name}
-            </span>
-          </div>
-        )}
+{/* الإنجليزي */}
+{!/[\u0600-\u06FF]/.test(certificateData?.name ?? "") && (
+  <div
+    className="absolute flex items-center justify-end font-bold"
+    style={{
+      left: certificateData?.certificateDesignType === "التقرير الثاني" ? "47%" : "49.5%",
+      top: "26.6%",
+      width: "48.2%",
+      height: "5.5%",
+      color: certificateData?.certificateDesignType === "التقرير الثاني" ? "#0f8a85" : "#0c7773",
+      fontFamily: getFontFamily("Droid, sans-serif"),
+      direction: "ltr",
+      textAlign: "right",
+    }}
+  >
+    <span style={{ 
+      fontSize: certificateData?.certificateDesignType === "التقرير الثاني" ? "2.9vw" : "2.4vw", 
+      whiteSpace: "nowrap" 
+    }}>
+      {certificateData.name}
+    </span>
+  </div>
+)}
+       {/* رقم الهوية - مع تغيير الموضع في التقرير الثاني */}
+<div
+  className="absolute text-black"
+  style={{
+    left: certificateData?.certificateDesignType === "التقرير الثاني" ? "76.8%" : "78.8%",
+    top: certificateData?.certificateDesignType === "التقرير الثاني" ? "45%" : "40.7%",
+    fontSize: "2.1vw",
+    width: "24.41%",
+    height: "3.9%",
+    textAlign: "center",
+    lineHeight: "150%",
+    fontFamily: certificateData?.certificateDesignType === "التقرير الثاني" ? "Noto" : undefined,
+  }}
+>
+  <span>{certificateData.idNumber}</span>
+</div>
 
-        {/* رقم الهوية - مع تغيير الموضع في التقرير الثاني */}
-        <div
-          className="absolute text-black"
-          style={{
-            left: "78.8%",
-            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "45%" : "40.7%",
-            fontSize: "2.1vw",
-            width: "24.41%",
-            height: "3.9%",
-            textAlign: "center",
-            lineHeight: "150%",
-          }}
-        >
-          <span>{certificateData.idNumber}</span>
-        </div>
+{/* الجنسية - مع تغيير الموضع في التقرير الثاني */}
+<div
+  className="absolute text-black"
+  style={{
+    left: certificateData?.certificateDesignType === "التقرير الثاني" ? "38%" : "39%",
+    direction: "rtl",
+    top: certificateData?.certificateDesignType === "التقرير الثاني" ? "45%" : "40.7%",
+    width: "19.53%",
+    height: "3.9%",
+    fontSize: "2.1vw",
+    fontFamily: getFontFamily("Droid"),
+  }}
+>
+  <span>{certificateData.nationality}</span>
+</div>
 
-        {/* الجنسية - مع تغيير الموضع في التقرير الثاني */}
-        <div
-          className="absolute text-black"
-          style={{
-            left: "39%",
-            direction: "rtl",
-            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "45%" : "40.7%",
-            width: "19.53%",
-            height: "3.9%",
-            fontSize: "2.1vw",
-            fontFamily: "Droid",
-          }}
-        >
-          <span>{certificateData.nationality}</span>
-        </div>
+{/* رقم الشهادة - مع تغيير الموضع في التقرير الثاني */}
+<div
+  className="absolute text-black"
+  style={{
+    left: certificateData?.certificateDesignType === "التقرير الثاني" ? "80.8%" : "82.8%",
+    top: certificateData?.certificateDesignType === "التقرير الثاني" ? "63%" : "55%",
+    fontSize: "2.1vw",
+    width: "24.41%",
+    height: "3.9%",
+    fontFamily: certificateData?.certificateDesignType === "التقرير الثاني" ? "Noto" : undefined,
+  }}
+>
+  <span>{certificateData.healthCertificateNumber}</span>
+</div>
 
-        {/* رقم الشهادة - مع تغيير الموضع في التقرير الثاني */}
-        <div
-          className="absolute text-black"
-          style={{
-            left: "82.8%",
-            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "63%" : "55%",
-            fontSize: "2.1vw",
-            width: "24.41%",
-            height: "3.9%",
-          }}
-        >
-          <span>{certificateData.healthCertificateNumber}</span>
-        </div>
+{/* المهنة - مع تغيير الموضع في التقرير الثاني */}
+<div
+  className="absolute text-black"
+  style={{
+    left: certificateData?.certificateDesignType === "التقرير الثاني" ? "38%" : "39%",
+    direction: "rtl",
+    top: certificateData?.certificateDesignType === "التقرير الثاني" ? "63%" : "55%",
+    width: "19.53%",
+    height: "3.9%",
+    fontSize: "2.1vw",
+    fontFamily: getFontFamily("Droid"),
+    overflow: "visible",
+    whiteSpace: "nowrap",
+    textAlign: "right",
+  }}
+>
+  <span>{certificateData.jobTitle}</span>
+</div>
 
-        {/* المهنة - مع تغيير الموضع في التقرير الثاني */}
-        <div
-          className="absolute text-black"
-          style={{
-            left: "39%",
-            direction: "rtl",
-            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "63%" : "55%",
-            width: "19.53%",
-            height: "3.9%",
-            fontSize: "2.1vw",
-            fontFamily: "Droid",
-            overflow: "visible",
-            whiteSpace: "nowrap",
-            textAlign: "right",
-          }}
-        >
-          <span>{certificateData.jobTitle}</span>
-        </div>
+{/* تاريخ إصدار الشهادة - مع تغيير الموضع في التقرير الثاني */}
+<div
+  className="absolute text-black"
+  style={{
+    left: certificateData?.certificateDesignType === "التقرير الثاني" ? "84%" : "86%",
+    top: certificateData?.certificateDesignType === "التقرير الثاني" ? "82%" : "68.5%",
+    fontSize: "2.1vw",
+    width: "24.41%",
+    height: "3.9%",
+    fontFamily: certificateData?.certificateDesignType === "التقرير الثاني" ? "Noto" : undefined,
+  }}
+>
+  <span> {convertToHijri(certificateData.certificateIssueDate) || "-"}</span>
+</div>
 
-        {/* تاريخ إصدار الشهادة - مع تغيير الموضع في التقرير الثاني */}
-        <div
-          className="absolute text-black"
-          style={{
-            left: "86%",
-            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "82%" : "68.5%",
-            fontSize: "2.1vw",
-            width: "24.41%",
-            height: "3.9%",
-          }}
-        >
-          <span> {convertToHijri(certificateData.certificateIssueDate) || "-"}</span>
-        </div>
+{/* تاريخ انتهاء الشهادة - مع تغيير الموضع في التقرير الثاني */}
+<div
+  className="absolute text-black"
+  style={{
+    left: certificateData?.certificateDesignType === "التقرير الثاني" ? "45.9%" : "47.9%",
+    top: certificateData?.certificateDesignType === "التقرير الثاني" ? "82%" : "68.5%",
+    width: "19.53%",
+    height: "3.9%",
+    fontSize: "2.1vw",
+    fontFamily: certificateData?.certificateDesignType === "التقرير الثاني" ? "Noto" : undefined,
+  }}
+>
+  <span> {convertToHijri(certificateData.healthCertificateIssueDate) || "-"}</span>
+</div>
 
-        {/* تاريخ انتهاء الشهادة - مع تغيير الموضع في التقرير الثاني */}
-        <div
-          className="absolute text-black"
-          style={{
-            left: "47.9%",
-            top: certificateData?.certificateDesignType === "التقرير الثاني" ? "82%" : "68.5%",
-            width: "19.53%",
-            height: "3.9%",
-            fontSize: "2.1vw",
-          }}
-        >
-          <span> {convertToHijri(certificateData.healthCertificateIssueDate) || "-"}</span>
-        </div>
+{/* نوع البرنامج - يظهر فقط في التقرير الأول */}
+{certificateData?.certificateDesignType !== "التقرير الثاني" && (
+  <div
+    className="absolute text-black"
+    style={{
+      left: "72.5%",
+      top: "82%",
+      fontSize: "2.1vw",
+      width: "24.41%",
+      height: "3.9%",
+      fontFamily: getFontFamily("Droid"),
+      textAlign: "right",
+      direction: "rtl",
+      whiteSpace: "nowrap",
+    }}
+  >
+    <span
+      style={{
+        display: "inline-block",
+        paddingLeft: "9999px",
+      }}
+    >
+      {certificateData?.programType}
+    </span>
+  </div>
+)}
 
-        {/* نوع البرنامج - يظهر فقط في التقرير الأول */}
-        {certificateData?.certificateDesignType !== "التقرير الثاني" && (
-          <div
-            className="absolute text-black"
-            style={{
-              left: "72.5%",
-              top: "82%",
-              fontSize: "2.1vw",
-              width: "24.41%",
-              height: "3.9%",
-              fontFamily: "Droid",
-              textAlign: "right",
-              direction: "rtl",
-              whiteSpace: "nowrap",
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                paddingLeft: "9999px",
-              }}
-            >
-              {certificateData?.programType}
-            </span>
-          </div>
-        )}
-
-        {/* تاريخ انتهاء البرنامج - يظهر فقط في التقرير الأول */}
-        {certificateData?.certificateDesignType !== "التقرير الثاني" && (
-          <div
-            className="absolute text-black"
-            style={{
-              left: "47.9%",
-              top: "82%",
-              fontSize: "2.1vw",
-              width: "19.53%",
-              height: "3.9%",
-            }}
-          >
-            <span> {convertToHijri(certificateData.programEndDate) || "-"}</span>
-          </div>
-        )}
+{/* تاريخ انتهاء البرنامج - يظهر فقط في التقرير الأول */}
+{certificateData?.certificateDesignType !== "التقرير الثاني" && (
+  <div
+    className="absolute text-black"
+    style={{
+      left: "47.9%",
+      top: "82%",
+      fontSize: "2.1vw",
+      width: "19.53%",
+      height: "3.9%",
+    }}
+  >
+    <span> {convertToHijri(certificateData.programEndDate) || "-"}</span>
+  </div>
+)}
       </div>
       <div className="relative w-full mt-10" style={{ paddingTop: "62.65%" }}>
         <Image

@@ -66,4 +66,11 @@
   font-display: swap;
 }
 
-
+@font-face {
+  font-family: 'Noto';
+  src: url('/fonts/NotoNaskhArabicUI-Bold.ttf') format('woff2'),
+    url('/fonts/NotoNaskhArabicUI-Bold.ttf') format('truetype');
+  font-weight: 700; 
+  font-style: normal;
+  font-display: swap;
+}
