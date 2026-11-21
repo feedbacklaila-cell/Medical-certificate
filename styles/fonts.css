@@ -68,8 +68,8 @@
 
 @font-face {
   font-family: 'Noto';
-  src: url('/fonts/NotoNaskhArabicUI-Bold.ttf') format('woff2'),
-    url('/fonts/NotoNaskhArabicUI-Bold.ttf') format('truetype');
+  src: url('/fonts/IBMPlexSansArabic-Regular.ttf') format('woff2'),
+    url('/fonts/IBMPlexSansArabic-Regular.ttf') format('truetype');
   font-weight: 700; 
   font-style: normal;
   font-display: swap;
