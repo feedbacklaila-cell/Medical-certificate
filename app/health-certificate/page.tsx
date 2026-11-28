@@ -94,7 +94,7 @@ export default function HealthCertificatePage() {
   // دالة لتحديد الخط بناءً على نوع التصميم
   const getFontFamily = (defaultFont: string = "Droid") => {
     if (certificateData?.certificateDesignType === "التقرير الثاني") {
-      return "Noto";
+      return "Droid";
     }
     return defaultFont;
   };
